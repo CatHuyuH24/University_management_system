@@ -57,7 +57,7 @@ public class LoginView {
         stage.setTitle("Login");
 
         try {
-            Image iconImage = new Image("university_icon.png");
+            Image iconImage = new Image(getClass().getResource("/images/university_icon.png").toExternalForm());
             stage.getIcons().add(iconImage);
         } catch (NullPointerException e) {
             System.err.println("Image not found: university_icon.png");
