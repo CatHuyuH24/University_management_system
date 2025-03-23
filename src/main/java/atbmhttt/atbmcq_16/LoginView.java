@@ -31,11 +31,18 @@ public class LoginView {
         // Password field
         Label passwordLabel = new Label("Password:");
         TextField passwordField = new TextField();
+
+        // 2-way changing, the content of the text field and the
+        // actual underlying state of the linked data is consistent
         passwordField.textProperty().bindBidirectional(viewModel.passwordProperty());
+
+        // 1-way changing, change the field affect the
+        // label's text, not the other way around
+        passwordLabel.textProperty().bind(viewModel.passwordProperty());
 
         // Login button
         Button loginButton = new Button("Login");
-        loginButton.setOnAction(event -> viewModel.login(usernameLabel, passwordLabel));
+        loginButton.setOnAction(event -> viewModel.login(usernameLabel));
 
         // Add components to the GridPane
         gridPane.add(usernameLabel, 0, 0); // Column 0, Row 0
@@ -50,8 +57,7 @@ public class LoginView {
         stage.setTitle("Login");
 
         try {
-            Image iconImage = new Image(
-                    getClass().getResource("/atbmhttt/atbmcq_16/university_icon.png").toExternalForm());
+            Image iconImage = new Image("university_icon.png");
             stage.getIcons().add(iconImage);
         } catch (NullPointerException e) {
             System.err.println("Image not found: university_icon.png");

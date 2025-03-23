@@ -7,7 +7,7 @@ import javafx.beans.property.StringProperty;
 
 public class LoginViewModel {
     private final StringProperty username = new SimpleStringProperty();
-    private final StringProperty password = new SimpleStringProperty();
+    private final StringProperty password = new SimpleStringProperty("One way binding");
 
     public StringProperty usernameProperty() {
         return username;
@@ -33,9 +33,8 @@ public class LoginViewModel {
         this.password.set(password);
     }
 
-    public void login(Label usernameLabel, Label passwordLabel) {
-        usernameLabel.textProperty().set(password.get());
-        passwordLabel.textProperty().set(username.get());
+    public void login(Label usernameLabel) {
+        usernameLabel.textProperty().set(username.get());
         // Add login logic here (e.g., validate username and password)
         System.out.println("Logging in with username: " + getUsername() + " and password: " + getPassword());
     }
