@@ -1,6 +1,5 @@
 module atbmhttt.atbmcq_16 {
-    requires javafx.controls;
-    requires javafx.fxml;
+    requires transitive javafx.controls; // Make javafx.controls available to dependent modules
     requires transitive javafx.graphics;
 
     opens atbmhttt.atbmcq_16 to javafx.fxml;
