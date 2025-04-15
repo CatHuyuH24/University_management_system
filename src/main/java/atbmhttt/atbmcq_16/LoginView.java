@@ -11,9 +11,11 @@ import javafx.stage.Stage;
 
 public class LoginView {
     private final LoginViewModel viewModel;
+    private final Router router;
 
-    public LoginView(LoginViewModel viewModel) {
+    public LoginView(LoginViewModel viewModel, Router router) {
         this.viewModel = viewModel;
+        this.router = router;
     }
 
     public void start(Stage stage) {
@@ -32,17 +34,27 @@ public class LoginView {
         Label passwordLabel = new Label("Password:");
         TextField passwordField = new TextField();
 
+        // THESE ARE FOR TESTING PURPOSES
+        /*
+         * 1-way changing, change the field affect the
+         * label's text, not the other way around
+         * passwordLabel.textProperty().bind(viewModel.passwordProperty());
+         */
+
         // 2-way changing, the content of the text field and the
         // actual underlying state of the linked data is consistent
         passwordField.textProperty().bindBidirectional(viewModel.passwordProperty());
 
-        // 1-way changing, change the field affect the
-        // label's text, not the other way around
-        passwordLabel.textProperty().bind(viewModel.passwordProperty());
-
         // Login button
         Button loginButton = new Button("Login");
-        loginButton.setOnAction(event -> viewModel.login(usernameLabel));
+        // Update login button action to use the router for navigation
+        loginButton.setOnAction(event -> {
+            String inputUsername = usernameField.getText();
+            String inputPassword = passwordField.getText();
+            if (viewModel.loginSuccessfully(inputUsername, inputPassword)) {
+                router.navigateToHello();
+            }
+        });
 
         // Add components to the GridPane
         gridPane.add(usernameLabel, 0, 0); // Column 0, Row 0

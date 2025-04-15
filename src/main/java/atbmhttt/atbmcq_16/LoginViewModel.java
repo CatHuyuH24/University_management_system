@@ -1,14 +1,10 @@
 package atbmhttt.atbmcq_16;
 
-import javafx.scene.control.Label;
-import java.sql.PreparedStatement;
-
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class LoginViewModel {
@@ -39,18 +35,16 @@ public class LoginViewModel {
         this.password.set(password);
     }
 
-    private Connection connectToDatabase() throws SQLException {
+    private Connection connectToDatabase(String dbUsername, String dbPassword) throws SQLException {
         try {
             Class.forName("oracle.jdbc.OracleDriver"); // Ensure the Oracle JDBC driver is loaded
         } catch (ClassNotFoundException e) {
             throw new SQLException("Oracle JDBC Driver not found. Please include it in your library path.", e);
         }
         String url = "jdbc:oracle:thin:@//localhost:1521/ATBMCQ_16_CSDL"; // Replace with your Oracle DB URL
-        String user = "ATBMCQ_ADMIN"; // Replace with your Oracle DB username
-        String password = "123"; // Replace with your Oracle DB password
-        Connection conn = DriverManager.getConnection(url, user, password);
+        Connection conn = DriverManager.getConnection(url, dbUsername, dbPassword);
         if (conn != null) {
-            System.out.println("OKOK");
+            System.out.println("Database connection successful.");
             return conn;
         } else {
             return null;
@@ -58,7 +52,7 @@ public class LoginViewModel {
     }
 
     public boolean isConnectedToDatabase() {
-        try (Connection connection = connectToDatabase()) {
+        try (Connection connection = connectToDatabase("ATBMCQ_ADMIN", "123")) {
             return connection != null && !connection.isClosed();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -66,24 +60,19 @@ public class LoginViewModel {
         }
     }
 
-    public void login(Label usernameLabel) {
-        usernameLabel.textProperty().set(username.get());
-        try (Connection connection = connectToDatabase()) {
-            String query = "SELECT * FROM dba_users WHERE username = ? AND password = ?";
-            try (PreparedStatement statement = connection.prepareStatement(query)) {
-                statement.setString(1, getUsername());
-                statement.setString(2, getPassword());
-                try (ResultSet resultSet = statement.executeQuery()) {
-                    if (resultSet.next()) {
-                        System.out.println("Login successful for user: " + getUsername());
-                    } else {
-                        System.out.println("Invalid username or password.");
-                    }
-                }
+    public boolean loginSuccessfully(String inputUsername, String inputPassword) {
+        try (Connection connection = connectToDatabase(inputUsername, inputPassword)) {
+            if (connection != null && !connection.isClosed()) {
+                System.out.println("Login successful for user: " + inputUsername);
+                return true;
+            } else {
+                System.out.println("Invalid username or password.");
             }
         } catch (SQLException e) {
             e.printStackTrace();
             System.err.println("Database connection error: " + e.getMessage());
         }
+
+        return false;
     }
 }
