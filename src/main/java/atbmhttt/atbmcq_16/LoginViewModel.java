@@ -6,10 +6,11 @@ import javafx.beans.property.StringProperty;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.CallableStatement;
 
 public class LoginViewModel {
     private final StringProperty username = new SimpleStringProperty();
-    private final StringProperty password = new SimpleStringProperty("One way binding");
+    private final StringProperty password = new SimpleStringProperty();
 
     public StringProperty usernameProperty() {
         return username;
@@ -61,7 +62,9 @@ public class LoginViewModel {
     }
 
     public boolean loginSuccessfully(String inputUsername, String inputPassword) {
-        try (Connection connection = connectToDatabase(inputUsername, inputPassword)) {
+        Connection connection = null;
+        try {
+            connection = connectToDatabase(inputUsername, inputPassword);
             if (connection != null && !connection.isClosed()) {
                 System.out.println("Login successful for user: " + inputUsername);
                 return true;
@@ -74,5 +77,27 @@ public class LoginViewModel {
         }
 
         return false;
+    }
+
+    public boolean isAdminUser() throws SQLException {
+        String sql = "{ call ATBMCQ_ADMIN.IS_ADMIN_USER(?) }"; // Stored procedure call
+        try (Connection connection = connectToDatabase(getUsername(), getPassword());
+                CallableStatement callableStatement = connection.prepareCall(sql)) {
+
+            // Register the OUT parameter to capture the result
+            callableStatement.registerOutParameter(1, java.sql.Types.NUMERIC);
+
+            // Execute the stored procedure
+            callableStatement.execute();
+
+            // Retrieve the result
+            int result = callableStatement.getInt(1);
+            return result == 1; // Return true if the user is an admin
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
+
     }
 }

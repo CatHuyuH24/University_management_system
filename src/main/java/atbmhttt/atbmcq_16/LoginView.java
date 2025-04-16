@@ -1,9 +1,12 @@
 package atbmhttt.atbmcq_16;
 
+import java.sql.SQLException;
+
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField; // Import PasswordField
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
@@ -32,7 +35,10 @@ public class LoginView {
 
         // Password field
         Label passwordLabel = new Label("Password:");
-        TextField passwordField = new TextField();
+        PasswordField passwordField = new PasswordField(); // Replace the TextField for password with PasswordField
+        // 2-way changing, the content of the text field and the
+        // actual underlying state of the linked data is consistent
+        passwordField.textProperty().bindBidirectional(viewModel.passwordProperty());
 
         // THESE ARE FOR TESTING PURPOSES
         /*
@@ -41,18 +47,24 @@ public class LoginView {
          * passwordLabel.textProperty().bind(viewModel.passwordProperty());
          */
 
-        // 2-way changing, the content of the text field and the
-        // actual underlying state of the linked data is consistent
-        passwordField.textProperty().bindBidirectional(viewModel.passwordProperty());
-
         // Login button
         Button loginButton = new Button("Login");
         // Update login button action to use the router for navigation
         loginButton.setOnAction(event -> {
-            String inputUsername = usernameField.getText();
-            String inputPassword = passwordField.getText();
-            if (viewModel.loginSuccessfully(inputUsername, inputPassword)) {
-                router.navigateToHello();
+            try {
+                if (viewModel.isAdminUser()) {
+                    router.navigateToAdminDashboard();
+                } else {
+                    router.navigateToClientDashboard();
+                }
+            } catch (SQLException e) {
+                // Display a pop-up to the user if login fails
+                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+                        javafx.scene.control.Alert.AlertType.ERROR);
+                alert.setTitle("Login Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Invalid username or password. Please try again.");
+                alert.showAndWait();
             }
         });
 

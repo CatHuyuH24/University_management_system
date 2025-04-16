@@ -19,8 +19,14 @@ public class Router {
         loginView.start(primaryStage);
     }
 
-    public void navigateToHello() {
-        Label helloLabel = new Label("HELLO");
+    public void navigateToAdminDashboard() {
+        Label helloLabel = new Label("ADMIN");
+        Scene helloScene = new Scene(new StackPane(helloLabel), 400, 300);
+        primaryStage.setScene(helloScene);
+    }
+
+    public void navigateToClientDashboard() {
+        Label helloLabel = new Label("CLIENT");
         Scene helloScene = new Scene(new StackPane(helloLabel), 400, 300);
         primaryStage.setScene(helloScene);
     }
