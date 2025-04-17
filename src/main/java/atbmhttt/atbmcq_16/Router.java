@@ -27,7 +27,7 @@ public class Router {
     }
 
     public void navigateToClientDashboard() {
-        Label helloLabel = new Label("CLIENT");
+        Label helloLabel = new Label("CLIENT_FIX");
         Scene helloScene = new Scene(new StackPane(helloLabel), 400, 300);
         primaryStage.setTitle("Client dashboard");
         primaryStage.setScene(helloScene);
