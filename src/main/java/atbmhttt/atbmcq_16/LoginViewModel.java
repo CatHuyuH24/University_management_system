@@ -11,6 +11,11 @@ import java.sql.CallableStatement;
 public class LoginViewModel {
     private final StringProperty username = new SimpleStringProperty();
     private final StringProperty password = new SimpleStringProperty();
+    private final Router router;
+
+    public LoginViewModel(Router router) {
+        this.router = router;
+    }
 
     public StringProperty usernameProperty() {
         return username;
@@ -42,7 +47,7 @@ public class LoginViewModel {
         } catch (ClassNotFoundException e) {
             throw new SQLException("Oracle JDBC Driver not found. Please include it in your library path.", e);
         }
-        String url = "jdbc:oracle:thin:@//localhost:1521/ATBMCQ_16_CSDL"; // Replace with your Oracle DB URL
+        String url = "jdbc:oracle:thin:@//localhost:1521/ATBMCQ_16_CSDL"; // Oracle DB URL
         Connection conn = DriverManager.getConnection(url, dbUsername, dbPassword);
         if (conn != null) {
             System.out.println("Database connection successful.");
@@ -61,22 +66,38 @@ public class LoginViewModel {
         }
     }
 
-    public boolean loginSuccessfully(String inputUsername, String inputPassword) {
-        Connection connection = null;
+    // public boolean loginSuccessfully(String inputUsername, String inputPassword)
+    // {
+    // Connection connection = null;
+    // try {
+    // connection = connectToDatabase(inputUsername, inputPassword);
+    // if (connection != null && !connection.isClosed()) {
+    // System.out.println("Login successful for user: " + inputUsername);
+    // return true;
+    // } else {
+    // System.out.println("Invalid username or password.");
+    // }
+    // } catch (SQLException e) {
+    // e.printStackTrace();
+    // System.err.println("Database connection error: " + e.getMessage());
+    // }
+
+    // return false;
+    // }
+
+    public void login() throws SQLException, Exception {
         try {
-            connection = connectToDatabase(inputUsername, inputPassword);
-            if (connection != null && !connection.isClosed()) {
-                System.out.println("Login successful for user: " + inputUsername);
-                return true;
+            if (isAdminUser()) {
+                router.navigateToAdminDashboard();
             } else {
-                System.out.println("Invalid username or password.");
+                router.navigateToClientDashboard();
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.err.println("Database connection error: " + e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            System.err.println("LoginViewModel: Exception when logging in");
+            throw e;
         }
-
-        return false;
     }
 
     public boolean isAdminUser() throws SQLException {

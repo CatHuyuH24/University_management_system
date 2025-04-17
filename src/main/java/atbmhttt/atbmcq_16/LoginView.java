@@ -2,23 +2,21 @@ package atbmhttt.atbmcq_16;
 
 import java.sql.SQLException;
 
+import atbmhttt.atbmcq_16.dialogs.ErrorDialog;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField; // Import PasswordField
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 public class LoginView {
     private final LoginViewModel viewModel;
-    private final Router router;
 
-    public LoginView(LoginViewModel viewModel, Router router) {
+    public LoginView(LoginViewModel viewModel) {
         this.viewModel = viewModel;
-        this.router = router;
     }
 
     public void start(Stage stage) {
@@ -52,19 +50,19 @@ public class LoginView {
         // Update login button action to use the router for navigation
         loginButton.setOnAction(event -> {
             try {
-                if (viewModel.isAdminUser()) {
-                    router.navigateToAdminDashboard();
-                } else {
-                    router.navigateToClientDashboard();
-                }
+                viewModel.login();
             } catch (SQLException e) {
-                // Display a pop-up to the user if login fails
-                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
-                        javafx.scene.control.Alert.AlertType.ERROR);
-                alert.setTitle("Login Error");
-                alert.setHeaderText(null);
-                alert.setContentText("Invalid username or password. Please try again.");
-                alert.showAndWait();
+                ErrorDialog.showErrorAlert(
+                        "INVALID LOGIN CREDENTIAL",
+                        null,
+                        "Invalid username or password.\nPlease try again.",
+                        null);
+            } catch (Exception e) {
+                ErrorDialog.showErrorAlert(
+                        "ERROR",
+                        null,
+                        "An error has occurred.\nPlease try again.",
+                        null);
             }
         });
 
@@ -79,13 +77,6 @@ public class LoginView {
         // Create a Scene and set it on the Stage
         Scene scene = new Scene(gridPane, 600, 450);
         stage.setTitle("Login");
-
-        try {
-            Image iconImage = new Image(getClass().getResource("/images/university_icon.png").toExternalForm());
-            stage.getIcons().add(iconImage);
-        } catch (NullPointerException e) {
-            System.err.println("Image not found: university_icon.png");
-        }
 
         stage.setScene(scene);
         stage.show();

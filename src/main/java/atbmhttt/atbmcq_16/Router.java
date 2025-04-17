@@ -14,20 +14,22 @@ public class Router {
     }
 
     public void navigateToLogin() {
-        LoginViewModel viewModel = new LoginViewModel();
-        LoginView loginView = new LoginView(viewModel, this);
+        LoginViewModel viewModel = new LoginViewModel(this);
+        LoginView loginView = new LoginView(viewModel);
         loginView.start(primaryStage);
     }
 
     public void navigateToAdminDashboard() {
         Label helloLabel = new Label("ADMIN");
         Scene helloScene = new Scene(new StackPane(helloLabel), 400, 300);
+        primaryStage.setTitle("Admin dashboard");
         primaryStage.setScene(helloScene);
     }
 
     public void navigateToClientDashboard() {
         Label helloLabel = new Label("CLIENT");
         Scene helloScene = new Scene(new StackPane(helloLabel), 400, 300);
+        primaryStage.setTitle("Client dashboard");
         primaryStage.setScene(helloScene);
     }
 }
