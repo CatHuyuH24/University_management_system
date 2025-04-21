@@ -114,7 +114,10 @@ public class AdminView extends Application {
             tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY); // Ensure columns fill the table width
             usernameColumn.setStyle("-fx-alignment: CENTER;");
             createdDateColumn.setStyle("-fx-alignment: CENTER;");
-            tableView.getColumns().addAll(usernameColumn, createdDateColumn, actionsColumn);
+
+            tableView.getColumns().add(usernameColumn);
+            tableView.getColumns().add(createdDateColumn);
+            tableView.getColumns().add(actionsColumn);
             tableView.setItems(FXCollections.observableArrayList(users));
 
             contentArea.setCenter(tableView);

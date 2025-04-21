@@ -14,8 +14,6 @@ public class AdminViewModel {
     private static String DB_USER;
     private static String DB_PASSWORD;
 
-    private List<String> users = new ArrayList<>();
-
     public AdminViewModel(String username, String password) {
         DB_USER = username;
         DB_PASSWORD = password;
