@@ -4,7 +4,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
-public class ErrorDialog {
+public class AlertDialog {
     public static void showErrorAlert(String title, String headerText, String contentText, String iconPath) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
@@ -18,9 +18,9 @@ public class ErrorDialog {
         }
 
         try {
-            alertStage.getIcons().add(new Image(ErrorDialog.class.getResource(iconPath).toExternalForm()));
+            alertStage.getIcons().add(new Image(AlertDialog.class.getResource(iconPath).toExternalForm()));
         } catch (Exception e) {
-            System.err.println("ErrorDialog: Error occurred when trying to get icon image");
+            System.err.println("AlertDialog: Error occurred when trying to get icon image");
         }
         // Show the alert
         alert.showAndWait();

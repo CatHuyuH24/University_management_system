@@ -2,7 +2,7 @@ package atbmhttt.atbmcq_16;
 
 import java.sql.SQLException;
 
-import atbmhttt.atbmcq_16.dialogs.ErrorDialog;
+import atbmhttt.atbmcq_16.dialogs.AlertDialog;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -52,13 +52,13 @@ public class LoginView {
             try {
                 viewModel.login();
             } catch (SQLException e) {
-                ErrorDialog.showErrorAlert(
+                AlertDialog.showErrorAlert(
                         "INVALID LOGIN CREDENTIAL",
                         null,
                         "Invalid username or password.\nPlease try again.",
                         null);
             } catch (Exception e) {
-                ErrorDialog.showErrorAlert(
+                AlertDialog.showErrorAlert(
                         "ERROR",
                         null,
                         "An error has occurred.\nPlease try again.",

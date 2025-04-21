@@ -1,5 +1,6 @@
 package atbmhttt.atbmcq_16;
 
+import atbmhttt.atbmcq_16.admin.Views.AdminView;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
@@ -20,10 +21,8 @@ public class Router {
     }
 
     public void navigateToAdminDashboard() {
-        Label helloLabel = new Label("ADMIN");
-        Scene helloScene = new Scene(new StackPane(helloLabel), 400, 300);
-        primaryStage.setTitle("Admin dashboard");
-        primaryStage.setScene(helloScene);
+        AdminView view = new AdminView();
+        view.start(primaryStage);
     }
 
     public void navigateToClientDashboard() {
