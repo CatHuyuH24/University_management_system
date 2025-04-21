@@ -20,8 +20,8 @@ public class Router {
         loginView.start(primaryStage);
     }
 
-    public void navigateToAdminDashboard() {
-        AdminView view = new AdminView();
+    public void navigateToAdminDashboard(String username, String password) {
+        AdminView view = new AdminView(username, password);
         view.start(primaryStage);
     }
 

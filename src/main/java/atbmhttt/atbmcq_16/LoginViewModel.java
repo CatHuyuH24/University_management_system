@@ -88,7 +88,7 @@ public class LoginViewModel {
     public void login() throws SQLException, Exception {
         try {
             if (isAdminUser()) {
-                router.navigateToAdminDashboard();
+                router.navigateToAdminDashboard(getUsername(), getPassword());
             } else {
                 router.navigateToClientDashboard();
             }

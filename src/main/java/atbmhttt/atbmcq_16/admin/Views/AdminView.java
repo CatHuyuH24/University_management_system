@@ -1,6 +1,8 @@
 package atbmhttt.atbmcq_16.admin.Views;
 
+import atbmhttt.atbmcq_16.admin.ViewModels.AdminViewModel;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -9,9 +11,18 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.util.List;
+
 public class AdminView extends Application {
+
+    private AdminViewModel adminViewModel;
+
+    public AdminView(String username, String password) {
+        adminViewModel = new AdminViewModel(username, password);
+    }
 
     @Override
     public void start(Stage primaryStage) {
@@ -26,17 +37,27 @@ public class AdminView extends Application {
 
         navigationPanel.getChildren().addAll(usersButton, rolesButton, privilegesButton, logoutButton);
 
+        BorderPane contentArea = new BorderPane();
         // Right content area
-        Label contentLabel = new Label("Users");
-
+        Text text = new Text("Welcome administrator " + adminViewModel.getUsername());
         // Event handlers for navigation buttons
-        usersButton.setOnAction(e -> contentLabel.setText("Users"));
-        rolesButton.setOnAction(e -> contentLabel.setText("Roles"));
-        privilegesButton.setOnAction(e -> contentLabel.setText("Privileges"));
+        ListView<String> usersListView = new ListView<>();
+        usersButton.setOnAction(e -> {
+            List<String> users = adminViewModel.getUsers();
+            usersListView.setItems(FXCollections.observableArrayList(users));
+            contentArea.setCenter(usersListView);
+        });
+        rolesButton.setOnAction(e -> {
+            text.setText("Roles");
+            contentArea.setCenter(text);
+        });
+        privilegesButton.setOnAction(e -> {
+            text.setText("Priviledges");
+            contentArea.setCenter(new Label("Priviledges"));
+        });
         logoutButton.setOnAction(e -> showLogoutConfirmation());
 
-        BorderPane contentArea = new BorderPane();
-        contentArea.setCenter(contentLabel);
+        contentArea.setCenter(text);
 
         // SplitPane to divide navigation and content
         SplitPane splitPane = new SplitPane();
@@ -45,7 +66,7 @@ public class AdminView extends Application {
 
         // Scene setup
         Scene scene = new Scene(splitPane, 800, 600);
-        primaryStage.setTitle("Admin Panel");
+        primaryStage.setTitle("Admin Dashboard");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -53,9 +74,5 @@ public class AdminView extends Application {
     private void showLogoutConfirmation() {
         // Placeholder for logout confirmation dialog
         System.out.println("Logout confirmation dialog");
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }
