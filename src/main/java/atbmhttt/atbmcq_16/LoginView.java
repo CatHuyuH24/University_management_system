@@ -57,12 +57,14 @@ public class LoginView {
                         null,
                         "Invalid username or password.\nPlease try again.",
                         null);
+                e.printStackTrace();
             } catch (Exception e) {
                 AlertDialog.showErrorAlert(
                         "ERROR",
                         null,
                         "An error has occurred.\nPlease try again.",
                         null);
+                e.printStackTrace();
             }
         });
 

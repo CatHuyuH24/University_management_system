@@ -14,14 +14,16 @@ public class AdminViewModel {
     private static String DB_USER;
     private static String DB_PASSWORD;
 
+    private List<String> users = new ArrayList<>();
+
     public AdminViewModel(String username, String password) {
         DB_USER = username;
         DB_PASSWORD = password;
     }
 
-    public List<String> getUsers() {
-        List<String> users = new ArrayList<>();
+    public List<String[]> getUsersWithDetails() {
         String sql = "BEGIN ? := ATBMCQ_ADMIN.FN_GET_USERS; END;";
+        List<String[]> userDetails = new ArrayList<>();
 
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
                 CallableStatement statement = connection.prepareCall(sql)) {
@@ -31,14 +33,17 @@ public class AdminViewModel {
 
             try (ResultSet resultSet = (ResultSet) statement.getObject(1)) {
                 while (resultSet.next()) {
-                    users.add(resultSet.getString("username"));
+                    // assuming only 2 attributes for each records, username and created_date
+                    String username = resultSet.getString(1);
+                    String created = resultSet.getString(2);
+                    userDetails.add(new String[] { username, created });
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return users;
+        return userDetails;
     }
 
     public String getUsername() {

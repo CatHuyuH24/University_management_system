@@ -2,14 +2,14 @@ package atbmhttt.atbmcq_16.admin.Views;
 
 import atbmhttt.atbmcq_16.admin.ViewModels.AdminViewModel;
 import javafx.application.Application;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.SplitPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -23,6 +23,8 @@ public class AdminView extends Application {
     public AdminView(String username, String password) {
         adminViewModel = new AdminViewModel(username, password);
     }
+
+    private Text text = new Text("Welcome administrator");
 
     @Override
     public void start(Stage primaryStage) {
@@ -39,23 +41,11 @@ public class AdminView extends Application {
 
         BorderPane contentArea = new BorderPane();
         // Right content area
-        Text text = new Text("Welcome administrator " + adminViewModel.getUsername());
         // Event handlers for navigation buttons
-        ListView<String> usersListView = new ListView<>();
-        usersButton.setOnAction(e -> {
-            List<String> users = adminViewModel.getUsers();
-            usersListView.setItems(FXCollections.observableArrayList(users));
-            contentArea.setCenter(usersListView);
-        });
-        rolesButton.setOnAction(e -> {
-            text.setText("Roles");
-            contentArea.setCenter(text);
-        });
-        privilegesButton.setOnAction(e -> {
-            text.setText("Priviledges");
-            contentArea.setCenter(new Label("Priviledges"));
-        });
-        logoutButton.setOnAction(e -> showLogoutConfirmation());
+        setUpDisplayUsersViaButton(usersButton, contentArea);
+        setUpDisplayRolesViaButton(rolesButton, contentArea);
+        setUpDisplayPriviledgesViaButton(rolesButton, contentArea);
+        setUpLogoutButton(logoutButton);
 
         contentArea.setCenter(text);
 
@@ -74,5 +64,78 @@ public class AdminView extends Application {
     private void showLogoutConfirmation() {
         // Placeholder for logout confirmation dialog
         System.out.println("Logout confirmation dialog");
+    }
+
+    private void setUpDisplayUsersViaButton(final Button usersButton, final BorderPane contentArea) {
+        usersButton.setOnAction(e -> {
+            List<String[]> users = adminViewModel.getUsersWithDetails(); // Assuming this returns a list of [username,
+                                                                         // created]
+
+            TableView<String[]> tableView = new TableView<>();
+
+            TableColumn<String[], String> usernameColumn = new TableColumn<>("Username");
+            usernameColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper(data.getValue()[0]));
+
+            TableColumn<String[], String> createdDateColumn = new TableColumn<>("Created date");
+            createdDateColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper(data.getValue()[1]));
+
+            TableColumn<String[], Void> actionsColumn = new TableColumn<>("Actions");
+            actionsColumn.setCellFactory(col -> new TableCell<>() {
+                private final Button editButton = new Button("Edit");
+                private final Button deleteButton = new Button("Delete");
+                private final HBox actionButtons = new HBox(5, editButton, deleteButton);
+
+                {
+
+                    editButton.setOnAction(event -> {
+                        String username = getTableView().getItems().get(getIndex())[0];
+                        System.out.println("Edit action for: " + username);
+                    });
+
+                    deleteButton.setOnAction(event -> {
+                        String username = getTableView().getItems().get(getIndex())[0];
+                        System.out.println("Delete action for: " + username);
+                    });
+
+                    actionButtons.setAlignment(Pos.CENTER);
+                }
+
+                @Override
+                protected void updateItem(Void item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty) {
+                        setGraphic(null);
+                    } else {
+                        setGraphic(actionButtons);
+                    }
+                }
+            });
+
+            tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY); // Ensure columns fill the table width
+            usernameColumn.setStyle("-fx-alignment: CENTER;");
+            createdDateColumn.setStyle("-fx-alignment: CENTER;");
+            tableView.getColumns().addAll(usernameColumn, createdDateColumn, actionsColumn);
+            tableView.setItems(FXCollections.observableArrayList(users));
+
+            contentArea.setCenter(tableView);
+        });
+    }
+
+    private void setUpDisplayRolesViaButton(final Button rolesButton, final BorderPane contentArea) {
+        rolesButton.setOnAction(e -> {
+            text.setText("Roles");
+            contentArea.setCenter(text);
+        });
+    }
+
+    private void setUpDisplayPriviledgesViaButton(final Button privilegesButton, final BorderPane contentArea) {
+        privilegesButton.setOnAction(e -> {
+            text.setText("Priviledges");
+            contentArea.setCenter(new Label("Priviledges"));
+        });
+    }
+
+    private void setUpLogoutButton(final Button logoutButton) {
+        logoutButton.setOnAction(e -> showLogoutConfirmation());
     }
 }
