@@ -8,27 +8,27 @@ import javafx.stage.Stage;
 
 public class Router {
 
-    private final Stage primaryStage;
+    private static Stage P_STAGE; // quick, simple, may use Singleton+ Service Factory instead
 
-    public Router(Stage primaryStage) {
-        this.primaryStage = primaryStage;
+    public static void setPrimaryStage(Stage primaryStage) {
+        P_STAGE = primaryStage;
     }
 
-    public void navigateToLogin() {
-        LoginViewModel viewModel = new LoginViewModel(this);
+    public static void navigateToLogin() {
+        LoginViewModel viewModel = new LoginViewModel();
         LoginView loginView = new LoginView(viewModel);
-        loginView.start(primaryStage);
+        loginView.start(P_STAGE);
     }
 
-    public void navigateToAdminDashboard(String username, String password) {
+    public static void navigateToAdminDashboard(String username, String password) {
         AdminView view = new AdminView(username, password);
-        view.start(primaryStage);
+        view.start(P_STAGE);
     }
 
-    public void navigateToClientDashboard() {
+    public static void navigateToClientDashboard() {
         Label helloLabel = new Label("CLIENT_FIX");
         Scene helloScene = new Scene(new StackPane(helloLabel), 400, 300);
-        primaryStage.setTitle("Client dashboard");
-        primaryStage.setScene(helloScene);
+        P_STAGE.setTitle("Client dashboard");
+        P_STAGE.setScene(helloScene);
     }
 }

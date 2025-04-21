@@ -1,6 +1,8 @@
 package atbmhttt.atbmcq_16.admin.Views;
 
+import atbmhttt.atbmcq_16.Router;
 import atbmhttt.atbmcq_16.admin.ViewModels.AdminViewModel;
+import atbmhttt.atbmcq_16.dialogs.AlertDialog;
 import javafx.application.Application;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
@@ -9,8 +11,10 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -28,23 +32,35 @@ public class AdminView extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        // Left navigation panel
-        VBox navigationPanel = new VBox(10);
+        // Left navigation panel using GridPane
+        GridPane navigationPanel = new GridPane();
         navigationPanel.setPadding(new Insets(10));
+        navigationPanel.setVgap(10);
 
         Button usersButton = new Button("Users");
         Button rolesButton = new Button("Roles");
         Button privilegesButton = new Button("Privileges");
         Button logoutButton = new Button("Log out");
 
-        navigationPanel.getChildren().addAll(usersButton, rolesButton, privilegesButton, logoutButton);
+        // Add buttons to the grid
+        navigationPanel.add(usersButton, 0, 0);
+        navigationPanel.add(rolesButton, 0, 1);
+        navigationPanel.add(privilegesButton, 0, 2);
+
+        // Add a spacer pane to fill the space between the privileges button and the
+        // logout button
+        Pane spacer = new Pane();
+        navigationPanel.add(spacer, 0, 3);
+        GridPane.setVgrow(spacer, Priority.ALWAYS);
+
+        navigationPanel.add(logoutButton, 0, 4);
 
         BorderPane contentArea = new BorderPane();
         // Right content area
         // Event handlers for navigation buttons
         setUpDisplayUsersViaButton(usersButton, contentArea);
         setUpDisplayRolesViaButton(rolesButton, contentArea);
-        setUpDisplayPriviledgesViaButton(rolesButton, contentArea);
+        setUpDisplayPriviledgesViaButton(privilegesButton, contentArea);
         setUpLogoutButton(logoutButton);
 
         contentArea.setCenter(text);
@@ -59,11 +75,6 @@ public class AdminView extends Application {
         primaryStage.setTitle("Admin Dashboard");
         primaryStage.setScene(scene);
         primaryStage.show();
-    }
-
-    private void showLogoutConfirmation() {
-        // Placeholder for logout confirmation dialog
-        System.out.println("Logout confirmation dialog");
     }
 
     private void setUpDisplayUsersViaButton(final Button usersButton, final BorderPane contentArea) {
@@ -139,6 +150,15 @@ public class AdminView extends Application {
     }
 
     private void setUpLogoutButton(final Button logoutButton) {
-        logoutButton.setOnAction(e -> showLogoutConfirmation());
+        logoutButton.setOnAction(e -> {
+            // Show confirmation alert before logging out
+            ButtonType response = AlertDialog.showAndGetResultConfirmationAlert("LOGGING OUT",
+                    null,
+                    "Are you sure you want to log out?",
+                    null);
+            if (ButtonType.OK == response) {
+                Router.navigateToLogin();
+            }
+        });
     }
 }

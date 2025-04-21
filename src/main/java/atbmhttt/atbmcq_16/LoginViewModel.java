@@ -11,11 +11,6 @@ import java.sql.CallableStatement;
 public class LoginViewModel {
     private final StringProperty username = new SimpleStringProperty();
     private final StringProperty password = new SimpleStringProperty();
-    private final Router router;
-
-    public LoginViewModel(Router router) {
-        this.router = router;
-    }
 
     public StringProperty usernameProperty() {
         return username;
@@ -66,31 +61,12 @@ public class LoginViewModel {
         }
     }
 
-    // public boolean loginSuccessfully(String inputUsername, String inputPassword)
-    // {
-    // Connection connection = null;
-    // try {
-    // connection = connectToDatabase(inputUsername, inputPassword);
-    // if (connection != null && !connection.isClosed()) {
-    // System.out.println("Login successful for user: " + inputUsername);
-    // return true;
-    // } else {
-    // System.out.println("Invalid username or password.");
-    // }
-    // } catch (SQLException e) {
-    // e.printStackTrace();
-    // System.err.println("Database connection error: " + e.getMessage());
-    // }
-
-    // return false;
-    // }
-
     public void login() throws SQLException, Exception {
         try {
             if (isAdminUser()) {
-                router.navigateToAdminDashboard(getUsername(), getPassword());
+                Router.navigateToAdminDashboard(getUsername(), getPassword());
             } else {
-                router.navigateToClientDashboard();
+                Router.navigateToClientDashboard();
             }
         } catch (SQLException e) {
             throw e;

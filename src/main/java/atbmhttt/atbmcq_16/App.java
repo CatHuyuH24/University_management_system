@@ -16,8 +16,8 @@ public class App extends Application {
             System.err.println("Image not found: university_icon.png");
         }
 
-        Router router = new Router(primaryStage);
-        router.navigateToLogin();
+        Router.setPrimaryStage(primaryStage);// set up the primary stage
+        Router.navigateToLogin();
 
     }
 

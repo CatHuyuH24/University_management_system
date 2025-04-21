@@ -26,6 +26,17 @@ public class LoginView {
         gridPane.setVgap(10); // Set vertical gap between rows
         gridPane.setAlignment(Pos.CENTER); // Center the grid in the scene
 
+        Label title = new Label("UNIVERSITY MANAGEMENT SYSTEM");
+        Label subtitle = new Label("ATBMCQ-16");
+
+        // Add title and subtitle to the GridPane
+        // Update title color to purple
+        title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: purple;");
+        gridPane.add(title, 0, 0, 2, 1); // Span across 2 columns
+
+        subtitle.setStyle("-fx-font-size: 18px;");
+        gridPane.add(subtitle, 0, 1, 2, 1); // Span across 2 columns
+
         // Username field
         Label usernameLabel = new Label("Username:");
         TextField usernameField = new TextField();
@@ -33,17 +44,8 @@ public class LoginView {
 
         // Password field
         Label passwordLabel = new Label("Password:");
-        PasswordField passwordField = new PasswordField(); // Replace the TextField for password with PasswordField
-        // 2-way changing, the content of the text field and the
-        // actual underlying state of the linked data is consistent
+        PasswordField passwordField = new PasswordField();
         passwordField.textProperty().bindBidirectional(viewModel.passwordProperty());
-
-        // THESE ARE FOR TESTING PURPOSES
-        /*
-         * 1-way changing, change the field affect the
-         * label's text, not the other way around
-         * passwordLabel.textProperty().bind(viewModel.passwordProperty());
-         */
 
         // Login button
         Button loginButton = new Button("Login");
@@ -68,13 +70,13 @@ public class LoginView {
             }
         });
 
-        // Add components to the GridPane
-        gridPane.add(usernameLabel, 0, 0); // Column 0, Row 0
-        gridPane.add(usernameField, 1, 0); // Column 1, Row 0
-        gridPane.add(passwordLabel, 0, 1); // Column 0, Row 1
-        gridPane.add(passwordField, 1, 1); // Column 1, Row 1
-        gridPane.add(loginButton, 1, 2); // Start at column 0, row 2
-        loginButton.setMaxWidth(150);
+        // Adjust other components' positions
+        gridPane.add(usernameLabel, 0, 2); // Column 0, Row 2
+        gridPane.add(usernameField, 1, 2); // Column 1, Row 2
+        gridPane.add(passwordLabel, 0, 3); // Column 0, Row 3
+        gridPane.add(passwordField, 1, 3); // Column 1, Row 3
+        gridPane.add(loginButton, 1, 4); // Column 1, Row 4
+        loginButton.setPrefWidth(350);
 
         // Create a Scene and set it on the Stage
         Scene scene = new Scene(gridPane, 600, 450);
