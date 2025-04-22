@@ -56,6 +56,22 @@ public class LoginView {
             }
         });
 
+        Button revokePrivilegeButton = new Button("Revoke Privilege");
+        revokePrivilegeButton.setOnAction(event -> {
+            PrivilegeManager privilegeManager = new PrivilegeManager();
+            RevokePrivilegeView revokePrivilegeView = new RevokePrivilegeView(privilegeManager);
+            revokePrivilegeView.start(new Stage());
+        });
+
+        Button viewPrivilegesButton = new Button("View Privileges");
+        viewPrivilegesButton.setOnAction(event -> {
+            PrivilegeViewer privilegeViewer = new PrivilegeViewer();
+            ViewPrivilegesView viewPrivilegesView = new ViewPrivilegesView(privilegeViewer);
+            viewPrivilegesView.start(new Stage());
+        });
+        gridPane.add(viewPrivilegesButton, 1, 4); // Add to the grid
+
+        gridPane.add(revokePrivilegeButton, 1, 3); // Add to the grid
         // Add components to the GridPane
         gridPane.add(usernameLabel, 0, 0); // Column 0, Row 0
         gridPane.add(usernameField, 1, 0); // Column 1, Row 0
@@ -79,3 +95,4 @@ public class LoginView {
         stage.show();
     }
 }
+
