@@ -69,6 +69,22 @@ public class AdminViewModel {
         return pdbRoles;
     }
 
+    public boolean addUser(String username, String password) {
+        String sql = "BEGIN ATBMCQ_ADMIN.ADD_USER(?, ?); END;";
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+                CallableStatement statement = connection.prepareCall(sql)) {
+
+            statement.setString(1, username);
+            statement.setString(2, password);
+            statement.execute();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public String getUsername() {
         return DB_USER;
     }

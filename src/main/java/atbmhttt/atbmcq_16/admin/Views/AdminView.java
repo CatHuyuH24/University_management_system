@@ -37,23 +37,28 @@ public class AdminView extends Application {
         navigationPanel.setPadding(new Insets(10));
         navigationPanel.setVgap(10);
 
+        Button addUserButton = new Button("Add User");
+        addUserButton.setStyle(
+                "-fx-background-radius: 15; -fx-padding: 5 10 5 10; -fx-background-color: #0078D7; -fx-text-fill: white;");
+        navigationPanel.add(addUserButton, 0, 0); // Add the button to the top of the navigation panel
+
         Button usersButton = new Button("Users");
         Button rolesButton = new Button("Roles");
         Button privilegesButton = new Button("Privileges");
         Button logoutButton = new Button("Log out");
 
         // Add buttons to the grid
-        navigationPanel.add(usersButton, 0, 0);
-        navigationPanel.add(rolesButton, 0, 1);
-        navigationPanel.add(privilegesButton, 0, 2);
+        navigationPanel.add(usersButton, 0, 1);
+        navigationPanel.add(rolesButton, 0, 2);
+        navigationPanel.add(privilegesButton, 0, 3);
 
         // Add a spacer pane to fill the space between the privileges button and the
         // logout button
         Pane spacer = new Pane();
-        navigationPanel.add(spacer, 0, 3);
+        navigationPanel.add(spacer, 0, 4);
         GridPane.setVgrow(spacer, Priority.ALWAYS);
 
-        navigationPanel.add(logoutButton, 0, 4);
+        navigationPanel.add(logoutButton, 0, 5);
 
         BorderPane contentArea = new BorderPane();
         // Right content area
@@ -61,6 +66,7 @@ public class AdminView extends Application {
         setUpDisplayUsersViaButton(usersButton, contentArea);
         setUpDisplayRolesViaButton(rolesButton, contentArea);
         setUpDisplayPriviledgesViaButton(privilegesButton, contentArea);
+        setUpAddUserButton(addUserButton, contentArea); // Set up event handler for the button
         setUpLogoutButton(logoutButton);
 
         contentArea.setCenter(text);
@@ -164,6 +170,13 @@ public class AdminView extends Application {
         privilegesButton.setOnAction(e -> {
             text.setText("Priviledges");
             contentArea.setCenter(new Label("Priviledges"));
+        });
+    }
+
+    private void setUpAddUserButton(final Button addUserButton, final BorderPane contentArea) {
+        addUserButton.setOnAction(e -> {
+            // Placeholder for adding a new user
+            contentArea.setCenter(new Label("Add User Form"));
         });
     }
 
