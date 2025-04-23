@@ -10,11 +10,14 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -122,6 +125,28 @@ public class AdminView extends Application {
                 }
             });
 
+            TableColumn<String[], Void> actionColumn = new TableColumn<>("Action");
+            actionColumn.setCellFactory(col -> new TableCell<>() {
+                private final Button actionButton = new Button("P");
+
+                {
+                    actionButton.setOnAction(event -> {
+                        String username = getTableView().getItems().get(getIndex())[0];
+                        handleUserPrivilegesDetails(username);
+                    });
+                }
+
+                @Override
+                protected void updateItem(Void item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty) {
+                        setGraphic(null);
+                    } else {
+                        setGraphic(actionButton);
+                    }
+                }
+            });
+
             tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY); // Ensure columns fill the table width
             usernameColumn.setStyle("-fx-alignment: CENTER;");
             createdDateColumn.setStyle("-fx-alignment: CENTER;");
@@ -129,6 +154,7 @@ public class AdminView extends Application {
             tableView.getColumns().add(usernameColumn);
             tableView.getColumns().add(createdDateColumn);
             tableView.getColumns().add(actionsColumn);
+            tableView.getColumns().add(actionColumn);
             tableView.setItems(FXCollections.observableArrayList(users));
 
             contentArea.setCenter(tableView);
@@ -162,8 +188,50 @@ public class AdminView extends Application {
 
     private void setUpDisplayPriviledgesViaButton(final Button privilegesButton, final BorderPane contentArea) {
         privilegesButton.setOnAction(e -> {
-            text.setText("Priviledges");
-            contentArea.setCenter(new Label("Priviledges"));
+            Stage privilegesStage = new Stage();
+            privilegesStage.setTitle("Privileges Management");
+
+            // Set the icon in the title bar
+            privilegesStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/university_icon.png")));
+
+            privilegesStage.setOnCloseRequest(event -> privilegesStage.close());
+
+            HBox header = new HBox(10);
+            header.setAlignment(Pos.CENTER_LEFT);
+
+            ImageView imageView = new ImageView(
+                    new Image(getClass().getResourceAsStream("/images/university_icon.png")));
+            imageView.setFitWidth(50);
+            imageView.setFitHeight(50);
+
+            Label titleLabel = new Label("Privileges Management");
+            titleLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+
+            header.getChildren().addAll(imageView, titleLabel);
+
+            VBox layout = new VBox(10);
+            layout.setPadding(new Insets(10));
+            layout.getChildren().add(header); // Add the header with the logo and title
+            layout.setAlignment(Pos.CENTER);
+
+            Button userPrivilegesButton = new Button("User Privileges");
+            Button rolePrivilegesButton = new Button("Role Privileges");
+
+            userPrivilegesButton.setOnAction(event -> {
+                privilegesStage.close();
+                handleUserPrivileges();
+            });
+
+            rolePrivilegesButton.setOnAction(event -> {
+                privilegesStage.close();
+                handleRolePrivileges();
+            });
+
+            layout.getChildren().addAll(userPrivilegesButton, rolePrivilegesButton);
+
+            Scene scene = new Scene(layout, 300, 200);
+            privilegesStage.setScene(scene);
+            privilegesStage.show();
         });
     }
 
@@ -178,5 +246,94 @@ public class AdminView extends Application {
                 Router.navigateToLogin();
             }
         });
+    }
+
+    private void handleUserPrivileges() {
+        Stage userPrivilegesStage = new Stage();
+        userPrivilegesStage.setTitle("User Privileges");
+
+        TableView<String[]> tableView = new TableView<>();
+
+        TableColumn<String[], Void> actionColumn = new TableColumn<>("Edit Privileges");
+        actionColumn.setCellFactory(col -> new TableCell<>() {
+            private final Button actionButton = new Button("P");
+
+            {
+                actionButton.setOnAction(event -> {
+                    String username = getTableView().getItems().get(getIndex())[0];
+                    System.out.println("Button P clicked for user: " + username);
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(actionButton);
+                }
+            }
+        });
+
+        TableColumn<String[], String> userColumn = new TableColumn<>("User");
+        userColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper(data.getValue()[0]));
+
+        tableView.getColumns().addAll(actionColumn, userColumn);
+        tableView.setItems(FXCollections.observableArrayList(adminViewModel.getUsersWithDetails()));
+
+        VBox layout = new VBox(10, tableView);
+        layout.setPadding(new Insets(10));
+
+        Scene scene = new Scene(layout, 600, 450);
+        userPrivilegesStage.setScene(scene);
+        userPrivilegesStage.show();
+    }
+
+    private void handleUserPrivilegesDetails(String username) {
+        // Logic to handle user privileges details
+        System.out.println("Privileges for user: " + username);
+    }
+
+    private void handleRolePrivileges() {
+        Stage rolePrivilegesStage = new Stage();
+        rolePrivilegesStage.setTitle("Role Privileges");
+
+        TableView<String[]> tableView = new TableView<>();
+
+        TableColumn<String[], Void> actionColumn = new TableColumn<>("Edit Privileges");
+        actionColumn.setCellFactory(col -> new TableCell<>() {
+            private final Button actionButton = new Button("P");
+
+            {
+                actionButton.setOnAction(event -> {
+                    String roleName = getTableView().getItems().get(getIndex())[0];
+                    System.out.println("Button P clicked for role: " + roleName);
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(actionButton);
+                }
+            }
+        });
+
+        TableColumn<String[], String> roleColumn = new TableColumn<>("Role");
+        roleColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper(data.getValue()[0]));
+
+        tableView.getColumns().addAll(actionColumn, roleColumn);
+        tableView.setItems(FXCollections.observableArrayList(adminViewModel.getPdbRoles()));
+
+        VBox layout = new VBox(10, tableView);
+        layout.setPadding(new Insets(10));
+
+        Scene scene = new Scene(layout, 600, 450);
+        rolePrivilegesStage.setScene(scene);
+        rolePrivilegesStage.show();
     }
 }
