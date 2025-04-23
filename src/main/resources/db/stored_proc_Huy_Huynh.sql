@@ -25,3 +25,15 @@ BEGIN
     RETURN user_cursor;
 END;
 /
+
+// Xem các vai trò trong PDB, lấy thông tin Name, Id của Role
+CREATE OR REPLACE FUNCTION FN_GET_PDB_ROLES
+RETURN SYS_REFCURSOR
+AS
+    role_cursor SYS_REFCURSOR;
+BEGIN
+    OPEN role_cursor FOR
+        SELECT ROLE, ROLE_ID FROM DBA_ROLES WHERE common = 'NO';
+    RETURN role_cursor;
+END;
+/

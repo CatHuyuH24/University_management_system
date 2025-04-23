@@ -137,8 +137,26 @@ public class AdminView extends Application {
 
     private void setUpDisplayRolesViaButton(final Button rolesButton, final BorderPane contentArea) {
         rolesButton.setOnAction(e -> {
-            text.setText("Roles");
-            contentArea.setCenter(text);
+            List<String[]> roles = adminViewModel.getPdbRoles(); // Assuming this returns a list of [roleName,
+                                                                 // description]
+
+            TableView<String[]> tableView = new TableView<>();
+
+            TableColumn<String[], String> roleNameColumn = new TableColumn<>("Role Name");
+            roleNameColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper(data.getValue()[0]));
+
+            TableColumn<String[], String> descriptionColumn = new TableColumn<>("Role ID");
+            descriptionColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper(data.getValue()[1]));
+
+            tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY); // Ensure columns fill the table width
+            roleNameColumn.setStyle("-fx-alignment: CENTER;");
+            descriptionColumn.setStyle("-fx-alignment: CENTER;");
+
+            tableView.getColumns().add(roleNameColumn);
+            tableView.getColumns().add(descriptionColumn);
+            tableView.setItems(FXCollections.observableArrayList(roles));
+
+            contentArea.setCenter(tableView);
         });
     }
 

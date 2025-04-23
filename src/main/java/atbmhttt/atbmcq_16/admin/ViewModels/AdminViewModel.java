@@ -44,6 +44,31 @@ public class AdminViewModel {
         return userDetails;
     }
 
+    public List<String[]> getPdbRoles() {
+        String sql = "BEGIN ? := ATBMCQ_ADMIN.FN_GET_PDB_ROLES; END;";
+        List<String[]> pdbRoles = new ArrayList<>();
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+                CallableStatement statement = connection.prepareCall(sql)) {
+
+            statement.registerOutParameter(1, java.sql.Types.REF_CURSOR);
+            statement.execute();
+
+            try (ResultSet resultSet = (ResultSet) statement.getObject(1)) {
+                while (resultSet.next()) {
+                    // assuming only 2 attributes for each record, role name and description
+                    String roleName = resultSet.getString(1);
+                    String roleId = resultSet.getString(2);
+                    pdbRoles.add(new String[] { roleName, roleId });
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return pdbRoles;
+    }
+
     public String getUsername() {
         return DB_USER;
     }
