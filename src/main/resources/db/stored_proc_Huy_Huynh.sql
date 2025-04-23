@@ -51,3 +51,17 @@ EXCEPTION
         DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
 END;
 /
+
+// XÓA ROLE
+CREATE OR REPLACE PROCEDURE drop_role_procedure(
+    p_role_name IN VARCHAR2
+) AS
+BEGIN
+    -- Xóa role
+    EXECUTE IMMEDIATE 'DROP ROLE ' || p_role_name;
+    DBMS_OUTPUT.PUT_LINE('Role "' || p_role_name || '" đã được xóa.');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Lỗi khi xóa role "' || p_role_name || '": ' || SQLERRM);
+END;
+/

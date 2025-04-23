@@ -7,6 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 
 public class AdminViewModel {
 
@@ -93,7 +96,7 @@ public class AdminViewModel {
         String sql = "{call drop_user_procedure(?)}";
 
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-             CallableStatement statement = connection.prepareCall(sql)) {
+                CallableStatement statement = connection.prepareCall(sql)) {
 
             statement.setString(1, username);
             statement.execute();
@@ -101,6 +104,34 @@ public class AdminViewModel {
             System.out.println("User " + username + " has been deleted successfully.");
         } catch (SQLException e) {
             System.err.println("Error deleting user " + username + ": " + e.getMessage());
+        }
+    }
+
+    public boolean confirmAndDeleteUser(String username) {
+        // Confirm deletion
+        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION,
+                "Are you sure you want to delete user " + username + "?", ButtonType.YES, ButtonType.NO);
+        Optional<ButtonType> response = confirmationAlert.showAndWait();
+
+        if (response.isPresent() && response.get() == ButtonType.YES) {
+            deleteUser(username);
+            return true;
+        }
+        return false;
+    }
+
+    public void deleteRole(String roleName) {
+        String sql = "{call drop_role_procedure(?)}";
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+                CallableStatement statement = connection.prepareCall(sql)) {
+
+            statement.setString(1, roleName);
+            statement.execute();
+
+            System.out.println("Role " + roleName + " has been deleted successfully.");
+        } catch (SQLException e) {
+            System.err.println("Error deleting role " + roleName + ": " + e.getMessage());
         }
     }
 }
