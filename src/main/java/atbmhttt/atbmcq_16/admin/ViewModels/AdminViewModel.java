@@ -72,4 +72,35 @@ public class AdminViewModel {
     public String getUsername() {
         return DB_USER;
     }
+
+    public void changeUserPassword(String username, String newPassword) {
+        String sql = "{call change_user_password(?, ?)}";
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+                CallableStatement statement = connection.prepareCall(sql)) {
+
+            statement.setString(1, username);
+            statement.setString(2, newPassword);
+            statement.execute();
+
+            System.out.println("Password for user " + username + " has been changed successfully.");
+        } catch (SQLException e) {
+            System.err.println("Error changing password for user " + username + ": " + e.getMessage());
+        }
+    }
+
+    public void deleteUser(String username) {
+        String sql = "{call drop_user_procedure(?)}";
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             CallableStatement statement = connection.prepareCall(sql)) {
+
+            statement.setString(1, username);
+            statement.execute();
+
+            System.out.println("User " + username + " has been deleted successfully.");
+        } catch (SQLException e) {
+            System.err.println("Error deleting user " + username + ": " + e.getMessage());
+        }
+    }
 }

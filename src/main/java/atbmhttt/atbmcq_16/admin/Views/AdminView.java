@@ -21,11 +21,19 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.List;
 
 public class AdminView extends Application {
 
     private AdminViewModel adminViewModel;
+
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/your_database";
+    private static final String DB_USER = "your_username";
+    private static final String DB_PASSWORD = "your_password";
 
     public AdminView(String username, String password) {
         adminViewModel = new AdminViewModel(username, password);
@@ -103,12 +111,52 @@ public class AdminView extends Application {
 
                     editButton.setOnAction(event -> {
                         String username = getTableView().getItems().get(getIndex())[0];
-                        System.out.println("Edit action for: " + username);
+
+                        // Create a new stage for changing the password
+                        Stage changePasswordStage = new Stage();
+                        changePasswordStage.setTitle("Change Password for " + username);
+
+                        VBox layout = new VBox(10);
+                        layout.setPadding(new Insets(10));
+
+                        Label instructionLabel = new Label("Enter new password for " + username + ":");
+                        PasswordField newPasswordField = new PasswordField();
+                        Button submitButton = new Button("Submit");
+
+                        submitButton.setOnAction(submitEvent -> {
+                            String newPassword = newPasswordField.getText();
+                            if (newPassword.isEmpty()) {
+                                Alert alert = new Alert(Alert.AlertType.ERROR, "Password cannot be empty!",
+                                        ButtonType.OK);
+                                alert.showAndWait();
+                            } else {
+                                adminViewModel.changeUserPassword(username, newPassword);
+                                Alert successAlert = new Alert(Alert.AlertType.INFORMATION,
+                                        "Password changed successfully!", ButtonType.OK);
+                                successAlert.showAndWait();
+                                changePasswordStage.close();
+                            }
+                        });
+
+                        layout.getChildren().addAll(instructionLabel, newPasswordField, submitButton);
+                        layout.setAlignment(Pos.CENTER);
+
+                        Scene scene = new Scene(layout, 300, 200);
+                        changePasswordStage.setScene(scene);
+                        changePasswordStage.show();
                     });
 
                     deleteButton.setOnAction(event -> {
                         String username = getTableView().getItems().get(getIndex())[0];
-                        System.out.println("Delete action for: " + username);
+                        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to delete user " + username + "?", ButtonType.YES, ButtonType.NO);
+                        confirmationAlert.showAndWait().ifPresent(response -> {
+                            if (response == ButtonType.YES) {
+                                adminViewModel.deleteUser(username);
+                                getTableView().getItems().remove(getIndex()); // Update the UI to reflect the deletion
+                                Alert successAlert = new Alert(Alert.AlertType.INFORMATION, "User deleted successfully!", ButtonType.OK);
+                                successAlert.showAndWait();
+                            }
+                        });
                     });
 
                     actionButtons.setAlignment(Pos.CENTER);
@@ -125,28 +173,6 @@ public class AdminView extends Application {
                 }
             });
 
-            TableColumn<String[], Void> actionColumn = new TableColumn<>("Action");
-            actionColumn.setCellFactory(col -> new TableCell<>() {
-                private final Button actionButton = new Button("P");
-
-                {
-                    actionButton.setOnAction(event -> {
-                        String username = getTableView().getItems().get(getIndex())[0];
-                        handleUserPrivilegesDetails(username);
-                    });
-                }
-
-                @Override
-                protected void updateItem(Void item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty) {
-                        setGraphic(null);
-                    } else {
-                        setGraphic(actionButton);
-                    }
-                }
-            });
-
             tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY); // Ensure columns fill the table width
             usernameColumn.setStyle("-fx-alignment: CENTER;");
             createdDateColumn.setStyle("-fx-alignment: CENTER;");
@@ -154,7 +180,6 @@ public class AdminView extends Application {
             tableView.getColumns().add(usernameColumn);
             tableView.getColumns().add(createdDateColumn);
             tableView.getColumns().add(actionsColumn);
-            tableView.getColumns().add(actionColumn);
             tableView.setItems(FXCollections.observableArrayList(users));
 
             contentArea.setCenter(tableView);

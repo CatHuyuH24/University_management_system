@@ -37,3 +37,17 @@ BEGIN
     RETURN role_cursor;
 END;
 /
+
+// thay đổi Password của người dùng trong PDB
+CREATE OR REPLACE PROCEDURE change_user_password(
+    p_username      IN VARCHAR2,
+    p_new_password  IN VARCHAR2
+) AS
+BEGIN
+    EXECUTE IMMEDIATE 'ALTER USER "' || p_username || '" IDENTIFIED BY "' || p_new_password || '"';
+    DBMS_OUTPUT.PUT_LINE('Password for user "' || p_username || '" has been changed.');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+END;
+/
