@@ -56,18 +56,28 @@ CREATE OR REPLACE PROCEDURE REVOKE_PRIVILEGE_FROM_USER_OR_ROLE (
     grantee_name IN VARCHAR2
 ) AS
 BEGIN
-    EXECUTE IMMEDIATE 'REVOKE ' || privilege_name || ' FROM ' || grantee_name;
-    DBMS_OUTPUT.PUT_LINE('Privilege ' || privilege_name || ' revoked from ' || grantee_name);
+    -- Kiểm tra nếu là quyền trên đối tượng (ví dụ: SELECT, INSERT)
+    IF privilege_name IN ('SELECT', 'INSERT', 'UPDATE', 'DELETE') THEN
+        EXECUTE IMMEDIATE 'REVOKE ' || privilege_name || ' ON EMPLOYEES FROM ' || grantee_name;
+        DBMS_OUTPUT.PUT_LINE('Privilege ' || privilege_name || ' on EMPLOYEES revoked from ' || grantee_name);
+
+    -- Kiểm tra nếu là quyền hệ thống (ví dụ: CREATE TABLE, CREATE SESSION)
+    ELSIF privilege_name IN ('CREATE TABLE', 'CREATE SESSION') THEN
+        EXECUTE IMMEDIATE 'REVOKE ' || privilege_name || ' FROM ' || grantee_name;
+        DBMS_OUTPUT.PUT_LINE('System privilege ' || privilege_name || ' revoked from ' || grantee_name);
+
+    -- Kiểm tra nếu là role (ví dụ: CONNECT, RESOURCE)
+    ELSE
+        EXECUTE IMMEDIATE 'REVOKE ' || privilege_name || ' FROM ' || grantee_name;
+        DBMS_OUTPUT.PUT_LINE('Role ' || privilege_name || ' revoked from ' || grantee_name);
+    END IF;
+
 EXCEPTION
     WHEN OTHERS THEN
         DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
 END;
 /
 
-BEGIN
-    REVOKE_PRIVILEGE_FROM_USER_OR_ROLE('SELECT', 'HR');
-END;
-/
 
 CREATE OR REPLACE PROCEDURE VIEW_PRIVILEGES_FOR_USER_OR_ROLE (
     user_or_role_name IN VARCHAR2
