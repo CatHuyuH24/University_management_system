@@ -11,9 +11,11 @@ import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -55,19 +57,21 @@ public class AdminView extends Application {
         Button rolesButton = new Button("Roles");
         Button privilegesButton = new Button("Privileges");
         Button logoutButton = new Button("Log out");
+        Button tablesButton = new Button("Tables");
 
         // Add buttons to the grid
         navigationPanel.add(usersButton, 0, 1);
         navigationPanel.add(rolesButton, 0, 2);
         navigationPanel.add(privilegesButton, 0, 3);
+        navigationPanel.add(tablesButton, 0, 4);
 
         // Add a spacer pane to fill the space between the privileges button and the
         // logout button
         Pane spacer = new Pane();
-        navigationPanel.add(spacer, 0, 4);
+        navigationPanel.add(spacer, 0, 5);
         GridPane.setVgrow(spacer, Priority.ALWAYS);
 
-        navigationPanel.add(logoutButton, 0, 5);
+        navigationPanel.add(logoutButton, 0, 6);
 
         BorderPane contentArea = new BorderPane();
         // Right content area
@@ -77,6 +81,7 @@ public class AdminView extends Application {
         setUpDisplayPriviledgesViaButton(privilegesButton, contentArea);
         setUpAddUserButton(addUserButton, contentArea); // Set up event handler for the button
         setUpLogoutButton(logoutButton);
+        setUpDisplayTablesViaButton(tablesButton, contentArea);
 
         contentArea.setCenter(text);
 
@@ -281,6 +286,7 @@ public class AdminView extends Application {
             private final Button actionButton = new Button("P");
 
             {
+
                 actionButton.setOnAction(event -> {
                     String username = getTableView().getItems().get(getIndex())[0];
                     System.out.println("Button P clicked for user: " + username);
@@ -330,6 +336,7 @@ public class AdminView extends Application {
             private final Button actionButton = new Button("P");
 
             {
+
                 actionButton.setOnAction(event -> {
                     String roleName = getTableView().getItems().get(getIndex())[0];
                     System.out.println("Button P clicked for role: " + roleName);
@@ -428,5 +435,98 @@ public class AdminView extends Application {
                 successAlert.showAndWait();
             }
         });
+    }
+
+    private void setUpDisplayTablesViaButton(final Button tablesButton, final BorderPane contentArea) {
+        tablesButton.setOnAction(e -> {
+            List<String[]> tables = adminViewModel.getAllTables();
+            TableView<String[]> tableView = new TableView<>();
+
+            TableColumn<String[], String> tableNameColumn = new TableColumn<>("Table Name");
+            tableNameColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper(data.getValue()[0]));
+            tableNameColumn.setStyle("-fx-alignment: CENTER;");
+
+            TableColumn<String[], Boolean> checkBoxColumn = new TableColumn<>("Update");
+            checkBoxColumn.setCellFactory(col -> new TableCell<>() {
+                private final javafx.scene.control.CheckBox checkBox = new javafx.scene.control.CheckBox();
+                private boolean ignoreListener = false;
+                {
+                    checkBox.setOnAction(event -> {
+                        if (ignoreListener) return;
+                        String[] row = getTableView().getItems().get(getIndex());
+                        if (checkBox.isSelected()) {
+                            showTableColumnsDialog(row[0], checkBox);
+                        }
+                    });
+                }
+                @Override
+                protected void updateItem(Boolean item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty) {
+                        setGraphic(null);
+                    } else {
+                        setGraphic(checkBox);
+                        ignoreListener = true;
+                        checkBox.setSelected(false);
+                        ignoreListener = false;
+                    }
+                }
+            });
+            checkBoxColumn.setStyle("-fx-alignment: CENTER;");
+
+            tableView.getColumns().add(tableNameColumn);
+            tableView.getColumns().add(checkBoxColumn);
+            tableView.setItems(FXCollections.observableArrayList(tables));
+            tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+            contentArea.setCenter(tableView);
+        });
+    }
+
+    private void showTableColumnsDialog(String tableName, javafx.scene.control.CheckBox tableCheckBox) {
+        List<String> columns = adminViewModel.getColumnsOfTable(tableName);
+        Stage dialog = new Stage();
+        dialog.setTitle("Columns of " + tableName);
+        VBox layout = new VBox(10);
+        layout.setPadding(new Insets(15));
+        layout.getChildren().add(new Label("Columns in table '" + tableName + "':"));
+        // Lưu trạng thái tick của các cột
+        List<String> selectedColumns = new java.util.ArrayList<>();
+        for (String col : columns) {
+            HBox row = new HBox();
+            row.setSpacing(10);
+            row.setAlignment(Pos.CENTER_LEFT);
+            Label colLabel = new Label(col);
+            javafx.scene.control.CheckBox colCheckBox = new javafx.scene.control.CheckBox();
+            colCheckBox.selectedProperty().addListener((obs, wasSelected, isNowSelected) -> {
+                if (isNowSelected) selectedColumns.add(col);
+                else selectedColumns.remove(col);
+            });
+            HBox.setHgrow(colLabel, Priority.ALWAYS);
+            colLabel.setMaxWidth(Double.MAX_VALUE);
+            row.getChildren().addAll(colLabel, colCheckBox);
+            row.setFillHeight(true);
+            row.setStyle("-fx-padding: 0; -fx-alignment: center-right;");
+            layout.getChildren().add(row);
+        }
+        Pane spacer = new Pane();
+        VBox.setVgrow(spacer, Priority.ALWAYS);
+        layout.getChildren().add(spacer);
+        Button okButton = new Button("OK");
+        HBox buttonBox = new HBox(okButton);
+        buttonBox.setAlignment(Pos.BOTTOM_RIGHT);
+        layout.getChildren().add(buttonBox);
+        okButton.setOnAction(event -> {
+            if (!selectedColumns.isEmpty()) {
+                // Gọi hàm thực hiện store procedure với các tham số
+                adminViewModel.grantUpdatePrivilege(tableName, selectedColumns);
+            }
+            tableCheckBox.setSelected(false);
+            dialog.close();
+        });
+        Scene scene = new Scene(layout, 350, 300);
+        dialog.setScene(scene);
+        dialog.setOnCloseRequest(event -> tableCheckBox.setSelected(false));
+        dialog.show();
     }
 }

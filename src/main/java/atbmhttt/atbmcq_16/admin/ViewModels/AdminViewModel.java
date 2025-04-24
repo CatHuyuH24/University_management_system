@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 
@@ -147,6 +148,53 @@ public class AdminViewModel {
             System.out.println("Role " + roleName + " has been deleted successfully.");
         } catch (SQLException e) {
             System.err.println("Error deleting role " + roleName + ": " + e.getMessage());
+        }
+    }
+
+    public List<String[]> getAllTables() {
+        String sql = "SELECT table_name FROM user_tables ORDER BY table_name";
+        List<String[]> tables = new ArrayList<>();
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             java.sql.Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql)) {
+            while (resultSet.next()) {
+                String tableName = resultSet.getString(1);
+                tables.add(new String[]{tableName});
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return tables;
+    }
+
+    public List<String> getColumnsOfTable(String tableName) {
+        List<String> columns = new ArrayList<>();
+        String sql = "SELECT column_name FROM user_tab_columns WHERE table_name = ? ORDER BY column_id";
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             java.sql.PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, tableName);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    columns.add(resultSet.getString(1));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return columns;
+    }
+
+    public void grantUpdatePrivilege(String tableName, List<String> columns) {
+        // Nối tên các cột bằng dấu phẩy, không có khoảng trắng thừa
+        String columnsStr = String.join(",", columns);
+        String sql = "BEGIN grant_column_privilege( p_privilege => 'UPDATE', p_object_name => ?, p_columns => ?, p_grantee => 'ANNU', p_with_option => FALSE ); END;";
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             java.sql.PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, "ATBMCQ_ADMIN." + tableName);
+            statement.setString(2, columnsStr);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }
