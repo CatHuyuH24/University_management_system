@@ -61,8 +61,7 @@ public class AdminViewModel {
                 while (resultSet.next()) {
                     // assuming only 2 attributes for each record, role name and description
                     String roleName = resultSet.getString(1);
-                    String roleId = resultSet.getString(2);
-                    pdbRoles.add(new String[] { roleName, roleId });
+                    pdbRoles.add(new String[] { roleName });
                 }
             }
         } catch (SQLException e) {
@@ -73,7 +72,7 @@ public class AdminViewModel {
     }
 
     public boolean addUser(String username, String password) {
-        String sql = "BEGIN ATBMCQ_ADMIN.ADD_USER(?, ?); END;";
+        String sql = "BEGIN ATBMCQ_ADMIN.SP_ADD_USER_ALLOW_CREATESESSION_ISADMINUSER(?, ?); END;";
 
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
                 CallableStatement statement = connection.prepareCall(sql)) {
@@ -93,7 +92,7 @@ public class AdminViewModel {
     }
 
     public void changeUserPassword(String username, String newPassword) {
-        String sql = "{call change_user_password(?, ?)}";
+        String sql = "BEGIN ATBMCQ_ADMIN.SP_CHANGE_USER_PASSWORD(?, ?); END;";
 
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
                 CallableStatement statement = connection.prepareCall(sql)) {
@@ -109,7 +108,7 @@ public class AdminViewModel {
     }
 
     public void deleteUser(String username) {
-        String sql = "{call drop_user_procedure(?)}";
+        String sql = "BEGIN ATBMCQ_ADMIN.SP_DROP_USER(?); END;";
 
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
                 CallableStatement statement = connection.prepareCall(sql)) {
@@ -137,7 +136,7 @@ public class AdminViewModel {
     }
 
     public void deleteRole(String roleName) {
-        String sql = "{call drop_role_procedure(?)}";
+        String sql = "BEGIN ATBMCQ_ADMIN.SP_DROP_ROLE(?); END;";
 
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
                 CallableStatement statement = connection.prepareCall(sql)) {

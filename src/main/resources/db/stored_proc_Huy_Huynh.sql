@@ -33,7 +33,7 @@ AS
     role_cursor SYS_REFCURSOR;
 BEGIN
     OPEN role_cursor FOR
-        SELECT ROLE, ROLE_ID FROM DBA_ROLES WHERE common = 'NO';
+        SELECT ROLE FROM DBA_ROLES WHERE common = 'NO';
     RETURN role_cursor;
 END;
 /
@@ -50,7 +50,7 @@ BEGIN
 END;
 
 
-CREATE OR REPLACE PROCEDURE SP_ADD_USER_ALLOW_CREATE_SESSION(
+CREATE OR REPLACE PROCEDURE SP_ADD_USER_ALLOW_CREATESESSION_ISADMINUSER(
     p_username IN VARCHAR2,
     p_password IN VARCHAR2
 )
@@ -71,7 +71,8 @@ BEGIN
 
     -- Grant session
     EXECUTE IMMEDIATE 'GRANT CREATE SESSION TO ' || p_username;
-
+    EXECUTE IMMEDIATE 'GRANT EXECUTE ON ATBMCQ_ADMIN.IS_ADMIN_USER TO ' || p_username;
+    
     COMMIT;
 EXCEPTION
     WHEN user_already_existed THEN 
@@ -81,49 +82,66 @@ EXCEPTION
     WHEN OTHERS THEN
         ROLLBACK;
         RAISE;
-END SP_ADD_USER_ALLOW_CREATE_SESSION;
+END;
 
 
 
--- CHO PHÉP USER ĐƯỢC PHÉP GỌI IS_ADMIN_USER
-CREATE OR REPLACE PROCEDURE SP_GRANT_EXECUTE_ISADMINUSER (
-    p_username IN VARCHAR2,
-    p_password IN VARCHAR2
-) AS
-BEGIN
-    EXECUTE IMMEDIATE 'GRANT EXECUTE ON ATBMCQ_ADMIN.IS_ADMIN_USER TO USER' || p_username;
-    COMMIT;
-EXCEPTION
-    WHEN OTHERS THEN
-        ROLLBACK;
-        RAISE;
-END ADD_USER;
-/
-
-// thay đổi Password của người dùng trong PDB
-CREATE OR REPLACE PROCEDURE change_user_password(
+-- thay đổi Password của người dùng trong PDB
+CREATE OR REPLACE PROCEDURE SP_CHANGE_USER_PASSWORD(
     p_username      IN VARCHAR2,
     p_new_password  IN VARCHAR2
 ) AS
+    user_exist INT;
+    v_sql       VARCHAR2(1000);
 BEGIN
-    EXECUTE IMMEDIATE 'ALTER USER "' || p_username || '" IDENTIFIED BY "' || p_new_password || '"';
-    DBMS_OUTPUT.PUT_LINE('Password for user "' || p_username || '" has been changed.');
+    -- Validate username to contain only allowed characters
+    IF NOT REGEXP_LIKE(p_username, '^[A-Za-z0-9_]+$') THEN
+        RAISE_APPLICATION_ERROR(-20002, 'Invalid username.');
+    END IF;
+
+    user_exist := fn_does_user_exist(p_username);
+    IF user_exist = 1 THEN
+        v_sql := 'ALTER USER "' || p_username || '" IDENTIFIED BY "' || p_new_password || '"';
+        EXECUTE IMMEDIATE v_sql;
+    ELSE
+        RAISE_APPLICATION_ERROR(-20003, 'User does not exist.');
+    END IF;
 EXCEPTION
     WHEN OTHERS THEN
         DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
 END;
-/
+
 
 // XÓA ROLE
-CREATE OR REPLACE PROCEDURE drop_role_procedure(
+CREATE OR REPLACE PROCEDURE SP_DROP_ROLE(
     p_role_name IN VARCHAR2
 ) AS
 BEGIN
     -- Xóa role
     EXECUTE IMMEDIATE 'DROP ROLE ' || p_role_name;
     DBMS_OUTPUT.PUT_LINE('Role "' || p_role_name || '" đã được xóa.');
+    COMMIT;
 EXCEPTION
     WHEN OTHERS THEN
         DBMS_OUTPUT.PUT_LINE('Lỗi khi xóa role "' || p_role_name || '": ' || SQLERRM);
+END;
+/
+
+-- XOA USER
+CREATE OR REPLACE PROCEDURE SP_DROP_USER(
+    p_username IN VARCHAR2
+) AS
+    v_user_exist INT;
+BEGIN
+    v_user_exist := fn_does_user_exist(p_username);
+    IF v_user_exist = 1 THEN
+        EXECUTE IMMEDIATE 'DROP USER ' || p_username;
+        COMMIT;
+    END IF;
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('ERROR DELETING USER "' || p_username || '"');
+        RAISE;
 END;
 /

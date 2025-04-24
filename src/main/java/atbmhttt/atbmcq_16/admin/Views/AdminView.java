@@ -21,19 +21,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.List;
 
 public class AdminView extends Application {
 
     private AdminViewModel adminViewModel;
-
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/your_database";
-    private static final String DB_USER = "your_username";
-    private static final String DB_PASSWORD = "your_password";
 
     public AdminView(String username, String password) {
         adminViewModel = new AdminViewModel(username, password);
@@ -161,9 +153,6 @@ public class AdminView extends Application {
             TableColumn<String[], String> roleNameColumn = new TableColumn<>("Role Name");
             roleNameColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper(data.getValue()[0]));
 
-            TableColumn<String[], String> roleIdColumn = new TableColumn<>("Role ID");
-            roleIdColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper(data.getValue()[1]));
-
             TableColumn<String[], Void> actionsColumn = new TableColumn<>("Actions");
             actionsColumn.setCellFactory(col -> new TableCell<>() {
                 private final Button editButton = new Button("Edit");
@@ -197,9 +186,9 @@ public class AdminView extends Application {
 
             tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY); // Ensure columns fill the table width
             roleNameColumn.setStyle("-fx-alignment: CENTER;");
-            roleIdColumn.setStyle("-fx-alignment: CENTER;");
+            tableView.getColumns().add(roleNameColumn);
+            tableView.getColumns().add(actionsColumn);
 
-            tableView.getColumns().addAll(roleNameColumn, roleIdColumn, actionsColumn);
             tableView.setItems(FXCollections.observableArrayList(roles));
 
             contentArea.setCenter(tableView);
@@ -306,7 +295,9 @@ public class AdminView extends Application {
         TableColumn<String[], String> userColumn = new TableColumn<>("User");
         userColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper(data.getValue()[0]));
 
-        tableView.getColumns().addAll(actionColumn, userColumn);
+        tableView.getColumns().add(actionColumn);
+        tableView.getColumns().add(userColumn);
+
         tableView.setItems(FXCollections.observableArrayList(adminViewModel.getUsersWithDetails()));
 
         VBox layout = new VBox(10, tableView);
@@ -353,7 +344,9 @@ public class AdminView extends Application {
         TableColumn<String[], String> roleColumn = new TableColumn<>("Role");
         roleColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper(data.getValue()[0]));
 
-        tableView.getColumns().addAll(actionColumn, roleColumn);
+        tableView.getColumns().add(actionColumn);
+        tableView.getColumns().add(roleColumn);
+
         tableView.setItems(FXCollections.observableArrayList(adminViewModel.getPdbRoles()));
 
         VBox layout = new VBox(10, tableView);
