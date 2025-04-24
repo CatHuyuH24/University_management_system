@@ -99,3 +99,31 @@ EXCEPTION
         RAISE;
 END ADD_USER;
 /
+
+// thay đổi Password của người dùng trong PDB
+CREATE OR REPLACE PROCEDURE change_user_password(
+    p_username      IN VARCHAR2,
+    p_new_password  IN VARCHAR2
+) AS
+BEGIN
+    EXECUTE IMMEDIATE 'ALTER USER "' || p_username || '" IDENTIFIED BY "' || p_new_password || '"';
+    DBMS_OUTPUT.PUT_LINE('Password for user "' || p_username || '" has been changed.');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+END;
+/
+
+// XÓA ROLE
+CREATE OR REPLACE PROCEDURE drop_role_procedure(
+    p_role_name IN VARCHAR2
+) AS
+BEGIN
+    -- Xóa role
+    EXECUTE IMMEDIATE 'DROP ROLE ' || p_role_name;
+    DBMS_OUTPUT.PUT_LINE('Role "' || p_role_name || '" đã được xóa.');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Lỗi khi xóa role "' || p_role_name || '": ' || SQLERRM);
+END;
+/
