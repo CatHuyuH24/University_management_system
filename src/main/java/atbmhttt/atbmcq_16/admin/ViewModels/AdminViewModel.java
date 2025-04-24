@@ -7,6 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 
 public class AdminViewModel {
 
@@ -58,8 +61,7 @@ public class AdminViewModel {
                 while (resultSet.next()) {
                     // assuming only 2 attributes for each record, role name and description
                     String roleName = resultSet.getString(1);
-                    String roleId = resultSet.getString(2);
-                    pdbRoles.add(new String[] { roleName, roleId });
+                    pdbRoles.add(new String[] { roleName });
                 }
             }
         } catch (SQLException e) {
@@ -69,7 +71,82 @@ public class AdminViewModel {
         return pdbRoles;
     }
 
+    public boolean addUser(String username, String password) {
+        String sql = "BEGIN ATBMCQ_ADMIN.SP_ADD_USER_ALLOW_CREATESESSION_ISADMINUSER(?, ?); END;";
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+                CallableStatement statement = connection.prepareCall(sql)) {
+
+            statement.setString(1, username);
+            statement.setString(2, password);
+            statement.execute();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public String getUsername() {
         return DB_USER;
+    }
+
+    public void changeUserPassword(String username, String newPassword) {
+        String sql = "BEGIN ATBMCQ_ADMIN.SP_CHANGE_USER_PASSWORD(?, ?); END;";
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+                CallableStatement statement = connection.prepareCall(sql)) {
+
+            statement.setString(1, username);
+            statement.setString(2, newPassword);
+            statement.execute();
+
+            System.out.println("Password for user " + username + " has been changed successfully.");
+        } catch (SQLException e) {
+            System.err.println("Error changing password for user " + username + ": " + e.getMessage());
+        }
+    }
+
+    public void deleteUser(String username) {
+        String sql = "BEGIN ATBMCQ_ADMIN.SP_DROP_USER(?); END;";
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+                CallableStatement statement = connection.prepareCall(sql)) {
+
+            statement.setString(1, username);
+            statement.execute();
+
+            System.out.println("User " + username + " has been deleted successfully.");
+        } catch (SQLException e) {
+            System.err.println("Error deleting user " + username + ": " + e.getMessage());
+        }
+    }
+
+    public boolean confirmAndDeleteUser(String username) {
+        // Confirm deletion
+        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION,
+                "Are you sure you want to delete user " + username + "?", ButtonType.YES, ButtonType.NO);
+        Optional<ButtonType> response = confirmationAlert.showAndWait();
+
+        if (response.isPresent() && response.get() == ButtonType.YES) {
+            deleteUser(username);
+            return true;
+        }
+        return false;
+    }
+
+    public void deleteRole(String roleName) {
+        String sql = "BEGIN ATBMCQ_ADMIN.SP_DROP_ROLE(?); END;";
+
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+                CallableStatement statement = connection.prepareCall(sql)) {
+
+            statement.setString(1, roleName);
+            statement.execute();
+
+            System.out.println("Role " + roleName + " has been deleted successfully.");
+        } catch (SQLException e) {
+            System.err.println("Error deleting role " + roleName + ": " + e.getMessage());
+        }
     }
 }

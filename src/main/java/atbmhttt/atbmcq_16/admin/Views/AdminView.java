@@ -46,23 +46,28 @@ public class AdminView extends Application {
         navigationPanel.setPadding(new Insets(10));
         navigationPanel.setVgap(10);
 
+        Button addUserButton = new Button("Add User");
+        addUserButton.setStyle(
+                "-fx-background-radius: 15; -fx-padding: 5 10 5 10; -fx-background-color: #0078D7; -fx-text-fill: white;");
+        navigationPanel.add(addUserButton, 0, 0); // Add the button to the top of the navigation panel
+
         Button usersButton = new Button("Users");
         Button rolesButton = new Button("Roles");
         Button privilegesButton = new Button("Privileges");
         Button logoutButton = new Button("Log out");
 
         // Add buttons to the grid
-        navigationPanel.add(usersButton, 0, 0);
-        navigationPanel.add(rolesButton, 0, 1);
-        navigationPanel.add(privilegesButton, 0, 2);
+        navigationPanel.add(usersButton, 0, 1);
+        navigationPanel.add(rolesButton, 0, 2);
+        navigationPanel.add(privilegesButton, 0, 3);
 
         // Add a spacer pane to fill the space between the privileges button and the
         // logout button
         Pane spacer = new Pane();
-        navigationPanel.add(spacer, 0, 3);
+        navigationPanel.add(spacer, 0, 4);
         GridPane.setVgrow(spacer, Priority.ALWAYS);
 
-        navigationPanel.add(logoutButton, 0, 4);
+        navigationPanel.add(logoutButton, 0, 5);
 
         BorderPane contentArea = new BorderPane();
         // Right content area
@@ -70,6 +75,7 @@ public class AdminView extends Application {
         setUpDisplayUsersViaButton(usersButton, contentArea);
         setUpDisplayRolesViaButton(rolesButton, contentArea);
         setUpDisplayPriviledgesViaButton(privilegesButton, contentArea);
+        setUpAddUserButton(addUserButton, contentArea); // Set up event handler for the button
         setUpLogoutButton(logoutButton);
 
         contentArea.setCenter(text);
@@ -109,12 +115,12 @@ public class AdminView extends Application {
 
                     editButton.setOnAction(event -> {
                         String username = getTableView().getItems().get(getIndex())[0];
-                        System.out.println("Edit action for: " + username);
+                        handleEditUser(username);
                     });
 
                     deleteButton.setOnAction(event -> {
                         String username = getTableView().getItems().get(getIndex())[0];
-                        System.out.println("Delete action for: " + username);
+                        handleDeleteUser(username, getTableView(), getIndex());
                     });
 
                     actionButtons.setAlignment(Pos.CENTER);
@@ -131,28 +137,6 @@ public class AdminView extends Application {
                 }
             });
 
-            TableColumn<String[], Void> actionColumn = new TableColumn<>("Action");
-            actionColumn.setCellFactory(col -> new TableCell<>() {
-                private final Button actionButton = new Button("P");
-
-                {
-                    actionButton.setOnAction(event -> {
-                        String username = getTableView().getItems().get(getIndex())[0];
-                        handleUserPrivilegesDetails(username);
-                    });
-                }
-
-                @Override
-                protected void updateItem(Void item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (empty) {
-                        setGraphic(null);
-                    } else {
-                        setGraphic(actionButton);
-                    }
-                }
-            });
-
             tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY); // Ensure columns fill the table width
             usernameColumn.setStyle("-fx-alignment: CENTER;");
             createdDateColumn.setStyle("-fx-alignment: CENTER;");
@@ -160,7 +144,6 @@ public class AdminView extends Application {
             tableView.getColumns().add(usernameColumn);
             tableView.getColumns().add(createdDateColumn);
             tableView.getColumns().add(actionsColumn);
-            tableView.getColumns().add(actionColumn);
             tableView.setItems(FXCollections.observableArrayList(users));
 
             contentArea.setCenter(tableView);
@@ -169,23 +152,49 @@ public class AdminView extends Application {
 
     private void setUpDisplayRolesViaButton(final Button rolesButton, final BorderPane contentArea) {
         rolesButton.setOnAction(e -> {
-            List<String[]> roles = adminViewModel.getPdbRoles(); // Assuming this returns a list of [roleName,
-                                                                 // description]
+            List<String[]> roles = adminViewModel.getPdbRoles();
 
             TableView<String[]> tableView = new TableView<>();
 
             TableColumn<String[], String> roleNameColumn = new TableColumn<>("Role Name");
             roleNameColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper(data.getValue()[0]));
 
-            TableColumn<String[], String> descriptionColumn = new TableColumn<>("Role ID");
-            descriptionColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper(data.getValue()[1]));
+            TableColumn<String[], Void> actionsColumn = new TableColumn<>("Actions");
+            actionsColumn.setCellFactory(col -> new TableCell<>() {
+                private final Button editButton = new Button("Edit");
+                private final Button deleteButton = new Button("Delete");
+                private final HBox actionButtons = new HBox(5, editButton, deleteButton);
+
+                {
+                    editButton.setOnAction(event -> {
+                        String roleName = getTableView().getItems().get(getIndex())[0];
+                        handleEditRole(roleName);
+                    });
+
+                    deleteButton.setOnAction(event -> {
+                        String roleName = getTableView().getItems().get(getIndex())[0];
+                        handleDeleteRole(roleName, getTableView(), getIndex());
+                    });
+
+                    actionButtons.setAlignment(Pos.CENTER);
+                }
+
+                @Override
+                protected void updateItem(Void item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty) {
+                        setGraphic(null);
+                    } else {
+                        setGraphic(actionButtons);
+                    }
+                }
+            });
 
             tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY); // Ensure columns fill the table width
             roleNameColumn.setStyle("-fx-alignment: CENTER;");
-            descriptionColumn.setStyle("-fx-alignment: CENTER;");
-
             tableView.getColumns().add(roleNameColumn);
-            tableView.getColumns().add(descriptionColumn);
+            tableView.getColumns().add(actionsColumn);
+
             tableView.setItems(FXCollections.observableArrayList(roles));
 
             contentArea.setCenter(tableView);
@@ -241,6 +250,13 @@ public class AdminView extends Application {
         });
     }
 
+    private void setUpAddUserButton(final Button addUserButton, final BorderPane contentArea) {
+        addUserButton.setOnAction(e -> {
+            // Placeholder for adding a new user
+            contentArea.setCenter(new Label("Add User Form"));
+        });
+    }
+
     private void setUpLogoutButton(final Button logoutButton) {
         logoutButton.setOnAction(e -> {
             // Show confirmation alert before logging out
@@ -285,7 +301,9 @@ public class AdminView extends Application {
         TableColumn<String[], String> userColumn = new TableColumn<>("User");
         userColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper(data.getValue()[0]));
 
-        tableView.getColumns().addAll(actionColumn, userColumn);
+        tableView.getColumns().add(actionColumn);
+        tableView.getColumns().add(userColumn);
+
         tableView.setItems(FXCollections.observableArrayList(adminViewModel.getUsersWithDetails()));
 
         VBox layout = new VBox(10, tableView);
@@ -332,7 +350,9 @@ public class AdminView extends Application {
         TableColumn<String[], String> roleColumn = new TableColumn<>("Role");
         roleColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper(data.getValue()[0]));
 
-        tableView.getColumns().addAll(actionColumn, roleColumn);
+        tableView.getColumns().add(actionColumn);
+        tableView.getColumns().add(roleColumn);
+
         tableView.setItems(FXCollections.observableArrayList(adminViewModel.getPdbRoles()));
 
         VBox layout = new VBox(10, tableView);
@@ -341,5 +361,72 @@ public class AdminView extends Application {
         Scene scene = new Scene(layout, 600, 450);
         rolePrivilegesStage.setScene(scene);
         rolePrivilegesStage.show();
+    }
+
+    private void handleEditUser(String username) {
+        // Create a new stage for changing the password
+        Stage changePasswordStage = new Stage();
+        changePasswordStage.setTitle("Change Password for " + username);
+
+        VBox layout = new VBox(10);
+        layout.setPadding(new Insets(10));
+
+        Label instructionLabel = new Label("Enter new password for " + username + ":");
+        PasswordField newPasswordField = new PasswordField();
+        Button submitButton = new Button("Submit");
+
+        submitButton.setOnAction(submitEvent -> {
+            String newPassword = newPasswordField.getText();
+            if (newPassword.isEmpty()) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Password cannot be empty!", ButtonType.OK);
+                alert.showAndWait();
+            } else {
+                adminViewModel.changeUserPassword(username, newPassword);
+                Alert successAlert = new Alert(Alert.AlertType.INFORMATION, "Password changed successfully!",
+                        ButtonType.OK);
+                successAlert.showAndWait();
+                changePasswordStage.close();
+            }
+        });
+
+        layout.getChildren().addAll(instructionLabel, newPasswordField, submitButton);
+        layout.setAlignment(Pos.CENTER);
+
+        Scene scene = new Scene(layout, 300, 200);
+        changePasswordStage.setScene(scene);
+        changePasswordStage.show();
+    }
+
+    private void handleDeleteUser(String username, TableView<String[]> tableView, int index) {
+        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION,
+                "Are you sure you want to delete user " + username + "?", ButtonType.YES, ButtonType.NO);
+        confirmationAlert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.YES) {
+                adminViewModel.deleteUser(username);
+                tableView.getItems().remove(index); // Update the UI to reflect the deletion
+                Alert successAlert = new Alert(Alert.AlertType.INFORMATION, "User deleted successfully!",
+                        ButtonType.OK);
+                successAlert.showAndWait();
+            }
+        });
+    }
+
+    private void handleEditRole(String roleName) {
+        // Logic to handle editing a role
+        System.out.println("Edit role: " + roleName);
+    }
+
+    private void handleDeleteRole(String roleName, TableView<String[]> tableView, int index) {
+        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION,
+                "Are you sure you want to delete role " + roleName + "?", ButtonType.YES, ButtonType.NO);
+        confirmationAlert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.YES) {
+                adminViewModel.deleteRole(roleName);
+                tableView.getItems().remove(index); // Update the UI to reflect the deletion
+                Alert successAlert = new Alert(Alert.AlertType.INFORMATION, "Role deleted successfully!",
+                        ButtonType.OK);
+                successAlert.showAndWait();
+            }
+        });
     }
 }
