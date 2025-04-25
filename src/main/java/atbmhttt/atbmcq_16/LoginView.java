@@ -1,21 +1,24 @@
 package atbmhttt.atbmcq_16;
 
+import java.sql.SQLException;
+
+import atbmhttt.atbmcq_16.dialogs.AlertDialog;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField; // Import PasswordField
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 public class LoginView {
     private final LoginViewModel viewModel;
-    private final Router router;
 
-    public LoginView(LoginViewModel viewModel, Router router) {
+    public LoginView(LoginViewModel viewModel) {
         this.viewModel = viewModel;
-        this.router = router;
     }
 
     public void start(Stage stage) {
@@ -25,6 +28,28 @@ public class LoginView {
         gridPane.setVgap(10); // Set vertical gap between rows
         gridPane.setAlignment(Pos.CENTER); // Center the grid in the scene
 
+        Label title = new Label("UNIVERSITY MANAGEMENT SYSTEM");
+        Label subtitle = new Label("ATBMCQ-16");
+
+        // Add app icon to the GridPane and center it horizontally
+        ImageView appIcon = new ImageView(new Image(getClass().getResourceAsStream("/images/app_icon.png")));
+        appIcon.setFitWidth(100); // Set the width of the icon
+        appIcon.setFitHeight(100); // Set the height of the icon
+        GridPane.setColumnSpan(appIcon, 2); // Span across 2 columns
+        GridPane.setHalignment(appIcon, javafx.geometry.HPos.CENTER); // Center horizontally
+        gridPane.add(appIcon, 0, 0); // Add to the grid
+
+        // Adjust title and subtitle positions and format
+        title.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+        GridPane.setColumnSpan(title, 2);
+        GridPane.setHalignment(title, javafx.geometry.HPos.CENTER); // Center horizontally
+        gridPane.add(title, 0, 1);
+
+        subtitle.setStyle("-fx-font-size: 14px; -fx-font-style: italic;");
+        GridPane.setColumnSpan(subtitle, 2);
+        GridPane.setHalignment(subtitle, javafx.geometry.HPos.CENTER); // Center horizontally
+        gridPane.add(subtitle, 0, 2);
+
         // Username field
         Label usernameLabel = new Label("Username:");
         TextField usernameField = new TextField();
@@ -32,64 +57,42 @@ public class LoginView {
 
         // Password field
         Label passwordLabel = new Label("Password:");
-        TextField passwordField = new TextField();
-
-        // THESE ARE FOR TESTING PURPOSES
-        /*
-         * 1-way changing, change the field affect the
-         * label's text, not the other way around
-         * passwordLabel.textProperty().bind(viewModel.passwordProperty());
-         */
-
-        // 2-way changing, the content of the text field and the
-        // actual underlying state of the linked data is consistent
+        PasswordField passwordField = new PasswordField();
         passwordField.textProperty().bindBidirectional(viewModel.passwordProperty());
 
         // Login button
         Button loginButton = new Button("Login");
         // Update login button action to use the router for navigation
         loginButton.setOnAction(event -> {
-            String inputUsername = usernameField.getText();
-            String inputPassword = passwordField.getText();
-            if (viewModel.loginSuccessfully(inputUsername, inputPassword)) {
-                router.navigateToHello();
+            try {
+                viewModel.login();
+            } catch (SQLException e) {
+                AlertDialog.showErrorAlert(
+                        "INVALID LOGIN CREDENTIAL",
+                        null,
+                        "Invalid username or password.\nPlease try again.",
+                        null);
+                e.printStackTrace();
+            } catch (Exception e) {
+                AlertDialog.showErrorAlert(
+                        "ERROR",
+                        null,
+                        "An error has occurred.\nPlease try again.",
+                        null);
+                e.printStackTrace();
             }
         });
 
-        Button revokePrivilegeButton = new Button("Revoke Privilege");
-        revokePrivilegeButton.setOnAction(event -> {
-            PrivilegeManager privilegeManager = new PrivilegeManager();
-            RevokePrivilegeView revokePrivilegeView = new RevokePrivilegeView(privilegeManager);
-            revokePrivilegeView.start(new Stage());
-        });
-
-        Button viewPrivilegesButton = new Button("View Privileges");
-        viewPrivilegesButton.setOnAction(event -> {
-            PrivilegeViewer privilegeViewer = new PrivilegeViewer();
-            ViewPrivilegesView viewPrivilegesView = new ViewPrivilegesView(privilegeViewer);
-            viewPrivilegesView.start(new Stage());
-        });
-        gridPane.add(viewPrivilegesButton, 1, 4); // Add to the grid
-
-        gridPane.add(revokePrivilegeButton, 1, 3); // Add to the grid
-        // Add components to the GridPane
-        gridPane.add(usernameLabel, 0, 0); // Column 0, Row 0
-        gridPane.add(usernameField, 1, 0); // Column 1, Row 0
-        gridPane.add(passwordLabel, 0, 1); // Column 0, Row 1
-        gridPane.add(passwordField, 1, 1); // Column 1, Row 1
-        gridPane.add(loginButton, 1, 2); // Start at column 0, row 2
-        loginButton.setMaxWidth(150);
+        gridPane.add(usernameLabel, 0, 3); // Column 0, Row 3
+        gridPane.add(usernameField, 1, 3); // Column 1, Row 3
+        gridPane.add(passwordLabel, 0, 4); // Column 0, Row 4
+        gridPane.add(passwordField, 1, 4); // Column 1, Row 4
+        gridPane.add(loginButton, 1, 5); // Column 1, Row 5
+        loginButton.setPrefWidth(350);
 
         // Create a Scene and set it on the Stage
         Scene scene = new Scene(gridPane, 600, 450);
         stage.setTitle("Login");
-
-        try {
-            Image iconImage = new Image(getClass().getResource("/images/university_icon.png").toExternalForm());
-            stage.getIcons().add(iconImage);
-        } catch (NullPointerException e) {
-            System.err.println("Image not found: university_icon.png");
-        }
 
         stage.setScene(scene);
         stage.show();
