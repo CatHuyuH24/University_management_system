@@ -1,8 +1,13 @@
 package atbmhttt.atbmcq_16.admin.Views;
 
+import java.sql.SQLException;
 import java.util.List;
 
+import atbmhttt.atbmcq_16.PrivilegeManager;
+import atbmhttt.atbmcq_16.PrivilegeViewer;
+import atbmhttt.atbmcq_16.RevokePrivilegeView;
 import atbmhttt.atbmcq_16.Router;
+import atbmhttt.atbmcq_16.ViewPrivilegesView;
 import atbmhttt.atbmcq_16.admin.ViewModels.AdminViewModel;
 import atbmhttt.atbmcq_16.dialogs.AlertDialog;
 import atbmhttt.atbmcq_16.helpers.BorderPaneHelper;
@@ -32,8 +37,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.sql.SQLException;
-
 public class AdminView extends Application {
 
     private TableView<String[]> rolesTableView;
@@ -57,6 +60,8 @@ public class AdminView extends Application {
         Button rolesButton = new Button("Roles");
         Button privilegesButton = new Button("Privileges");
         Button logoutButton = new Button("Log out");
+        Button revokePrivilegeButton = new Button("Revoke Privilege");
+        Button viewPrivilegesButton = new Button("View Privileges");
 
         // Add buttons to the grid
         navigationPanel.add(usersButton, 0, 1);
@@ -70,6 +75,8 @@ public class AdminView extends Application {
         GridPane.setVgrow(spacer, Priority.ALWAYS);
 
         navigationPanel.add(logoutButton, 0, 5);
+        navigationPanel.add(revokePrivilegeButton, 0, 6);
+        navigationPanel.add(viewPrivilegesButton, 0, 7);
 
         BorderPane contentArea = new BorderPane();
         // Right content area
@@ -91,6 +98,17 @@ public class AdminView extends Application {
         primaryStage.setTitle("Admin Dashboard");
         primaryStage.setScene(scene);
         primaryStage.show();
+
+        // Set up event handlers for the buttons
+        revokePrivilegeButton.setOnAction(e -> {
+            RevokePrivilegeView revokePrivilegeView = new RevokePrivilegeView(new PrivilegeManager());
+            revokePrivilegeView.start(new Stage());
+        });
+
+        viewPrivilegesButton.setOnAction(e -> {
+            ViewPrivilegesView viewPrivilegesView = new ViewPrivilegesView(new PrivilegeViewer());
+            viewPrivilegesView.start(new Stage());
+        });
     }
 
     private void setUpDisplayUsersViaButton(final Button usersButton, final BorderPane contentArea) {
