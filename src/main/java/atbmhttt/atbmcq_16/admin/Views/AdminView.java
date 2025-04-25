@@ -95,8 +95,16 @@ public class AdminView extends Application {
 
     private void setUpDisplayUsersViaButton(final Button usersButton, final BorderPane contentArea) {
         usersButton.setOnAction(e -> {
-            List<String[]> users = adminViewModel.getUsersWithDetails(); // Assuming this returns a list of [username,
-                                                                         // created]
+            List<String[]> users = null;
+            try {
+                users = adminViewModel.getUsersWithDetails();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                AlertDialog.showErrorAlert("ERROR FETCHING USERS",
+                        null,
+                        "An error occurred while fetching users. Please try again later.",
+                        null);
+            }
             usersTableView = new TableView<>();
 
             TableColumn<String[], String> usernameColumn = new TableColumn<>("Username");
@@ -160,7 +168,17 @@ public class AdminView extends Application {
 
     private void setUpDisplayRolesViaButton(final Button rolesButton, final BorderPane contentArea) {
         rolesButton.setOnAction(e -> {
-            List<String[]> roles = adminViewModel.getPdbRoles();
+            List<String[]> roles = null;
+            try {
+                roles = adminViewModel.getPdbRoles();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                AlertDialog.showErrorAlert("ERROR FETCHING ROLES",
+                        null,
+                        "An error occurred while fetching roles. Please try again later.",
+                        null);
+                return;
+            }
 
             rolesTableView = new TableView<>();
 
@@ -210,6 +228,7 @@ public class AdminView extends Application {
                     null, null, null, null,
                     rolesTableView);
         });
+
     }
 
     private void setUpDisplayPriviledgesViaButton(final Button privilegesButton, final BorderPane contentArea) {
@@ -292,36 +311,8 @@ public class AdminView extends Application {
                             "Username and/or password can not be empty\nPlease try again",
                             null);
                 } else {
-                    try {
-                        adminViewModel.addUser(username, password);
-                        String currentDateTime = java.time.LocalDateTime
-                                .now().format(
-                                        java.time.format.DateTimeFormatter
-                                                .ofPattern("yyyy-MM-dd HH:mm:ss")); // Get the current
-                                                                                    // date and time
-                                                                                    // as a string
-                        usersTableView.getItems().add(new String[] { username, currentDateTime }); // add the newly
-                                                                                                   // created user
-                                                                                                   // on UI
-                        AlertDialog.showInformationAlert("USER ADDED SUCCESSFULLY",
-                                null,
-                                "User " + username + "has been added successfully",
-                                null);
-
-                        addUserStage.close();
-                    } catch (SQLException ex) {
-                        if (ex.getErrorCode() == 20001) {
-                            AlertDialog.showErrorAlert("USER ALREADY EXISTED!",
-                                    null, "User " + username
-                                            + " already exists.\nPlease delete the user first, or choose a different username",
-                                    null);
-                        } else {
-                            AlertDialog.showErrorAlert("FAILED TO ADD A NEW USER",
-                                    null,
-                                    "User " + username + " couldn't be created.\nPlease try again later", null);
-                        }
-                    }
-
+                    handleAddUser(username, password);
+                    addUserStage.close();
                 }
             });
 
@@ -380,8 +371,15 @@ public class AdminView extends Application {
 
         tableView.getColumns().add(actionColumn);
         tableView.getColumns().add(userColumn);
-
-        tableView.setItems(FXCollections.observableArrayList(adminViewModel.getUsersWithDetails()));
+        try {
+            tableView.setItems(FXCollections.observableArrayList(adminViewModel.getUsersWithDetails()));
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            AlertDialog.showErrorAlert("ERROR FETCHING USER PRIVILEGES",
+                    null,
+                    "An error occurred while fetching user privileges. Please try again later.",
+                    null);
+        }
 
         VBox layout = new VBox(10, tableView);
         layout.setPadding(new Insets(10));
@@ -429,8 +427,15 @@ public class AdminView extends Application {
 
         tableView.getColumns().add(actionColumn);
         tableView.getColumns().add(roleColumn);
-
-        tableView.setItems(FXCollections.observableArrayList(adminViewModel.getPdbRoles()));
+        try {
+            tableView.setItems(FXCollections.observableArrayList(adminViewModel.getPdbRoles()));
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            AlertDialog.showErrorAlert("ERROR FETCHING ROLE PRIVILEGES",
+                    null,
+                    "An error occurred while fetching role privileges. Please try again later.",
+                    null);
+        }
 
         VBox layout = new VBox(10, tableView);
         layout.setPadding(new Insets(10));
@@ -438,6 +443,27 @@ public class AdminView extends Application {
         Scene scene = new Scene(layout, 600, 450);
         rolePrivilegesStage.setScene(scene);
         rolePrivilegesStage.show();
+    }
+
+    private void handleAddUser(String username, String password) {
+        try {
+            adminViewModel.addUser(username, password);
+            String currentDateTime = java.time.LocalDateTime
+                    .now().format(
+                            java.time.format.DateTimeFormatter
+                                    .ofPattern("yyyy-MM-dd HH:mm:ss"));
+            usersTableView.getItems().add(new String[] { username, currentDateTime });
+            AlertDialog.showInformationAlert("USER ADDED SUCCESSFULLY",
+                    null,
+                    "User " + username + " has been added successfully",
+                    null);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            AlertDialog.showErrorAlert("FAILED TO ADD USER",
+                    null,
+                    "An error occurred while adding user " + username + ". Please try again later.",
+                    null);
+        }
     }
 
     private void handleEditUser(String username) {
@@ -461,11 +487,7 @@ public class AdminView extends Application {
                 AlertDialog.showErrorAlert("EMPTY NEW PASSWORD", null,
                         "The new password CANNOT be empty!\nPlease provide a new password", null);
             } else {
-                adminViewModel.changeUserPassword(username, newPassword);
-                AlertDialog.showInformationAlert("UPDATED PASSWORD SUCCESSFULLY",
-                        null,
-                        "User " + username + " has had their password updated!",
-                        null);
+                handleChangeUserPassword(username, newPassword);
                 changePasswordStage.close();
             }
         });
@@ -478,17 +500,41 @@ public class AdminView extends Application {
         changePasswordStage.show();
     }
 
-    private void handleDeleteUser(String username, TableView<String[]> tableView, int index) {
-        ButtonType response = AlertDialog.showAndGetResultConfirmationAlert("DELETING USER",
-                null,
-                "Are you sure you want to delete user " + username,
-                null);
-        if (ButtonType.OK == response) {
-            adminViewModel.deleteUser(username);
-            tableView.getItems().remove(index); // Update the UI to reflect the deletion
-            AlertDialog.showInformationAlert("DELETED USER " + username,
+    private void handleChangeUserPassword(String username, String newPassword) {
+        try {
+            adminViewModel.changeUserPassword(username, newPassword);
+            AlertDialog.showInformationAlert("PASSWORD CHANGED",
                     null,
-                    "User " + username + " has been deleted successfully!",
+                    "Password for user " + username + " has been changed successfully!",
+                    null);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            AlertDialog.showErrorAlert("FAILED TO CHANGE PASSWORD",
+                    null,
+                    "An error occurred while changing the password for user " + username + ". Please try again later.",
+                    null);
+        }
+    }
+
+    private void handleDeleteUser(String username, TableView<String[]> tableView, int index) {
+        try {
+            ButtonType response = AlertDialog.showAndGetResultConfirmationAlert("DELETING USER",
+                    null,
+                    "Are you sure you want to delete user " + username,
+                    null);
+            if (ButtonType.OK == response) {
+                adminViewModel.deleteUser(username);
+                tableView.getItems().remove(index); // Update the UI to reflect the deletion
+                AlertDialog.showInformationAlert("DELETED USER",
+                        null,
+                        "User " + username + " has been deleted successfully!",
+                        null);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            AlertDialog.showErrorAlert("FAILED TO DELETE USER",
+                    null,
+                    "An error occurred while deleting user " + username + ". Please try again later.",
                     null);
         }
     }
@@ -499,16 +545,24 @@ public class AdminView extends Application {
     }
 
     private void handleDeleteRole(String roleName, TableView<String[]> tableView, int index) {
-        ButtonType response = AlertDialog.showAndGetResultConfirmationAlert("DELETING ROLE",
-                null,
-                "Are you sure you want to delete role " + roleName,
-                null);
-        if (ButtonType.OK == response) {
-            adminViewModel.deleteUser(roleName);
-            tableView.getItems().remove(index); // Update the UI to reflect the deletion
-            AlertDialog.showInformationAlert("DELETED ROLE " + roleName,
+        try {
+            ButtonType response = AlertDialog.showAndGetResultConfirmationAlert("DELETING ROLE",
                     null,
-                    "Role " + roleName + " has been deleted successfully!",
+                    "Are you sure you want to delete role " + roleName,
+                    null);
+            if (ButtonType.OK == response) {
+                adminViewModel.deleteRole(roleName);
+                tableView.getItems().remove(index); // Update the UI to reflect the deletion
+                AlertDialog.showInformationAlert("DELETED ROLE",
+                        null,
+                        "Role " + roleName + " has been deleted successfully!",
+                        null);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            AlertDialog.showErrorAlert("FAILED TO DELETE ROLE",
+                    null,
+                    "An error occurred while deleting role " + roleName + ". Please try again later.",
                     null);
         }
     }
