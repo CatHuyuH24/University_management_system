@@ -31,6 +31,7 @@ public class RolesView {
     private TableView<String[]> rolesTableView;
 
     public RolesView() {
+        System.out.println("new roles view");
         this.rolesViewModel = new RolesViewModel();
     }
 

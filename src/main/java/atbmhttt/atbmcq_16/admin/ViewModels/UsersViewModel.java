@@ -1,5 +1,6 @@
 package atbmhttt.atbmcq_16.admin.ViewModels;
 
+import atbmhttt.atbmcq_16.admin.Repositories.RolesRepository;
 import atbmhttt.atbmcq_16.admin.Repositories.UsersRepository;
 import java.sql.SQLException;
 import javafx.beans.property.SimpleListProperty;
@@ -8,10 +9,12 @@ import javafx.collections.ObservableList;
 
 public class UsersViewModel {
     private final UsersRepository usersRepository;
+    private final RolesRepository rolesRepository;
     private final SimpleListProperty<String[]> users;
 
     public UsersViewModel() {
         this.usersRepository = new UsersRepository();
+        this.rolesRepository = new RolesRepository();
         this.users = new SimpleListProperty<>(FXCollections.observableArrayList());
         try {
             this.users.setAll(usersRepository.getUsersWithDetails());
@@ -40,5 +43,17 @@ public class UsersViewModel {
 
     public void updateUserPassword(String username, String newPassword) throws SQLException {
         usersRepository.changeUserPassword(username, newPassword);
+    }
+
+    public ObservableList<String[]> getUserRoles(String username) throws SQLException {
+        return FXCollections.observableArrayList(rolesRepository.getUserRoles(username));
+    }
+
+    public void addRoleToUser(String username, String roleName) throws SQLException {
+        rolesRepository.addRoleToUser(username, roleName);
+    }
+
+    public void removeRoleFromUser(String username, String roleName) throws SQLException {
+        rolesRepository.removeRoleFromUser(username, roleName);
     }
 }
