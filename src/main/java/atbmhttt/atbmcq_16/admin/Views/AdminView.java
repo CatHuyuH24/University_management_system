@@ -15,10 +15,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -31,7 +33,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.sql.SQLException;
-import java.util.List;
 
 public class AdminView extends Application {
 
@@ -264,7 +265,10 @@ public class AdminView extends Application {
         addUserButton.setOnAction(e -> {
             // Create a new stage for adding a user
             Stage addUserStage = new Stage();
-            addUserStage.setTitle("Add New User");
+            addUserStage.setTitle("ADDING NEW USER");
+
+            // Set the icon in the title bar
+            addUserStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/app_icon.png")));
 
             VBox layout = new VBox(10);
             layout.setPadding(new Insets(10));
@@ -439,7 +443,10 @@ public class AdminView extends Application {
     private void handleEditUser(String username) {
         // Create a new stage for changing the password
         Stage changePasswordStage = new Stage();
-        changePasswordStage.setTitle("Change Password for " + username);
+        changePasswordStage.setTitle("CHANGING PASSWORD");
+
+        // Set the icon in the title bar
+        changePasswordStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/app_icon.png")));
 
         VBox layout = new VBox(10);
         layout.setPadding(new Insets(10));

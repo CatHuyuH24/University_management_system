@@ -37,7 +37,7 @@ public class AlertDialog {
      * @param contentText The main content text displayed in the alert dialog.
      * @param iconPath    The path to the icon image to be displayed in the title
      *                    bar
-     *                    of the alert dialog. If null, a default icon is used.
+     *                    of the alert dialog. If null, the app icon is used.
      * @return The ButtonType representing the user's response. Possible outcomes
      *         are:
      *         - ButtonType.OK: If the user confirms the action.

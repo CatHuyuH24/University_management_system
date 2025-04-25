@@ -9,6 +9,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField; // Import PasswordField
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
@@ -29,13 +31,24 @@ public class LoginView {
         Label title = new Label("UNIVERSITY MANAGEMENT SYSTEM");
         Label subtitle = new Label("ATBMCQ-16");
 
-        // Add title and subtitle to the GridPane
-        // Update title color to purple
-        title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: purple;");
-        gridPane.add(title, 0, 0, 2, 1); // Span across 2 columns
+        // Add app icon to the GridPane and center it horizontally
+        ImageView appIcon = new ImageView(new Image(getClass().getResourceAsStream("/images/app_icon.png")));
+        appIcon.setFitWidth(100); // Set the width of the icon
+        appIcon.setFitHeight(100); // Set the height of the icon
+        GridPane.setColumnSpan(appIcon, 2); // Span across 2 columns
+        GridPane.setHalignment(appIcon, javafx.geometry.HPos.CENTER); // Center horizontally
+        gridPane.add(appIcon, 0, 0); // Add to the grid
 
-        subtitle.setStyle("-fx-font-size: 18px;");
-        gridPane.add(subtitle, 0, 1, 2, 1); // Span across 2 columns
+        // Adjust title and subtitle positions and format
+        title.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
+        GridPane.setColumnSpan(title, 2);
+        GridPane.setHalignment(title, javafx.geometry.HPos.CENTER); // Center horizontally
+        gridPane.add(title, 0, 1);
+
+        subtitle.setStyle("-fx-font-size: 14px; -fx-font-style: italic;");
+        GridPane.setColumnSpan(subtitle, 2);
+        GridPane.setHalignment(subtitle, javafx.geometry.HPos.CENTER); // Center horizontally
+        gridPane.add(subtitle, 0, 2);
 
         // Username field
         Label usernameLabel = new Label("Username:");
@@ -70,12 +83,11 @@ public class LoginView {
             }
         });
 
-        // Adjust other components' positions
-        gridPane.add(usernameLabel, 0, 2); // Column 0, Row 2
-        gridPane.add(usernameField, 1, 2); // Column 1, Row 2
-        gridPane.add(passwordLabel, 0, 3); // Column 0, Row 3
-        gridPane.add(passwordField, 1, 3); // Column 1, Row 3
-        gridPane.add(loginButton, 1, 4); // Column 1, Row 4
+        gridPane.add(usernameLabel, 0, 3); // Column 0, Row 3
+        gridPane.add(usernameField, 1, 3); // Column 1, Row 3
+        gridPane.add(passwordLabel, 0, 4); // Column 0, Row 4
+        gridPane.add(passwordField, 1, 4); // Column 1, Row 4
+        gridPane.add(loginButton, 1, 5); // Column 1, Row 5
         loginButton.setPrefWidth(350);
 
         // Create a Scene and set it on the Stage
