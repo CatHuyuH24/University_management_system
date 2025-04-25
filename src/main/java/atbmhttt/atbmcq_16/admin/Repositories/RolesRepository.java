@@ -48,4 +48,19 @@ public class RolesRepository {
             throw e;
         }
     }
+
+    public void addRole(String roleName) throws SQLException {
+        String sql = "BEGIN ATBMCQ_ADMIN.SP_ADD_ROLE(?); END;";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+                CallableStatement statement = connection.prepareCall(sql)) {
+
+            statement.setString(1, roleName);
+            statement.execute();
+
+            System.out.println("Role " + roleName + " has been added successfully.");
+        } catch (SQLException e) {
+            throw e;
+        }
+    }
 }

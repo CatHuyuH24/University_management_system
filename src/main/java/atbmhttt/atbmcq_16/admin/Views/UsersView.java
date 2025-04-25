@@ -48,7 +48,7 @@ public class UsersView {
 
         TableColumn<String[], Void> actionsColumn = new TableColumn<>("Actions");
         actionsColumn.setCellFactory(col -> new TableCell<>() {
-            private final Button editButton = new Button("Edit");
+            private final Button editButton = new Button("Update password");
             private final Button deleteButton = new Button("Delete");
             private final HBox actionButtons = new HBox(5, editButton, deleteButton);
 
@@ -223,7 +223,13 @@ public class UsersView {
         }
     }
 
-    public boolean confirmAndDeleteUser(String username) {
+    public void confirmAndDeleteUser(String username) {
+        if ("ATBMCQ_ADMIN".equals(username)) {
+            AlertDialog.showInformationAlert(
+                    "CANNOT DELETE ROOT ADMIN", null,
+                    "YOU CANNOT DELETE THIS ROOT ADMIN ACCOUNT", null);
+            return;
+        }
         ButtonType response = AlertDialog.showAndGetResultConfirmationAlert(
                 "DELETE USER " + username, null,
                 "Are you sure you want to delete user " + username + "?",
@@ -244,6 +250,5 @@ public class UsersView {
                         null);
             }
         }
-        return false;
     }
 }

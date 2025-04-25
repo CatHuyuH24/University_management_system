@@ -145,3 +145,35 @@ EXCEPTION
         RAISE;
 END;
 /
+
+-- TẠO ROLE
+CREATE OR REPLACE PROCEDURE SP_ADD_ROLE(
+p_role_name IN VARCHAR2
+) AS
+    v_count NUMBER;
+    role_already_existed  EXCEPTION;
+    PRAGMA EXCEPTION_INIT(role_already_existed, -20010);
+BEGIN
+    -- Check if the role already exists
+    SELECT COUNT(*) INTO v_count
+    FROM dba_roles
+    WHERE role = UPPER(p_role_name);
+
+    IF v_count = 0 THEN
+        -- Role does not exist, create it
+        EXECUTE IMMEDIATE 'CREATE ROLE ' || DBMS_ASSERT.SIMPLE_SQL_NAME(p_role_name);
+        DBMS_OUTPUT.PUT_LINE('Role "' || p_role_name || '" has been created.');
+    ELSE
+        -- Role already exists
+        RAISE role_already_existed;
+        DBMS_OUTPUT.PUT_LINE('Role "' || p_role_name || '" already exists.');
+    END IF;
+EXCEPTION
+    WHEN role_already_existed THEN
+        ROLLBACK;
+        RAISE_APPLICATION_ERROR(-20001, 'Role "' || p_role_name || '" already exists.');
+        
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+END;
+/

@@ -30,8 +30,8 @@ public class RolesViewModel {
         roles.removeIf(role -> role[0].equals(roleName));
     }
 
-    // private void handleEditRole(String roleName) {
-    // // Logic to handle editing a role
-    // System.out.println("Edit role: " + roleName);
-    // }
+    public void addRole(String roleName) throws SQLException {
+        rolesRepository.addRole(roleName);
+        roles.add(new String[] { roleName });
+    }
 }
