@@ -10,10 +10,10 @@ public class App extends Application {
     public void start(Stage primaryStage) {
         // set up the icon for the whole application
         try {
-            Image iconImage = new Image(getClass().getResource("/images/university_icon.png").toExternalForm());
+            Image iconImage = new Image(getClass().getResource("/images/app_icon.png").toExternalForm());
             primaryStage.getIcons().add(iconImage);
         } catch (NullPointerException e) {
-            System.err.println("Image not found: university_icon.png");
+            System.err.println("Image not found: app_icon.png");
         }
 
         Router.setPrimaryStage(primaryStage);// set up the primary stage

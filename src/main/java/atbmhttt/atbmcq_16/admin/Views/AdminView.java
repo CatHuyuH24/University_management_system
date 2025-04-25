@@ -3,6 +3,7 @@ package atbmhttt.atbmcq_16.admin.Views;
 import atbmhttt.atbmcq_16.Router;
 import atbmhttt.atbmcq_16.admin.ViewModels.AdminViewModel;
 import atbmhttt.atbmcq_16.dialogs.AlertDialog;
+import atbmhttt.atbmcq_16.helpers.BorderPaneHelper;
 import javafx.application.Application;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
@@ -21,10 +22,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class AdminView extends Application {
 
+    private TableView<String[]> rolesTableView;
+    private TableView<String[]> usersTableView;
     private AdminViewModel adminViewModel;
 
     public AdminView(String username, String password) {
@@ -39,11 +43,6 @@ public class AdminView extends Application {
         GridPane navigationPanel = new GridPane();
         navigationPanel.setPadding(new Insets(10));
         navigationPanel.setVgap(10);
-
-        Button addUserButton = new Button("Add User");
-        addUserButton.setStyle(
-                "-fx-background-radius: 15; -fx-padding: 5 10 5 10; -fx-background-color: #0078D7; -fx-text-fill: white;");
-        navigationPanel.add(addUserButton, 0, 0); // Add the button to the top of the navigation panel
 
         Button usersButton = new Button("Users");
         Button rolesButton = new Button("Roles");
@@ -69,7 +68,6 @@ public class AdminView extends Application {
         setUpDisplayUsersViaButton(usersButton, contentArea);
         setUpDisplayRolesViaButton(rolesButton, contentArea);
         setUpDisplayPriviledgesViaButton(privilegesButton, contentArea);
-        setUpAddUserButton(addUserButton, contentArea); // Set up event handler for the button
         setUpLogoutButton(logoutButton);
 
         contentArea.setCenter(text);
@@ -90,8 +88,7 @@ public class AdminView extends Application {
         usersButton.setOnAction(e -> {
             List<String[]> users = adminViewModel.getUsersWithDetails(); // Assuming this returns a list of [username,
                                                                          // created]
-
-            TableView<String[]> tableView = new TableView<>();
+            usersTableView = new TableView<>();
 
             TableColumn<String[], String> usernameColumn = new TableColumn<>("Username");
             usernameColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper(data.getValue()[0]));
@@ -131,16 +128,24 @@ public class AdminView extends Application {
                 }
             });
 
-            tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY); // Ensure columns fill the table width
+            usersTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY); // Ensure columns fill the table
+                                                                                       // width
             usernameColumn.setStyle("-fx-alignment: CENTER;");
             createdDateColumn.setStyle("-fx-alignment: CENTER;");
 
-            tableView.getColumns().add(usernameColumn);
-            tableView.getColumns().add(createdDateColumn);
-            tableView.getColumns().add(actionsColumn);
-            tableView.setItems(FXCollections.observableArrayList(users));
+            usersTableView.getColumns().add(usernameColumn);
+            usersTableView.getColumns().add(createdDateColumn);
+            usersTableView.getColumns().add(actionsColumn);
+            usersTableView.setItems(FXCollections.observableArrayList(users));
 
-            contentArea.setCenter(tableView);
+            Button addUserButton = new Button("Add User");
+            setUpAddUserButton(addUserButton, contentArea); // set up event-listener
+
+            VBox vBox = new VBox(10, addUserButton, new Pane());
+
+            BorderPaneHelper.setAllSections(contentArea,
+                    null, vBox,
+                    null, null, usersTableView);
         });
     }
 
@@ -148,7 +153,7 @@ public class AdminView extends Application {
         rolesButton.setOnAction(e -> {
             List<String[]> roles = adminViewModel.getPdbRoles();
 
-            TableView<String[]> tableView = new TableView<>();
+            rolesTableView = new TableView<>();
 
             TableColumn<String[], String> roleNameColumn = new TableColumn<>("Role Name");
             roleNameColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper(data.getValue()[0]));
@@ -184,14 +189,17 @@ public class AdminView extends Application {
                 }
             });
 
-            tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY); // Ensure columns fill the table width
+            rolesTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY); // Ensure columns fill the table
+                                                                                       // width
             roleNameColumn.setStyle("-fx-alignment: CENTER;");
-            tableView.getColumns().add(roleNameColumn);
-            tableView.getColumns().add(actionsColumn);
+            rolesTableView.getColumns().add(roleNameColumn);
+            rolesTableView.getColumns().add(actionsColumn);
 
-            tableView.setItems(FXCollections.observableArrayList(roles));
+            rolesTableView.setItems(FXCollections.observableArrayList(roles));
 
-            contentArea.setCenter(tableView);
+            BorderPaneHelper.setAllSections(contentArea,
+                    null, null, null, null,
+                    rolesTableView);
         });
     }
 
@@ -201,7 +209,7 @@ public class AdminView extends Application {
             privilegesStage.setTitle("Privileges Management");
 
             // Set the icon in the title bar
-            privilegesStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/university_icon.png")));
+            privilegesStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/app_icon.png")));
 
             privilegesStage.setOnCloseRequest(event -> privilegesStage.close());
 
@@ -209,7 +217,7 @@ public class AdminView extends Application {
             header.setAlignment(Pos.CENTER_LEFT);
 
             ImageView imageView = new ImageView(
-                    new Image(getClass().getResourceAsStream("/images/university_icon.png")));
+                    new Image(getClass().getResourceAsStream("/images/app_icon.png")));
             imageView.setFitWidth(50);
             imageView.setFitHeight(50);
 
@@ -246,8 +254,71 @@ public class AdminView extends Application {
 
     private void setUpAddUserButton(final Button addUserButton, final BorderPane contentArea) {
         addUserButton.setOnAction(e -> {
-            // Placeholder for adding a new user
-            contentArea.setCenter(new Label("Add User Form"));
+            // Create a new stage for adding a user
+            Stage addUserStage = new Stage();
+            addUserStage.setTitle("Add New User");
+
+            VBox layout = new VBox(10);
+            layout.setPadding(new Insets(10));
+
+            Label usernameLabel = new Label("Enter username:");
+            TextField usernameField = new TextField();
+
+            Label passwordLabel = new Label("Enter password:");
+            PasswordField passwordField = new PasswordField();
+
+            Button submitButton = new Button("Submit");
+
+            submitButton.setOnAction(submitEvent -> {
+                String username = usernameField.getText();
+                String password = passwordField.getText();
+
+                if (username.isEmpty() || password.isEmpty()) {
+                    AlertDialog.showErrorAlert(
+                            "EMPTY USERNAME OR PASSWORD",
+                            null,
+                            "Username and/or password can not be empty\nPlease try again",
+                            null);
+                } else {
+                    try {
+                        adminViewModel.addUser(username, password);
+                        String currentDateTime = java.time.LocalDateTime
+                                .now().format(
+                                        java.time.format.DateTimeFormatter
+                                                .ofPattern("yyyy-MM-dd HH:mm:ss")); // Get the current
+                                                                                    // date and time
+                                                                                    // as a string
+                        usersTableView.getItems().add(new String[] { username, currentDateTime }); // add the newly
+                                                                                                   // created user
+                                                                                                   // on UI
+                        AlertDialog.showInformationAlert("USER ADDED SUCCESSFULLY",
+                                null,
+                                "User " + username + "has been added successfully",
+                                null);
+
+                        addUserStage.close();
+                    } catch (SQLException ex) {
+                        if (ex.getErrorCode() == 20001) {
+                            AlertDialog.showErrorAlert("USER ALREADY EXISTED!",
+                                    null, "User " + username
+                                            + " already exists.\nPlease delete the user first, or choose a different username",
+                                    null);
+                        } else {
+                            AlertDialog.showErrorAlert("FAILED TO ADD A NEW USER",
+                                    null,
+                                    "User " + username + " couldn't be created.\nPlease try again later", null);
+                        }
+                    }
+
+                }
+            });
+
+            layout.getChildren().addAll(usernameLabel, usernameField, passwordLabel, passwordField, submitButton);
+            layout.setAlignment(Pos.CENTER);
+
+            Scene scene = new Scene(layout, 300, 200);
+            addUserStage.setScene(scene);
+            addUserStage.show();
         });
     }
 
@@ -372,13 +443,14 @@ public class AdminView extends Application {
         submitButton.setOnAction(submitEvent -> {
             String newPassword = newPasswordField.getText();
             if (newPassword.isEmpty()) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Password cannot be empty!", ButtonType.OK);
-                alert.showAndWait();
+                AlertDialog.showErrorAlert("EMPTY NEW PASSWORD", null,
+                        "The new password CANNOT be empty!\nPlease provide a new password", null);
             } else {
                 adminViewModel.changeUserPassword(username, newPassword);
-                Alert successAlert = new Alert(Alert.AlertType.INFORMATION, "Password changed successfully!",
-                        ButtonType.OK);
-                successAlert.showAndWait();
+                AlertDialog.showInformationAlert("UPDATED PASSWORD SUCCESSFULLY",
+                        null,
+                        "User " + username + " has had their password updated!",
+                        null);
                 changePasswordStage.close();
             }
         });
@@ -392,17 +464,18 @@ public class AdminView extends Application {
     }
 
     private void handleDeleteUser(String username, TableView<String[]> tableView, int index) {
-        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION,
-                "Are you sure you want to delete user " + username + "?", ButtonType.YES, ButtonType.NO);
-        confirmationAlert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.YES) {
-                adminViewModel.deleteUser(username);
-                tableView.getItems().remove(index); // Update the UI to reflect the deletion
-                Alert successAlert = new Alert(Alert.AlertType.INFORMATION, "User deleted successfully!",
-                        ButtonType.OK);
-                successAlert.showAndWait();
-            }
-        });
+        ButtonType response = AlertDialog.showAndGetResultConfirmationAlert("DELETING USER",
+                null,
+                "Are you sure you want to delete user " + username,
+                null);
+        if (ButtonType.OK == response) {
+            adminViewModel.deleteUser(username);
+            tableView.getItems().remove(index); // Update the UI to reflect the deletion
+            AlertDialog.showInformationAlert("DELETED USER " + username,
+                    null,
+                    "User " + username + " has been deleted successfully!",
+                    null);
+        }
     }
 
     private void handleEditRole(String roleName) {
@@ -411,16 +484,17 @@ public class AdminView extends Application {
     }
 
     private void handleDeleteRole(String roleName, TableView<String[]> tableView, int index) {
-        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION,
-                "Are you sure you want to delete role " + roleName + "?", ButtonType.YES, ButtonType.NO);
-        confirmationAlert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.YES) {
-                adminViewModel.deleteRole(roleName);
-                tableView.getItems().remove(index); // Update the UI to reflect the deletion
-                Alert successAlert = new Alert(Alert.AlertType.INFORMATION, "Role deleted successfully!",
-                        ButtonType.OK);
-                successAlert.showAndWait();
-            }
-        });
+        ButtonType response = AlertDialog.showAndGetResultConfirmationAlert("DELETING ROLE",
+                null,
+                "Are you sure you want to delete role " + roleName,
+                null);
+        if (ButtonType.OK == response) {
+            adminViewModel.deleteUser(roleName);
+            tableView.getItems().remove(index); // Update the UI to reflect the deletion
+            AlertDialog.showInformationAlert("DELETED ROLE " + roleName,
+                    null,
+                    "Role " + roleName + " has been deleted successfully!",
+                    null);
+        }
     }
 }

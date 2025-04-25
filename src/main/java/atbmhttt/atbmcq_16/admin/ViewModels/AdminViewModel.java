@@ -7,8 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import javafx.scene.control.Alert;
+
+import atbmhttt.atbmcq_16.dialogs.AlertDialog;
 import javafx.scene.control.ButtonType;
 
 public class AdminViewModel {
@@ -71,7 +71,7 @@ public class AdminViewModel {
         return pdbRoles;
     }
 
-    public boolean addUser(String username, String password) {
+    public void addUser(String username, String password) throws SQLException {
         String sql = "BEGIN ATBMCQ_ADMIN.SP_ADD_USER_ALLOW_CREATESESSION_ISADMINUSER(?, ?); END;";
 
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
@@ -80,10 +80,10 @@ public class AdminViewModel {
             statement.setString(1, username);
             statement.setString(2, password);
             statement.execute();
-            return true;
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            System.err.println("Error adding user: " + e.getMessage());
+            throw e;
         }
     }
 
@@ -124,11 +124,13 @@ public class AdminViewModel {
 
     public boolean confirmAndDeleteUser(String username) {
         // Confirm deletion
-        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION,
-                "Are you sure you want to delete user " + username + "?", ButtonType.YES, ButtonType.NO);
-        Optional<ButtonType> response = confirmationAlert.showAndWait();
 
-        if (response.isPresent() && response.get() == ButtonType.YES) {
+        ButtonType response = AlertDialog.showAndGetResultConfirmationAlert(
+                "DELETE USER " + username, null,
+                "Are you sure you want to delete user " + username + "?",
+                null);
+
+        if (ButtonType.OK == response) {
             deleteUser(username);
             return true;
         }
