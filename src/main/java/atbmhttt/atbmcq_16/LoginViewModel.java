@@ -63,7 +63,7 @@ public class LoginViewModel {
 
     public void login() throws SQLException, Exception {
         try {
-            if (isAdminUser()) {
+            if (checkIfAdminAndInitializeDBConnection()) {
                 Router.navigateToAdminDashboard(getUsername(), getPassword());
             } else {
                 Router.navigateToClientDashboard();
@@ -76,7 +76,7 @@ public class LoginViewModel {
         }
     }
 
-    public boolean isAdminUser() throws SQLException {
+    public boolean checkIfAdminAndInitializeDBConnection() throws SQLException {
         String sql = "{ call ATBMCQ_ADMIN.IS_ADMIN_USER(?) }"; // Stored procedure call
         try (Connection connection = connectToDatabase(getUsername(), getPassword());
                 CallableStatement callableStatement = connection.prepareCall(sql)) {
@@ -89,6 +89,9 @@ public class LoginViewModel {
 
             // Retrieve the result
             int result = callableStatement.getInt(1);
+
+            DatabaseConnection.initialize(getUsername(), getPassword());// register username, password for the current
+                                                                        // user
             return result == 1; // Return true if the user is an admin
 
         } catch (SQLException e) {

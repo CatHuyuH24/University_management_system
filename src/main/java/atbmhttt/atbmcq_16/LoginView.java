@@ -61,7 +61,7 @@ public class LoginView {
         passwordField.textProperty().bindBidirectional(viewModel.passwordProperty());
 
         // Login button
-        Button loginButton = new Button("Login");
+        Button loginButton = new Button("Log in");
         // Update login button action to use the router for navigation
         loginButton.setOnAction(event -> {
             try {

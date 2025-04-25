@@ -1,4 +1,4 @@
-package atbmhttt.atbmcq_16.admin;
+package atbmhttt.atbmcq_16;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

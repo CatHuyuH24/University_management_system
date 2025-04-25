@@ -1,5 +1,5 @@
 package atbmhttt.atbmcq_16.admin.ViewModels;
 
-public class AdminViewModel {
+public class PrivilegesViewModel {
     // place-holder
 }
