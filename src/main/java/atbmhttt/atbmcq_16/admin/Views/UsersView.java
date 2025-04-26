@@ -50,8 +50,8 @@ public class UsersView {
         actionsColumn.setCellFactory(col -> new TableCell<>() {
             private final Button editButton = new Button("Update password");
             private final Button deleteButton = new Button("Delete");
-            private final Button rolesButton = new Button("Roles");
-            private final HBox actionButtons = new HBox(5, editButton, deleteButton, rolesButton);
+            private final Button userRolesButton = new Button("Roles");
+            private final HBox actionButtons = new HBox(5, editButton, deleteButton, userRolesButton);
 
             {
                 editButton.setOnAction(event -> {
@@ -64,7 +64,7 @@ public class UsersView {
                     confirmAndDeleteUser(username);
                 });
 
-                rolesButton.setOnAction(event -> {
+                userRolesButton.setOnAction(event -> {
                     String username = getTableView().getItems().get(getIndex())[0];
                     displayUserRoles(username);
                 });
