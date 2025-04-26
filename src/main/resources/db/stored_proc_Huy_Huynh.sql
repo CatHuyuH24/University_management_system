@@ -162,8 +162,8 @@ BEGIN
     IF v_count = 0 THEN
         -- Role does not exist, create it
         EXECUTE IMMEDIATE 'CREATE ROLE ' || DBMS_ASSERT.SIMPLE_SQL_NAME(p_role_name);
-        COMMIT;
         DBMS_OUTPUT.PUT_LINE('Role "' || p_role_name || '" has been created.');
+        COMMIT;
     ELSE
         -- Role already exists
         RAISE role_already_existed;
@@ -175,6 +175,70 @@ EXCEPTION
         RAISE_APPLICATION_ERROR(-20001, 'Role "' || p_role_name || '" already exists.');
         
     WHEN OTHERS THEN
+        RAISE;
+END;
+/
+
+
+--xem danh sách quyền
+SELECT 
+  PRIVILEGE || ' ON ' || OWNER || '.' || TABLE_NAME AS PRIV_STRING,
+  GRANTABLE,
+  TYPE
+FROM DBA_TAB_PRIVS
+WHERE GRANTEE = 'USER1'
+  AND TYPE IN ('PROCEDURE', 'FUNCTION', 'TABLE', 'VIEW');
+
+
+
+CREATE OR REPLACE PROCEDURE SP_ADD_ROLE_TO_USER(
+     p_username IN VARCHAR2,
+     p_rolename IN VARCHAR2
+) AS
+BEGIN
+    EXECUTE IMMEDIATE 'GRANT ' || p_rolename || ' TO ' || p_username;
+    
+EXCEPTION
+    WHEN OTHERS THEN
         DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
 END;
 /
+
+
+CREATE OR REPLACE PROCEDURE SP_REMOVE_ROLE_FROM_USER(
+     p_username IN VARCHAR2,
+     p_rolename IN VARCHAR2
+) AS
+BEGIN
+    EXECUTE IMMEDIATE 'REVOKE ' || p_rolename || ' FROM ' || p_username;
+    
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+END;
+/
+CREATE OR REPLACE FUNCTION FN_GET_USER_ROLES (
+    p_username IN VARCHAR2
+) RETURN SYS_REFCURSOR
+AS
+    v_cursor SYS_REFCURSOR;
+BEGIN
+    OPEN v_cursor FOR
+        SELECT rp.GRANTED_ROLE
+        FROM DBA_ROLE_PRIVS rp
+        JOIN DBA_ROLES r ON rp.GRANTED_ROLE = r.ROLE
+        WHERE rp.GRANTEE = UPPER(p_username)
+          AND r.COMMON = 'NO'  -- Only roles local to the current PDB
+        ORDER BY rp.GRANTED_ROLE;
+
+    RETURN v_cursor;
+END;
+/
+
+CREATE ROLE ABC;
+SELECT * FROM DBA_ROLES WHERE COMMON='NO';
+
+
+
+
+

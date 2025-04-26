@@ -50,7 +50,8 @@ public class UsersView {
         actionsColumn.setCellFactory(col -> new TableCell<>() {
             private final Button editButton = new Button("Update password");
             private final Button deleteButton = new Button("Delete");
-            private final HBox actionButtons = new HBox(5, editButton, deleteButton);
+            private final Button rolesButton = new Button("Roles");
+            private final HBox actionButtons = new HBox(5, editButton, deleteButton, rolesButton);
 
             {
                 editButton.setOnAction(event -> {
@@ -61,6 +62,11 @@ public class UsersView {
                 deleteButton.setOnAction(event -> {
                     String username = getTableView().getItems().get(getIndex())[0];
                     confirmAndDeleteUser(username);
+                });
+
+                rolesButton.setOnAction(event -> {
+                    String username = getTableView().getItems().get(getIndex())[0];
+                    displayUserRoles(username);
                 });
 
                 actionButtons.setAlignment(Pos.CENTER);
@@ -250,5 +256,104 @@ public class UsersView {
                         null);
             }
         }
+    }
+
+    private void displayUserRoles(String username) {
+        Stage rolesStage = new Stage();
+        rolesStage.setTitle("ROLES MANAGEMENT FOR " + username);
+
+        TableView<String[]> rolesTableView = new TableView<>();
+        TableColumn<String[], String> roleNameColumn = new TableColumn<>("Role Name");
+        roleNameColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper(data.getValue()[0]));
+
+        TableColumn<String[], Void> actionsColumn = new TableColumn<>("Actions");
+        actionsColumn.setCellFactory(col -> new TableCell<>() {
+            private final Button removeButton = new Button("Remove");
+
+            {
+                removeButton.setOnAction(event -> {
+                    String roleName = getTableView().getItems().get(getIndex())[0];
+                    try {
+                        usersViewModel.removeRoleFromUser(username, roleName);
+                        rolesTableView.getItems().remove(getIndex());
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        AlertDialog.showErrorAlert("FAILED TO REMOVE ROLE",
+                                null,
+                                "An error occurred while removing role " + roleName + ". Please try again later.",
+                                null);
+                    }
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(removeButton);
+                }
+            }
+        });
+
+        rolesTableView.getColumns().addAll(roleNameColumn, actionsColumn);
+
+        try {
+            rolesTableView.setItems(usersViewModel.getUserRoles(username));
+        } catch (SQLException e) {
+            e.printStackTrace();
+            AlertDialog.showErrorAlert("FAILED TO FETCH ROLES",
+                    null,
+                    "An error occurred while fetching roles for user " + username + ". Please try again later.",
+                    null);
+        }
+
+        Button addRoleButton = new Button("Add Role");
+        addRoleButton.setOnAction(event -> {
+            Stage addRoleStage = new Stage();
+            addRoleStage.setTitle("Add Role to " + username);
+
+            VBox layout = new VBox(10);
+            layout.setPadding(new Insets(10));
+
+            Label roleNameLabel = new Label("Enter role name:");
+            TextField roleNameField = new TextField();
+
+            Button submitButton = new Button("Submit");
+            submitButton.setOnAction(submitEvent -> {
+                String roleName = roleNameField.getText();
+                if (roleName.isEmpty()) {
+                    AlertDialog.showErrorAlert("EMPTY ROLE NAME",
+                            null,
+                            "Role name cannot be empty. Please try again.",
+                            null);
+                } else {
+                    try {
+                        usersViewModel.addRoleToUser(username, roleName);
+                        rolesTableView.getItems().add(new String[] { roleName });
+                        addRoleStage.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        AlertDialog.showErrorAlert("FAILED TO ADD ROLE",
+                                null,
+                                "An error occurred while adding role " + roleName + ". Please try again later.",
+                                null);
+                    }
+                }
+            });
+
+            layout.getChildren().addAll(roleNameLabel, roleNameField, submitButton);
+            layout.setAlignment(Pos.CENTER);
+
+            addRoleStage.setScene(new Scene(layout, 300, 200));
+            addRoleStage.show();
+        });
+
+        VBox layout = new VBox(10, rolesTableView, addRoleButton);
+        layout.setPadding(new Insets(10));
+
+        rolesStage.setScene(new Scene(layout, 400, 300));
+        rolesStage.show();
     }
 }
