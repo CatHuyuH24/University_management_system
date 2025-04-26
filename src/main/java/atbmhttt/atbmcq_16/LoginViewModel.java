@@ -6,10 +6,11 @@ import javafx.beans.property.StringProperty;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.CallableStatement;
 
 public class LoginViewModel {
     private final StringProperty username = new SimpleStringProperty();
-    private final StringProperty password = new SimpleStringProperty("One way binding");
+    private final StringProperty password = new SimpleStringProperty();
 
     public StringProperty usernameProperty() {
         return username;
@@ -41,7 +42,7 @@ public class LoginViewModel {
         } catch (ClassNotFoundException e) {
             throw new SQLException("Oracle JDBC Driver not found. Please include it in your library path.", e);
         }
-        String url = "jdbc:oracle:thin:@//localhost:1521/ATBMCQ_16_CSDL"; // Replace with your Oracle DB URL
+        String url = "jdbc:oracle:thin:@//localhost:1521/ATBMCQ_16_CSDL"; // Oracle DB URL
         Connection conn = DriverManager.getConnection(url, dbUsername, dbPassword);
         if (conn != null) {
             System.out.println("Database connection successful.");
@@ -60,19 +61,43 @@ public class LoginViewModel {
         }
     }
 
-    public boolean loginSuccessfully(String inputUsername, String inputPassword) {
-        try (Connection connection = connectToDatabase(inputUsername, inputPassword)) {
-            if (connection != null && !connection.isClosed()) {
-                System.out.println("Login successful for user: " + inputUsername);
-                return true;
+    public void login() throws SQLException, Exception {
+        try {
+            if (checkIfAdminAndInitializeDBConnection()) {
+                Router.navigateToAdminDashboard(getUsername(), getPassword());
             } else {
-                System.out.println("Invalid username or password.");
+                Router.navigateToClientDashboard();
             }
         } catch (SQLException e) {
+            throw e;
+        } catch (Exception e) {
+            System.err.println("LoginViewModel: Exception when logging in");
+            throw e;
+        }
+    }
+
+    public boolean checkIfAdminAndInitializeDBConnection() throws SQLException {
+        String sql = "{ call ATBMCQ_ADMIN.IS_ADMIN_USER(?) }"; // Stored procedure call
+        try (Connection connection = connectToDatabase(getUsername(), getPassword());
+                CallableStatement callableStatement = connection.prepareCall(sql)) {
+
+            // Register the OUT parameter to capture the result
+            callableStatement.registerOutParameter(1, java.sql.Types.NUMERIC);
+
+            // Execute the stored procedure
+            callableStatement.execute();
+
+            // Retrieve the result
+            int result = callableStatement.getInt(1);
+
+            DatabaseConnection.initialize(getUsername(), getPassword());// register username, password for the current
+                                                                        // user
+            return result == 1; // Return true if the user is an admin
+
+        } catch (SQLException e) {
             e.printStackTrace();
-            System.err.println("Database connection error: " + e.getMessage());
+            throw e;
         }
 
-        return false;
     }
 }
