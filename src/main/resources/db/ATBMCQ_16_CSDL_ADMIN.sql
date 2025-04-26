@@ -19,66 +19,6 @@ END;
 
 --Thực hiện cấp quyền trên một số loại đối tượng của CSDL như: table, view,
 --stored procedure, function.
-CREATE OR REPLACE PROCEDURE grant_privilege (
-    p_privilege     IN VARCHAR2,
-    p_object_name   IN VARCHAR2,
-    p_object_type   IN VARCHAR2,
-    p_grantee       IN VARCHAR2,
-    p_with_option   IN INT
-) AS
-    v_sql VARCHAR2(1000);
-BEGIN
-    -- Kiểm tra kiểu đối tượng
-    IF p_object_type NOT IN ('TABLE', 'VIEW', 'PROCEDURE', 'FUNCTION') THEN
-        RAISE_APPLICATION_ERROR(-20001, 'Loại đối tượng không hợp lệ.');
-    END IF;
-
-    -- Xây dựng câu lệnh GRANT
-    v_sql := 'GRANT ' || p_privilege || ' ON ' || p_object_name || ' TO ' || p_grantee;
-
-    IF p_with_option = 1 THEN
-        v_sql := v_sql || ' WITH GRANT OPTION';
-    END IF;
-
-    -- Thực thi lệnh GRANT
-    EXECUTE IMMEDIATE v_sql;
-
-    -- Output thông báo
-    DBMS_OUTPUT.PUT_LINE(' Thực hiện: ' || v_sql);
-EXCEPTION
-    WHEN OTHERS THEN
-        DBMS_OUTPUT.PUT_LINE(' Lỗi: ' || SQLERRM);
-END;
-/
-
---Quyền select, update phải cho phép phân quyền tính đến mức cột; quyền insert,
---delete thì không.
-CREATE OR REPLACE PROCEDURE grant_column_privilege (
-    p_privilege     IN VARCHAR2,       -- 'SELECT' hoặc 'UPDATE'
-    p_object_name   IN VARCHAR2,       -- Tên bảng hoặc view (schema.table_name)
-    p_columns       IN VARCHAR2,       -- Danh sách cột, cách nhau bằng dấu phẩy
-    p_grantee       IN VARCHAR2,       -- User hoặc role được cấp quyền
-    p_with_option   IN INT
-) AS
-    v_sql VARCHAR2(1000);
-BEGIN
-    IF UPPER(p_privilege) NOT IN ('SELECT', 'UPDATE') THEN
-        RAISE_APPLICATION_ERROR(-20001, 'Chỉ hỗ trợ SELECT hoặc UPDATE với cấp cột.');
-    END IF;
-
-    v_sql := 'GRANT ' || p_privilege || ' (' || p_columns || ') ON ' || p_object_name || ' TO ' || p_grantee;
-
-    IF p_with_option = 1 THEN
-        v_sql := v_sql || ' WITH GRANT OPTION';
-    END IF;
-
-    EXECUTE IMMEDIATE v_sql;
-    DBMS_OUTPUT.PUT_LINE(' Đã thực hiện: ' || v_sql);
-EXCEPTION
-    WHEN OTHERS THEN
-        DBMS_OUTPUT.PUT_LINE(' Lỗi: ' || SQLERRM);
-END;
-/
 
 CREATE TABLE EMPLOYEES (
     EMP_ID      NUMBER PRIMARY KEY,
@@ -125,6 +65,7 @@ BEGIN
     );
 END;
 /
+
 CREATE OR REPLACE PROCEDURE say_hello IS
 BEGIN
     DBMS_OUTPUT.PUT_LINE('Hello from procedure!');
@@ -141,6 +82,7 @@ BEGIN
     );
 END;
 /
+
 REVOKE EXECUTE ON ATBMCQ_ADMIN.SP_ADD_ROLE FROM ANNU;
 
 COMMIT;
