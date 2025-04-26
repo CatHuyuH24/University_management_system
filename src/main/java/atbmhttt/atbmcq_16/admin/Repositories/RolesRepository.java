@@ -115,4 +115,58 @@ public class RolesRepository {
             throw e;
         }
     }
+
+    public List<String> getGrantedRoles(String roleName) throws SQLException {
+        String sql = "BEGIN SP_LIST_GRANTED_ROLES(?, ?); END;";
+        List<String> grantedRoles = new ArrayList<>();
+
+        try (Connection connection = DatabaseConnection.getConnection();
+                CallableStatement statement = connection.prepareCall(sql)) {
+
+            statement.setString(1, roleName);
+            statement.registerOutParameter(2, java.sql.Types.REF_CURSOR);
+            statement.execute();
+
+            try (ResultSet resultSet = (ResultSet) statement.getObject(2)) {
+                while (resultSet.next()) {
+                    grantedRoles.add(resultSet.getString(1));
+                }
+            }
+        }
+
+        return grantedRoles;
+    }
+
+    public List<String> getAvailableRoles(String excludeRoleName) throws SQLException {
+        String sql = "BEGIN SP_LIST_ROLES_EXCLUDE(?, ?); END;";
+        List<String> availableRoles = new ArrayList<>();
+
+        try (Connection connection = DatabaseConnection.getConnection();
+                CallableStatement statement = connection.prepareCall(sql)) {
+
+            statement.setString(1, excludeRoleName);
+            statement.registerOutParameter(2, java.sql.Types.REF_CURSOR);
+            statement.execute();
+
+            try (ResultSet resultSet = (ResultSet) statement.getObject(2)) {
+                while (resultSet.next()) {
+                    availableRoles.add(resultSet.getString(1));
+                }
+            }
+        }
+
+        return availableRoles;
+    }
+
+    public void grantRoleToRole(String grantRole, String targetRole) throws SQLException {
+        String sql = "BEGIN SP_GRANT_ROLE_TO_ROLE(?, ?); END;";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+                CallableStatement statement = connection.prepareCall(sql)) {
+
+            statement.setString(1, grantRole);
+            statement.setString(2, targetRole);
+            statement.execute();
+        }
+    }
 }

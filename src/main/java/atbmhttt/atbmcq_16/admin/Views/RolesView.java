@@ -45,10 +45,16 @@ public class RolesView {
 
         TableColumn<String[], Void> actionsColumn = new TableColumn<>("Actions");
         actionsColumn.setCellFactory(col -> new TableCell<>() {
+            private final Button editButton = new Button("Edit");
             private final Button deleteButton = new Button("Delete");
-            private final HBox actionButtons = new HBox(5, deleteButton);
+            private final HBox actionButtons = new HBox(5, editButton, deleteButton);
 
             {
+                editButton.setOnAction(event -> {
+                    String roleName = getTableView().getItems().get(getIndex())[0];
+                    openEditRoleWindow(roleName);
+                });
+
                 deleteButton.setOnAction(event -> {
                     String roleName = getTableView().getItems().get(getIndex())[0];
                     confirmAndDeleteRole(roleName);
@@ -169,5 +175,84 @@ public class RolesView {
                         null);
             }
         }
+    }
+
+    private void openEditRoleWindow(String roleName) {
+        Stage editRoleStage = new Stage();
+        editRoleStage.setTitle("Edit Role: " + roleName);
+        editRoleStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/app_icon.png")));
+
+        VBox layout = new VBox(10);
+        layout.setPadding(new Insets(10));
+
+        Label grantedRolesLabel = new Label("ROLES GRANTED TO " + roleName + "LIST");
+        TableView<String> grantedRolesTable = new TableView<>();
+        grantedRolesTable.setPlaceholder(new Label("No roles granted yet."));
+
+        TableColumn<String, String> grantedRoleColumn = new TableColumn<>("Granted Role");
+        grantedRoleColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper(data.getValue()));
+        grantedRolesTable.getColumns().add(grantedRoleColumn);
+
+        try {
+            grantedRolesTable.setItems(rolesViewModel.getGrantedRoles(roleName));
+        } catch (Exception e) {
+            AlertDialog.showErrorAlert("Error Fetching Granted Roles", null,
+                    "An error occurred while fetching granted roles for " + roleName + ".\n" + e.getMessage(), null);
+        }
+
+        Button grantRoleButton = new Button("GRANT ROLE");
+        grantRoleButton.setOnAction(e -> openGrantRoleWindow(roleName));
+
+        layout.getChildren().addAll(grantedRolesLabel, grantedRolesTable, grantRoleButton);
+        layout.setAlignment(Pos.CENTER);
+
+        Scene scene = new Scene(layout, 400, 300);
+        editRoleStage.setScene(scene);
+        editRoleStage.show();
+    }
+
+    private void openGrantRoleWindow(String roleName) {
+        Stage grantRoleStage = new Stage();
+        grantRoleStage.setTitle("GRANT ROLE TO " + roleName);
+        grantRoleStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/app_icon.png")));
+
+        VBox layout = new VBox(10);
+        layout.setPadding(new Insets(10));
+
+        Label availableRolesLabel = new Label("Available Roles:");
+        TableView<String> availableRolesTable = new TableView<>();
+        availableRolesTable.setPlaceholder(new Label("No roles available."));
+
+        TableColumn<String, String> availableRoleColumn = new TableColumn<>("Role");
+        availableRoleColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper(data.getValue()));
+        availableRolesTable.getColumns().add(availableRoleColumn);
+
+        try {
+            availableRolesTable.setItems(rolesViewModel.getAvailableRoles(roleName));
+        } catch (Exception e) {
+            AlertDialog.showErrorAlert("Error Fetching Available Roles", null,
+                    "An error occurred while fetching available roles for " + roleName + ".\n" + e.getMessage(), null);
+        }
+
+        Button submitButton = new Button("Submit");
+        submitButton.setOnAction(e -> {
+            ObservableList<String> selectedRoles = availableRolesTable.getSelectionModel().getSelectedItems();
+            for (String selectedRole : selectedRoles) {
+                try {
+                    rolesViewModel.grantRoleToRole(selectedRole, roleName);
+                } catch (Exception ex) {
+                    AlertDialog.showErrorAlert("Error Granting Role", null, "An error occurred while granting role "
+                            + selectedRole + " to " + roleName + ".\n" + ex.getMessage(), null);
+                }
+            }
+            grantRoleStage.close();
+        });
+
+        layout.getChildren().addAll(availableRolesLabel, availableRolesTable, submitButton);
+        layout.setAlignment(Pos.CENTER);
+
+        Scene scene = new Scene(layout, 400, 300);
+        grantRoleStage.setScene(scene);
+        grantRoleStage.show();
     }
 }

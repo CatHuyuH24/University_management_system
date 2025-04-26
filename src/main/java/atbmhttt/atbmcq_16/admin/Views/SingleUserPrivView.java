@@ -45,11 +45,10 @@ public class SingleUserPrivView {
                     Privilege privilege = getTableView().getItems().get(getIndex());
                     SingleUserPrivViewModel viewModel = new SingleUserPrivViewModel();
                     String result = viewModel.revokePrivilege(
-                        privilege.getType(),
-                        privilege.getPrivilege(),
-                        privilege.getObject(),
-                        privilege.getColumn()
-                    );
+                            privilege.getType(),
+                            privilege.getPrivilege(),
+                            privilege.getObject(),
+                            privilege.getColumn());
                     System.out.println(result);
                 });
             }

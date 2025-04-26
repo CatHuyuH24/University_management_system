@@ -59,7 +59,7 @@ public class UserPrivilegesRepository {
     public String revokePrivilege(String grantee, String privilege, String objectName, String columnName) {
         String result = "";
         try (Connection connection = DatabaseConnection.getConnection()) {
-            String sql = "{CALL SP_REVOKE_PRIVILEGE(?, ?, ?, ?, ?)}";
+            String sql = "{CALL REVOKE_PRIVILEGE(?, ?, ?, ?, ?)}";
             try (CallableStatement callableStatement = connection.prepareCall(sql)) {
                 callableStatement.setString(1, grantee);
                 callableStatement.setString(2, privilege);
