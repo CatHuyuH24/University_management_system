@@ -62,6 +62,10 @@ public class AlertDialog {
         } catch (Exception e) {
             System.err.println("AlertDialog: Error occurred when trying to get icon image");
         }
+
+        // Adjust the size of the dialog
+        alert.getDialogPane().setPrefSize(400, 200); // Set preferred width and height
+
         // Show the alert
         ButtonType response;
         if (alert.showAndWait().isPresent()) {

@@ -45,7 +45,7 @@ public class RolesView {
 
         TableColumn<String[], Void> actionsColumn = new TableColumn<>("Actions");
         actionsColumn.setCellFactory(col -> new TableCell<>() {
-            private final Button editButton = new Button("Edit");
+            private final Button editButton = new Button("Roles");
             private final Button deleteButton = new Button("Delete");
             private final HBox actionButtons = new HBox(5, editButton, deleteButton);
 
@@ -53,6 +53,7 @@ public class RolesView {
                 editButton.setOnAction(event -> {
                     String roleName = getTableView().getItems().get(getIndex())[0];
                     openEditRoleWindow(roleName);
+
                 });
 
                 deleteButton.setOnAction(event -> {
@@ -179,7 +180,7 @@ public class RolesView {
 
     private void openEditRoleWindow(String roleName) {
         Stage editRoleStage = new Stage();
-        editRoleStage.setTitle("Edit Role: " + roleName);
+        editRoleStage.setTitle("ADD NEW ROLE FOR ROLE " + roleName);
         editRoleStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/app_icon.png")));
 
         VBox layout = new VBox(10);
@@ -201,7 +202,7 @@ public class RolesView {
         }
 
         Button grantRoleButton = new Button("GRANT ROLE");
-        grantRoleButton.setOnAction(e -> openGrantRoleWindow(roleName));
+        grantRoleButton.setOnAction(e -> openGrantRoleWindow(roleName, editRoleStage));
 
         layout.getChildren().addAll(grantedRolesLabel, grantedRolesTable, grantRoleButton);
         layout.setAlignment(Pos.CENTER);
@@ -211,7 +212,7 @@ public class RolesView {
         editRoleStage.show();
     }
 
-    private void openGrantRoleWindow(String roleName) {
+    private void openGrantRoleWindow(String roleName, final Stage editRoleStage) {
         Stage grantRoleStage = new Stage();
         grantRoleStage.setTitle("GRANT ROLE TO " + roleName);
         grantRoleStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/app_icon.png")));
@@ -240,6 +241,7 @@ public class RolesView {
             for (String selectedRole : selectedRoles) {
                 try {
                     rolesViewModel.grantRoleToRole(selectedRole, roleName);
+                    editRoleStage.close();
                 } catch (Exception ex) {
                     AlertDialog.showErrorAlert("Error Granting Role", null, "An error occurred while granting role "
                             + selectedRole + " to " + roleName + ".\n" + ex.getMessage(), null);

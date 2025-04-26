@@ -56,19 +56,18 @@ public class UserPrivilegesRepository {
         }
     }
 
-    public String revokePrivilege(String grantee, String privilege, String objectName, String columnName) {
+    public String revokePrivilege(String grantee, String privilege, String objectName) {
         String result = "";
         try (Connection connection = DatabaseConnection.getConnection()) {
-            String sql = "{CALL REVOKE_PRIVILEGE(?, ?, ?, ?, ?)}";
+            String sql = "{CALL REVOKE_PRIVILEGE(?, ?, ?, ?)}";
             try (CallableStatement callableStatement = connection.prepareCall(sql)) {
                 callableStatement.setString(1, grantee);
                 callableStatement.setString(2, privilege);
                 callableStatement.setString(3, objectName);
-                callableStatement.setString(4, columnName);
-                callableStatement.registerOutParameter(5, java.sql.Types.VARCHAR);
+                callableStatement.registerOutParameter(4, java.sql.Types.VARCHAR);
 
                 callableStatement.execute();
-                result = callableStatement.getString(5);
+                result = callableStatement.getString(4);
             }
         } catch (SQLException e) {
             e.printStackTrace();

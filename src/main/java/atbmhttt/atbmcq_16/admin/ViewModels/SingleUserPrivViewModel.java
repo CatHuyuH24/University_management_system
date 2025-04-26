@@ -11,7 +11,7 @@ public class SingleUserPrivViewModel {
         return repository.getUserPrivileges(username);
     }
 
-    public String revokePrivilege(String grantee, String privilege, String objectName, String columnName) {
-        return repository.revokePrivilege(grantee, privilege, objectName, columnName);
+    public String revokePrivilege(String grantee, String privilege, String objectName) {
+        return repository.revokePrivilege(grantee, privilege, objectName);
     }
 }

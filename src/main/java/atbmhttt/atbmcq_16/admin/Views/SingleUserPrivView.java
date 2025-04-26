@@ -2,10 +2,12 @@ package atbmhttt.atbmcq_16.admin.Views;
 
 import atbmhttt.atbmcq_16.admin.Models.Privilege;
 import atbmhttt.atbmcq_16.admin.ViewModels.SingleUserPrivViewModel;
+import atbmhttt.atbmcq_16.dialogs.AlertDialog;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -21,6 +23,7 @@ public class SingleUserPrivView {
         gridPane.setHgap(10);
         gridPane.setVgap(10);
         gridPane.setAlignment(Pos.CENTER);
+        Stage stage = new Stage();
 
         // TableView hiển thị quyền
         TableView<Privilege> tableView = new TableView<>();
@@ -44,12 +47,24 @@ public class SingleUserPrivView {
                 revokeButton.setOnAction(event -> {
                     Privilege privilege = getTableView().getItems().get(getIndex());
                     SingleUserPrivViewModel viewModel = new SingleUserPrivViewModel();
-                    String result = viewModel.revokePrivilege(
-                            privilege.getType(),
-                            privilege.getPrivilege(),
-                            privilege.getObject(),
-                            privilege.getColumn());
-                    System.out.println(result);
+
+                    String title = "REVOKING PRIVILEGE";
+                    String content = null;
+                    if ("UPDATE".equals(privilege.getPrivilege())) {
+                        content = "Deleting a privilege with UPDATE will REVOKE ON THE WHOLE TABLE\n";
+                    }
+                    content += "Are you sure you want to REVOKE?";
+                    ButtonType response = AlertDialog.showAndGetResultConfirmationAlert(
+                            title,
+                            null, content, null);
+                    if (ButtonType.OK == response) {
+                        viewModel.revokePrivilege(
+                                username,
+                                privilege.getPrivilege(),
+                                privilege.getObject());
+
+                        stage.close();
+                    }
                 });
             }
 
@@ -82,7 +97,6 @@ public class SingleUserPrivView {
         // Add components to the grid
         gridPane.add(tableView, 0, 2, 2, 1);
 
-        Stage stage = new Stage();
         // Add the application icon to the stage
         Image iconImage = new Image(getClass().getResource("/images/app_icon.png").toExternalForm());
         stage.getIcons().add(iconImage);
