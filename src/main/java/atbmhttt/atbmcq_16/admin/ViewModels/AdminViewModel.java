@@ -184,14 +184,64 @@ public class AdminViewModel {
         return columns;
     }
 
-    public void grantUpdatePrivilege(String tableName, List<String> columns) {
-        // Nối tên các cột bằng dấu phẩy, không có khoảng trắng thừa
+    // Lấy danh sách tên đối tượng (table, view, procedure, function)
+    public List<String> getAllObjectNames(String type) {
+        List<String> names = new ArrayList<>();
+        String sql = null;
+        switch (type) {
+            case "TABLE":
+                sql = "SELECT table_name FROM user_tables ORDER BY table_name";
+                break;
+            case "VIEW":
+                sql = "SELECT view_name FROM user_views ORDER BY view_name";
+                break;
+            case "PROCEDURE":
+                sql = "SELECT object_name FROM user_procedures WHERE object_type = 'PROCEDURE' ORDER BY object_name";
+                break;
+            case "FUNCTION":
+                sql = "SELECT object_name FROM user_procedures WHERE object_type = 'FUNCTION' ORDER BY object_name";
+                break;
+        }
+        if (sql == null) return names;
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             java.sql.Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql)) {
+            while (resultSet.next()) {
+                names.add(resultSet.getString(1));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return names;
+    }
+
+    // Gọi store procedure để cấp quyền cho đối tượng (trừ UPDATE TABLE/VIEW)
+    public void grantGeneralPrivilege(String type, String objectName, String privilege, boolean withGrantOption) {
+        String sql = "BEGIN grant_privilege( p_privilege => ?, p_object_name => ?, p_object_type => ?, p_grantee => ?, p_with_option => ? ); END;";
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             CallableStatement statement = connection.prepareCall(sql)) {
+            statement.setString(1, privilege);
+            statement.setString(2, objectName.startsWith("ATBMCQ_ADMIN.") ? objectName : "ATBMCQ_ADMIN." + objectName);
+            statement.setString(3, type);
+            statement.setString(4, "ANNU");
+            statement.setInt(5, withGrantOption ? 1:0);
+            statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Gọi store procedure để cấp quyền UPDATE cho các cột đã chọn, có WITH GRANT OPTION
+    public void grantUpdatePrivilegeWithOption(String tableName, List<String> columns, boolean withGrantOption) {
         String columnsStr = String.join(",", columns);
-        String sql = "BEGIN grant_column_privilege( p_privilege => 'UPDATE', p_object_name => ?, p_columns => ?, p_grantee => 'ANNU', p_with_option => FALSE ); END;";
+        String sql = "BEGIN grant_column_privilege(?,?,?,?,?); END;";
         try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
              java.sql.PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, "ATBMCQ_ADMIN." + tableName);
-            statement.setString(2, columnsStr);
+            statement.setString(1,"UPDATE");
+            statement.setString(2, "ATBMCQ_ADMIN." + tableName);
+            statement.setString(3, columnsStr);
+            statement.setString(4, "ANNU");
+            statement.setInt(5, withGrantOption ? 1:0);
             statement.execute();
         } catch (SQLException e) {
             e.printStackTrace();
