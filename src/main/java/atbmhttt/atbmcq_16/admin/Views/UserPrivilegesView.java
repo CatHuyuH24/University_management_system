@@ -21,8 +21,7 @@ public class UserPrivilegesView {
 
     public void displayUserPrivileges() {
         Stage userPrivilegesStage = new Stage();
-        Image iconImage = new Image(getClass().getResource("/images/app_icon.png").toExternalForm());
-        userPrivilegesStage.getIcons().add(iconImage);
+        userPrivilegesStage.getIcons().add(new Image(getClass().getResource("/images/app_icon.png").toExternalForm()));
         userPrivilegesStage.setTitle("USERS PRIVILEGES");
 
         TableView<String[]> tableView = new TableView<>();
@@ -60,8 +59,10 @@ public class UserPrivilegesView {
         TableColumn<String[], String> userColumn = new TableColumn<>("User");
         userColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper(data.getValue()[0]));
 
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tableView.getColumns().add(actionColumn);
         tableView.getColumns().add(userColumn);
+
         try {
             tableView.setItems(FXCollections.observableArrayList(viewModel.getUsersWithDetails()));
         } catch (SQLException ex) {

@@ -297,6 +297,9 @@ public class UsersView {
             }
         });
 
+        Image iconImage = new Image(getClass().getResource("/images/app_icon.png").toExternalForm());
+        rolesStage.getIcons().add(iconImage);
+        rolesTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         rolesTableView.getColumns().add(roleNameColumn);
         rolesTableView.getColumns().add(actionsColumn);
 
@@ -313,7 +316,8 @@ public class UsersView {
         Button addRoleButton = new Button("Add Role");
         addRoleButton.setOnAction(event -> {
             Stage addRoleStage = new Stage();
-            addRoleStage.setTitle("Add Role to " + username);
+            addRoleStage.getIcons().add(iconImage);
+            addRoleStage.setTitle("ADDING ROLE FOR " + username);
 
             VBox layout = new VBox(10);
             layout.setPadding(new Insets(10));

@@ -188,6 +188,8 @@ public class RolesView {
 
         Label grantedRolesLabel = new Label("ROLES GRANTED TO " + roleName + "LIST");
         TableView<String> grantedRolesTable = new TableView<>();
+
+        grantedRolesTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         grantedRolesTable.setPlaceholder(new Label("No roles granted yet."));
 
         TableColumn<String, String> grantedRoleColumn = new TableColumn<>("Granted Role");
@@ -222,6 +224,8 @@ public class RolesView {
 
         Label availableRolesLabel = new Label("Available Roles:");
         TableView<String> availableRolesTable = new TableView<>();
+
+        availableRolesTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         availableRolesTable.setPlaceholder(new Label("No roles available."));
 
         TableColumn<String, String> availableRoleColumn = new TableColumn<>("Role");

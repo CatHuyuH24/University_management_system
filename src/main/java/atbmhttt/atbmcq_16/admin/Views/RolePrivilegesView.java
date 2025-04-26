@@ -13,6 +13,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -22,6 +23,7 @@ public class RolePrivilegesView {
     public void displayRolePrivileges() {
         Stage rolePrivilegesStage = new Stage();
         rolePrivilegesStage.setTitle("Role Privileges");
+        rolePrivilegesStage.getIcons().add(new Image(getClass().getResource("/images/app_icon.png").toExternalForm()));
 
         TableView<String[]> tableView = new TableView<>();
 
