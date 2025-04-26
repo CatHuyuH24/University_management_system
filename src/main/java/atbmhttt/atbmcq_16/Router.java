@@ -21,7 +21,7 @@ public class Router {
     }
 
     public static void navigateToAdminDashboard(String username, String password) {
-        AdminView view = new AdminView();
+        AdminView view = new AdminView(username, password);
         view.start(P_STAGE);
     }
 
