@@ -180,11 +180,12 @@ public class RolesView {
     private void openEditRoleWindow(String roleName) {
         Stage editRoleStage = new Stage();
         editRoleStage.setTitle("Edit Role: " + roleName);
+        editRoleStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/app_icon.png")));
 
         VBox layout = new VBox(10);
         layout.setPadding(new Insets(10));
 
-        Label grantedRolesLabel = new Label("Roles granted to " + roleName + ":");
+        Label grantedRolesLabel = new Label("ROLES GRANTED TO " + roleName + "LIST");
         TableView<String> grantedRolesTable = new TableView<>();
         grantedRolesTable.setPlaceholder(new Label("No roles granted yet."));
 
@@ -199,7 +200,7 @@ public class RolesView {
                     "An error occurred while fetching granted roles for " + roleName + ".\n" + e.getMessage(), null);
         }
 
-        Button grantRoleButton = new Button("Grant Role");
+        Button grantRoleButton = new Button("GRANT ROLE");
         grantRoleButton.setOnAction(e -> openGrantRoleWindow(roleName));
 
         layout.getChildren().addAll(grantedRolesLabel, grantedRolesTable, grantRoleButton);
@@ -212,7 +213,8 @@ public class RolesView {
 
     private void openGrantRoleWindow(String roleName) {
         Stage grantRoleStage = new Stage();
-        grantRoleStage.setTitle("Grant Role to " + roleName);
+        grantRoleStage.setTitle("GRANT ROLE TO " + roleName);
+        grantRoleStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/app_icon.png")));
 
         VBox layout = new VBox(10);
         layout.setPadding(new Insets(10));
