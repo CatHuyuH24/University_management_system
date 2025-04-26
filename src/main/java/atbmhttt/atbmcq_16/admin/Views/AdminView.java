@@ -34,12 +34,13 @@ public class AdminView extends Application {
         Button rolesButton = new Button("Roles");
         Button privilegesButton = new Button("Privileges");
         Button logoutButton = new Button("Log out");
-        Button grantPrivilegeButton = new Button("Grant Privilege");
+        // Button grantPrivilegeButton = new Button("Grant Privilege");
+
         navigationPanel.add(usersButton, 0, 1);
         navigationPanel.add(rolesButton, 0, 2);
         navigationPanel.add(privilegesButton, 0, 3);
-        navigationPanel.add(grantPrivilegeButton, 0, 4);
-        setUpGrantPrivilegeButton(grantPrivilegeButton);
+        // navigationPanel.add(grantPrivilegeButton, 0, 4);
+        // setUpGrantPrivilegeButton(grantPrivilegeButton);
         // Add a spacer pane to fill the space between the privileges button and the
         // logout button
         Pane spacer = new Pane();
@@ -103,10 +104,4 @@ public class AdminView extends Application {
         });
     }
 
-    private void setUpGrantPrivilegeButton(final Button grantPrivilegeButton) {
-        grantPrivilegeButton.setOnAction(e -> {
-            GrantPrivilegesView grantPrivilegesView = new GrantPrivilegesView();
-            grantPrivilegesView.displayPrivileges();
-        });
-    }
 }

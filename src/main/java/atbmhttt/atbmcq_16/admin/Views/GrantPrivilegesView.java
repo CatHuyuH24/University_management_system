@@ -15,9 +15,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class GrantPrivilegesView {
-    private GrantPrivilegesViewModel viewModel = new GrantPrivilegesViewModel();
+    private GrantPrivilegesViewModel viewModel;
 
-    public void displayPrivileges() {
+    public void displayPrivileges(String username) {
+        viewModel = new GrantPrivilegesViewModel(username);
         Stage dialog = new Stage();
         dialog.setTitle("Grant Privilege");
         VBox layout = new VBox(12);

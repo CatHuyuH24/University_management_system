@@ -10,6 +10,12 @@ import java.util.List;
 import atbmhttt.atbmcq_16.DatabaseConnection;
 
 public class GrantPrivilegesViewModel {
+    private String username;
+
+    public GrantPrivilegesViewModel(String username) {
+        this.username = username;
+    }
+
     public List<String> getAllObjectNames(String type) {
         List<String> names = new ArrayList<>();
         String sql = null;
@@ -48,7 +54,7 @@ public class GrantPrivilegesViewModel {
             statement.setString(1, privilege);
             statement.setString(2, objectName.startsWith("ATBMCQ_ADMIN.") ? objectName : "ATBMCQ_ADMIN." + objectName);
             statement.setString(3, type);
-            statement.setString(4, "ANNU");
+            statement.setString(4, username);
             statement.setInt(5, withGrantOption ? 1 : 0);
             statement.execute();
         } catch (SQLException e) {
@@ -81,7 +87,7 @@ public class GrantPrivilegesViewModel {
             statement.setString(1, "UPDATE");
             statement.setString(2, "ATBMCQ_ADMIN." + tableName);
             statement.setString(3, columnsStr);
-            statement.setString(4, "ANNU");
+            statement.setString(4, username);
             statement.setInt(5, withGrantOption ? 1 : 0);
             statement.execute();
         } catch (SQLException e) {

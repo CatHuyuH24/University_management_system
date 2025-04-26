@@ -12,6 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -20,18 +21,27 @@ public class UserPrivilegesView {
 
     public void displayUserPrivileges() {
         Stage userPrivilegesStage = new Stage();
+        Image iconImage = new Image(getClass().getResource("/images/app_icon.png").toExternalForm());
+        userPrivilegesStage.getIcons().add(iconImage);
         userPrivilegesStage.setTitle("User Privileges");
 
         TableView<String[]> tableView = new TableView<>();
 
-        TableColumn<String[], Void> actionColumn = new TableColumn<>("Edit Privileges");
+        TableColumn<String[], Void> actionColumn = new TableColumn<>("Actions");
         actionColumn.setCellFactory(col -> new TableCell<>() {
-            private final Button actionButton = new Button("P");
+            private final Button actionButton = new Button("View and Revoke Privileges");
+            private final Button grantButton = new Button("Grant Privileges");
+            private final VBox buttonContainer = new VBox(5, actionButton, grantButton);
 
             {
                 actionButton.setOnAction(event -> {
                     String username = getTableView().getItems().get(getIndex())[0];
-                    System.out.println("Button P clicked for user: " + username);
+                    System.out.println("View and Revoke Privileges clicked for user: " + username);
+                });
+
+                grantButton.setOnAction(event -> {
+                    GrantPrivilegesView view = new GrantPrivilegesView();
+                    view.displayPrivileges(getTableView().getItems().get(getIndex())[0]);
                 });
             }
 
@@ -41,7 +51,7 @@ public class UserPrivilegesView {
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    setGraphic(actionButton);
+                    setGraphic(buttonContainer);
                 }
             }
         });
