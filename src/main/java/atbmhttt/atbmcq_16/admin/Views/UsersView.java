@@ -297,7 +297,8 @@ public class UsersView {
             }
         });
 
-        rolesTableView.getColumns().addAll(roleNameColumn, actionsColumn);
+        rolesTableView.getColumns().add(roleNameColumn);
+        rolesTableView.getColumns().add(actionsColumn);
 
         try {
             rolesTableView.setItems(usersViewModel.getUserRoles(username));
