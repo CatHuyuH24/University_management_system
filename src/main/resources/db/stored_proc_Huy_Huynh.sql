@@ -162,6 +162,7 @@ BEGIN
     IF v_count = 0 THEN
         -- Role does not exist, create it
         EXECUTE IMMEDIATE 'CREATE ROLE ' || DBMS_ASSERT.SIMPLE_SQL_NAME(p_role_name);
+        COMMIT;
         DBMS_OUTPUT.PUT_LINE('Role "' || p_role_name || '" has been created.');
     ELSE
         -- Role already exists
