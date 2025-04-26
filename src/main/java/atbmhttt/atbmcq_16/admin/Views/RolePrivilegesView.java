@@ -27,7 +27,8 @@ public class RolePrivilegesView {
 
         TableColumn<String[], Void> actionColumn = new TableColumn<>("Edit Privileges");
         actionColumn.setCellFactory(col -> new TableCell<>() {
-            private final Button actionButton = new Button("P");
+            private final Button actionButton = new Button("View and Revoke Privileges");
+            private final Button grantButton = new Button("Grant Privileges");
 
             {
                 actionButton.setOnAction(event -> {

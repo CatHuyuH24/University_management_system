@@ -246,4 +246,91 @@ END;
 /
 
 
+CREATE OR REPLACE PROCEDURE SP_LIST_GRANTED_ROLES(
+    p_role_name   IN  VARCHAR2,
+    p_result      OUT SYS_REFCURSOR
+)
+AS
+BEGIN
+    OPEN p_result FOR
+        SELECT granted_role
+        FROM dba_role_privs
+        WHERE grantee = UPPER(p_role_name)
+        ORDER BY granted_role;
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+        RAISE;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE SP_LIST_ROLES_EXCLUDE(
+    p_exclude_role IN  VARCHAR2,
+    p_result       OUT SYS_REFCURSOR
+)
+AS
+BEGIN
+    -- Open the cursor for the query
+    OPEN p_result FOR
+        SELECT role
+        FROM dba_roles
+        WHERE role != DBMS_ASSERT.SIMPLE_SQL_NAME(UPPER(p_exclude_role))
+          AND common = 'NO'
+        ORDER BY role;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+        RAISE;
+END;
+/
+
+CREATE OR REPLACE PROCEDURE SP_GRANT_ROLE_TO_ROLE(
+    p_grant_role IN VARCHAR2,
+    p_target_role IN VARCHAR2
+)
+AS
+    v_count NUMBER;
+BEGIN
+    -- Kiểm tra xem role cấp có tồn tại không
+    SELECT COUNT(*) INTO v_count
+    FROM dba_roles
+    WHERE role = UPPER(p_grant_role);
+
+    IF v_count = 0 THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Role "' || p_grant_role || '" does not exist.');
+    END IF;
+
+    -- Kiểm tra xem role nhận có tồn tại không
+    SELECT COUNT(*) INTO v_count
+    FROM dba_roles
+    WHERE role = UPPER(p_target_role);
+
+    IF v_count = 0 THEN
+        RAISE_APPLICATION_ERROR(-20002, 'Role "' || p_target_role || '" does not exist.');
+    END IF;
+
+    -- Kiểm tra ngược lại: target_role đã được grant cho grant_role chưa?
+    SELECT COUNT(*) INTO v_count
+    FROM dba_role_privs
+    WHERE granted_role = UPPER(p_target_role)
+      AND grantee = UPPER(p_grant_role);
+
+    IF v_count > 0 THEN
+        RAISE_APPLICATION_ERROR(-20004, 'Cannot grant "' || p_grant_role || '" to "' || p_target_role || '" because it would create a circular grant.');
+    END IF;
+
+    -- Cấp quyền cho role
+    EXECUTE IMMEDIATE 'GRANT ' || DBMS_ASSERT.SIMPLE_SQL_NAME(p_grant_role) ||
+                      ' TO ' || DBMS_ASSERT.SIMPLE_SQL_NAME(p_target_role);
+
+    DBMS_OUTPUT.PUT_LINE('Granted role "' || p_grant_role || '" to role "' || p_target_role || '".');
+
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error: ' || SQLERRM);
+        RAISE;
+END;
+/
+
 
