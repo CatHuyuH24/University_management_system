@@ -8,6 +8,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -93,6 +94,9 @@ public class GrantPrivilegesView {
         List<String> columns = viewModel.getColumnsOfTable(objectName);
         Stage dialog = new Stage();
         dialog.setTitle("Columns of " + objectName);
+        Image iconImage = new Image(getClass().getResource("/images/app_icon.png").toExternalForm());
+        dialog.getIcons().add(iconImage);
+
         VBox layout = new VBox(10);
         layout.setPadding(new Insets(15));
         layout.getChildren().add(new Label("Columns in '" + objectName + "':"));

@@ -27,14 +27,23 @@ public class RolePrivilegesView {
 
         TableView<String[]> tableView = new TableView<>();
 
-        TableColumn<String[], Void> actionColumn = new TableColumn<>("Edit Privileges");
+        TableColumn<String[], Void> actionColumn = new TableColumn<>("Actions");
         actionColumn.setCellFactory(col -> new TableCell<>() {
             private final Button actionButton = new Button("View and Revoke Privileges");
+            private final Button grantButton = new Button("Grant Privileges");
+            private final VBox buttonContainer = new VBox(5, actionButton, grantButton);
 
             {
                 actionButton.setOnAction(event -> {
                     String roleName = getTableView().getItems().get(getIndex())[0];
-                    System.out.println("Button P clicked for role: " + roleName);
+                    DetailPrivilegesView singleView = new DetailPrivilegesView();
+                    singleView.displayUserPrivs(roleName);
+                });
+
+                grantButton.setOnAction(event -> {
+                    String roleName = getTableView().getItems().get(getIndex())[0];
+                    GrantPrivilegesView grantPrivilegesView = new GrantPrivilegesView();
+                    grantPrivilegesView.displayPrivileges(roleName);
                 });
             }
 
@@ -44,7 +53,7 @@ public class RolePrivilegesView {
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    setGraphic(actionButton);
+                    setGraphic(buttonContainer);
                 }
             }
         });

@@ -35,7 +35,7 @@ public class UserPrivilegesView {
             {
                 actionButton.setOnAction(event -> {
                     String username = getTableView().getItems().get(getIndex())[0];
-                    SingleUserPrivView singleView = new SingleUserPrivView();
+                    DetailPrivilegesView singleView = new DetailPrivilegesView();
                     singleView.displayUserPrivs(username);
                 });
 

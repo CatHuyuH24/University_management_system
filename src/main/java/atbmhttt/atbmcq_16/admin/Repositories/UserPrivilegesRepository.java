@@ -18,8 +18,8 @@ public class UserPrivilegesRepository {
         return usersRepository.getUsersWithDetails();
     }
 
-    public ObservableList<Privilege> getUserPrivileges(String username) {
-        return new PrivilegeViewer().viewPrivileges(username);
+    public ObservableList<Privilege> getUserPrivileges(String name) {
+        return new PrivilegeViewer().viewPrivileges(name);
     }
 
     private class PrivilegeViewer {

@@ -1,7 +1,7 @@
 package atbmhttt.atbmcq_16.admin.Views;
 
 import atbmhttt.atbmcq_16.admin.Models.Privilege;
-import atbmhttt.atbmcq_16.admin.ViewModels.SingleUserPrivViewModel;
+import atbmhttt.atbmcq_16.admin.ViewModels.DetailPrivilegeViewModel;
 import atbmhttt.atbmcq_16.dialogs.AlertDialog;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -16,7 +16,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
-public class SingleUserPrivView {
+public class DetailPrivilegesView {
 
     public void displayUserPrivs(String username) {
         GridPane gridPane = new GridPane();
@@ -46,10 +46,10 @@ public class SingleUserPrivView {
             {
                 revokeButton.setOnAction(event -> {
                     Privilege privilege = getTableView().getItems().get(getIndex());
-                    SingleUserPrivViewModel viewModel = new SingleUserPrivViewModel();
+                    DetailPrivilegeViewModel viewModel = new DetailPrivilegeViewModel();
 
                     String title = "REVOKING PRIVILEGE";
-                    String content = null;
+                    String content = "";
                     if ("UPDATE".equals(privilege.getPrivilege())) {
                         content = "Deleting a privilege with UPDATE will REVOKE ON THE WHOLE TABLE\n";
                     }
@@ -90,7 +90,7 @@ public class SingleUserPrivView {
         tableView.prefWidthProperty().bind(gridPane.widthProperty());
 
         // Fetch privileges and set items to the TableView
-        SingleUserPrivViewModel viewModel = new SingleUserPrivViewModel();
+        DetailPrivilegeViewModel viewModel = new DetailPrivilegeViewModel();
         ObservableList<Privilege> privileges = viewModel.getPrivileges(username);
         tableView.setItems(privileges);
 
