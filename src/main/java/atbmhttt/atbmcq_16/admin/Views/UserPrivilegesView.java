@@ -23,7 +23,7 @@ public class UserPrivilegesView {
         Stage userPrivilegesStage = new Stage();
         Image iconImage = new Image(getClass().getResource("/images/app_icon.png").toExternalForm());
         userPrivilegesStage.getIcons().add(iconImage);
-        userPrivilegesStage.setTitle("User Privileges");
+        userPrivilegesStage.setTitle("USERS PRIVILEGES");
 
         TableView<String[]> tableView = new TableView<>();
 
@@ -36,7 +36,8 @@ public class UserPrivilegesView {
             {
                 actionButton.setOnAction(event -> {
                     String username = getTableView().getItems().get(getIndex())[0];
-                    System.out.println("View and Revoke Privileges clicked for user: " + username);
+                    SingleUserPrivView singleView = new SingleUserPrivView();
+                    singleView.displayUserPrivs(username);
                 });
 
                 grantButton.setOnAction(event -> {

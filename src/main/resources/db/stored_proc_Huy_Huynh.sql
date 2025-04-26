@@ -245,5 +245,81 @@ BEGIN
 END;
 /
 
+CREATE OR REPLACE PROCEDURE VIEW_PRIVILEGES (
+    p_grantee IN VARCHAR2,          -- Tên user hoặc role
+    p_result OUT SYS_REFCURSOR      -- Cursor chứa thông tin quyền
+) AS
+BEGIN
+    -- Truy vấn quyền đối tượng và quyền mức cột
+    OPEN p_result FOR
+        SELECT 'OBJECT' AS privilege_type, privilege, grantee, grantable AS grant_option, table_name AS object_name, NULL AS column_name
+        FROM DBA_TAB_PRIVS
+        WHERE grantee = UPPER(p_grantee)
+        UNION ALL
+        SELECT 'COLUMN' AS privilege_type, privilege, grantee, grantable AS grant_option, table_name AS object_name, column_name
+        FROM DBA_COL_PRIVS
+        WHERE grantee = UPPER(p_grantee);
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Error retrieving privileges: ' || SQLERRM);
+END VIEW_PRIVILEGES;
+/
 
 
+
+CREATE OR REPLACE PROCEDURE SP_REVOKE_PRIVILEGE (
+    p_grantee IN VARCHAR2,          -- Tên user hoặc role
+    p_privilege IN VARCHAR2,        -- Loại quyền (SELECT, UPDATE, EXECUTE, etc.)
+    p_object_name IN VARCHAR2,      -- Tên đối tượng (table, view, procedure, function)
+    p_column_name IN VARCHAR2,      -- Tên cột (không áp dụng, để NULL)
+    p_result OUT VARCHAR2           -- Kết quả hoặc thông báo lỗi
+) AS
+    v_sql VARCHAR2(1000);
+BEGIN
+    -- Kiểm tra tham số đầu vào
+    IF p_grantee IS NULL OR p_privilege IS NULL THEN
+        p_result := 'Error: Grantee and privilege cannot be NULL';
+        RETURN;
+    END IF;
+
+    -- Không cho phép thu hồi quyền mức cột
+    IF p_column_name IS NOT NULL THEN
+        p_result := 'Warning: Column-level revocation is not supported SO REVOKING UPDATE ON THE WHOLE OBJECT IS APPLIED';
+        RETURN;
+    END IF;
+
+    -- Kiểm tra p_object_name phải không NULL (chỉ hỗ trợ quyền đối tượng)
+    IF p_object_name IS NULL THEN
+        p_result := 'Error: Object name must be specified. System privilege revocation is not supported.';
+        RETURN;
+    END IF;
+
+    -- Xử lý thu hồi quyền đối tượng
+    v_sql := 'REVOKE ' || p_privilege || ' ON ' || p_object_name || ' FROM ' || p_grantee;
+
+    -- Thực thi câu lệnh REVOKE
+    EXECUTE IMMEDIATE v_sql;
+    
+    IF p_privilege = 'UPDATE' THEN
+        p_result := 'Privilege revoked successfully. All column-level UPDATE privileges on ' || p_object_name || ' are also revoked.';
+    ELSE
+        p_result := 'Privilege revoked successfully.';
+    END IF;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        p_result := 'Error: ' || SQLERRM;
+END SP_REVOKE_PRIVILEGE;
+/
+
+
+revoke update on fuck from user10;
+
+CREATE TABLE FUCK (
+  ID INT PRIMARY KEY,
+  NAME VARCHAR2(255)
+);
+
+GRANT UPDATE(NAME) ON FUCK TO USER10;
+
+GRANT DELETE ON FUCK TO USER10;
