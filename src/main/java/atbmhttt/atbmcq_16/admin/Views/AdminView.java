@@ -18,9 +18,8 @@ import javafx.stage.Stage;
 
 public class AdminView extends Application {
 
-    private UsersView usersView = new UsersView();
-    private RolesView rolesView = new RolesView();
-    private PrivilegesView privilegesView = new PrivilegesView();
+    private PrivilegesView privilegesView = new PrivilegesView();// doesn't need dynamic fetching -> no need repeating
+                                                                 // initialization
 
     private Text text = new Text("Welcome DATABASE ADMINISTRATOR");
 
@@ -73,12 +72,14 @@ public class AdminView extends Application {
 
     private void setUpDisplayRolesButton(final Button rolesButton, final BorderPane contentArea) {
         rolesButton.setOnAction(e -> {
+            RolesView rolesView = new RolesView();
             rolesView.displayRoles(contentArea);
         });
     }
 
     private void setUpDisplayUsersViaButton(final Button usersButton, final BorderPane contentArea) {
         usersButton.setOnAction(e -> {
+            UsersView usersView = new UsersView();
             usersView.displayUsers(contentArea);
         });
     }
