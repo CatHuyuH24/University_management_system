@@ -10,23 +10,17 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 
 public class PrivilegesView {
     private UserPrivilegesView userPrivilegesView = new UserPrivilegesView();
     private RolePrivilegesView rolePrivilegesView = new RolePrivilegesView();
 
     public void display(BorderPane contentArea) {
-        Stage privilegesStage = new Stage();
-        privilegesStage.setTitle("Privileges Management");
+        // Clear previous content
+        contentArea.setCenter(null);
 
-        // Set the icon in the title bar
-        privilegesStage.getIcons().add(new Image(getClass().getResourceAsStream("/images/app_icon.png")));
-
-        privilegesStage.setOnCloseRequest(event -> privilegesStage.close());
-
-        HBox header = new HBox(10);
-        header.setAlignment(Pos.CENTER_LEFT);
+        HBox header = new HBox();
+        header.setAlignment(Pos.CENTER);
 
         ImageView imageView = new ImageView(
                 new Image(getClass().getResourceAsStream("/images/app_icon.png")));
@@ -48,18 +42,14 @@ public class PrivilegesView {
 
         userPrivilegesButton.setOnAction(event -> {
             userPrivilegesView.displayUserPrivileges();
-            privilegesStage.close();
         });
 
         rolePrivilegesButton.setOnAction(event -> {
             rolePrivilegesView.displayRolePrivileges();
-            privilegesStage.close();
         });
 
         layout.getChildren().addAll(userPrivilegesButton, rolePrivilegesButton);
 
-        Scene scene = new Scene(layout, 300, 200);
-        privilegesStage.setScene(scene);
-        privilegesStage.show();
+        contentArea.setCenter(layout);
     }
 }
