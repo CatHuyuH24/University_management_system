@@ -12,53 +12,44 @@ GRANT EXECUTE ON DBMS_APPLICATION_INFO TO VPD_MGR;
 GRANT DROP ANY PROCEDURE TO VPD_MGR;
 GRANT UNLIMITED TABLESPACE TO VPD_MGR;
 
+
+
 -- XÂY DỰNG HÀM VỊ TỪ XEM SINHVIEN
-CREATE OR REPLACE FUNCTION PF_SINHVIEN_SELECT(
-    schema_name IN VARCHAR2,
-    object_name IN VARCHAR2
+CREATE OR REPLACE FUNCTION PF_SINHVIEN_SELECT (
+  schema_name IN VARCHAR2,
+  object_name IN VARCHAR2
 )
 RETURN VARCHAR2
 AS
-  v_username VARCHAR2(40);
-  v_temp     VARCHAR2(40);
-  v_count    NUMBER;
+  v_role VARCHAR2(30);
+  v_user VARCHAR2(30);
+  v_donvi VARCHAR2(30);
 BEGIN
-    v_username := SYS_CONTEXT('userenv', 'SESSION_USER');
+    v_user := SYS_CONTEXT('USERENV', 'SESSION_USER');
+    v_role := SYS_CONTEXT('user_ctx', 'VAI_TRO');
+    RETURN v_role;
+    IF v_user = 'VPD_MGR' OR v_user = 'ATBMCQ_ADMIN' THEN
+        RETURN '1 = 1'; -- Full access for VPD_MGR
+    ELSIF v_role = 'SINHVIEN' THEN
+        RETURN 'MASV = ''' || v_user || ''''; -- Access only to own record
+    ELSIF v_role = 'GV' THEN
+        BEGIN
+            SELECT MADV INTO v_donvi 
+            FROM ATBMCQ_ADMIN.NHANVIEN
+            WHERE MANV = v_user;
+        EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+                v_donvi := '';
+        END;
     
-    -- Exclude VPD_MGR from policy restrictions
---    IF v_username = 'VPD_MGR' THEN
---        RETURN '0=0'; -- No restriction
---    END IF;
-
-    IF EXISTS (SELECT 1 FROM ATBMCQ_ADMIN.SINHVIEN WHERE MASV = v_username) THEN
-      RETURN '100 = 100';
+        IF v_donvi != '' THEN
+            RETURN 'KHOA = ''' || v_donvi || '''';
+        END IF;
     ELSE
-      RETURN '100 = 1';
+        RETURN '0 = 1'; -- No access
     END IF;
-
---    SELECT VAITRO INTO v_temp FROM ATBMCQ_ADMIN.NHANVIEN WHERE MANV = v_username;
---    IF v_temp = 'GV' THEN
---      SELECT D.MADV INTO v_temp
---      FROM ATBMCQ_ADMIN.DONVI D
---      JOIN ATBMCQ_ADMIN.NHANVIEN N ON D.MADV = N.MADV
---      WHERE N.MANV = v_username;
---      RETURN 'KHOA = ''' || v_temp || '''';
---    ELSE
---      RETURN '0 = 1';
---    END IF;
-    return '3=100';
 END;
 /
-SET SERVEROUTPUT ON;
-
-DECLARE
-  res VARCHAR2(200);
-BEGIN
-  res := PF_SINHVIEN_SELECT('ATBMCQ_ADMIN', 'SINHVIEN');
-  DBMS_OUTPUT.PUT_LINE('Policy Result: ' || res);
-END;
-/
-
 
 -- ÁP DỤNG HÀM VỊ TỪ
 BEGIN
@@ -90,7 +81,7 @@ BEGIN
     END IF;
     
     SELECT VAITRO INTO v_temp FROM NHANVIEN WHERE MANV = v_username;
-    IF v_temp = 'NV PCTSV' THEN
+    IF v_temp = 'NV CTSV' THEN
         RETURN '1 = 1';
     ELSE
         RETURN '0 = 1';
@@ -127,7 +118,7 @@ BEGIN
     v_username := SYS_CONTEXT('userenv', 'SESSION_USER');
     SELECT VAITRO INTO v_temp FROM NHANVIEN WHERE MANV = v_username;
     
-    IF v_temp = 'NV PCTSV' THEN
+    IF v_temp = 'NV CTSV' THEN
         RETURN '1 = 1';
     ELSE
         RETURN '0 = 1';
@@ -160,5 +151,7 @@ END;
 /
 
 SELECT * FROM ATBMCQ_ADMIN.NHANVIEN;
-SELECT * FROM ATBMCQ_ADMIN.DONVI;
 SELECT * FROM ATBMCQ_ADMIN.SINHVIEN;
+SELECT MASV 
+    FROM ATBMCQ_ADMIN.SINHVIEN
+    WHERE MASV = 'SV001';

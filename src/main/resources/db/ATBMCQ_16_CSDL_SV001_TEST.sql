@@ -1,9 +1,1 @@
 SELECT * FROM ATBMCQ_ADMIN.sinhvien;
-set SERVEROUTPUT on
-DECLARE
-  res VARCHAR2(200);
-BEGIN
-  res := vpd_mgr.PF_SINHVIEN_SELECT('ATBMCQ_ADMIN', 'SINHVIEN');
-  DBMS_OUTPUT.PUT_LINE('Policy Result: ' || res);
-END;
-/
