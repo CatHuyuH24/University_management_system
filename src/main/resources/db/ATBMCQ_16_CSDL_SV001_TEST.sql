@@ -1,1 +1,0 @@
-SELECT * FROM ATBMCQ_ADMIN.sinhvien;

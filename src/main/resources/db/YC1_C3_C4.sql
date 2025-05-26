@@ -27,9 +27,9 @@ AS
 BEGIN
     v_user := SYS_CONTEXT('USERENV', 'SESSION_USER');
     v_role := SYS_CONTEXT('user_ctx', 'VAI_TRO');
-    RETURN v_role;
-    IF v_user = 'VPD_MGR' OR v_user = 'ATBMCQ_ADMIN' THEN
-        RETURN '1 = 1'; -- Full access for VPD_MGR
+    
+    IF v_user = 'ATBMCQ_ADMIN' OR v_user = 'VPD_MGR' THEN
+        RETURN '1 = 1';
     ELSIF v_role = 'SINHVIEN' THEN
         RETURN 'MASV = ''' || v_user || ''''; -- Access only to own record
     ELSIF v_role = 'GV' THEN
@@ -39,12 +39,10 @@ BEGIN
             WHERE MANV = v_user;
         EXCEPTION
             WHEN NO_DATA_FOUND THEN
-                v_donvi := '';
+                RETURN '111 = 999';
         END;
-    
-        IF v_donvi != '' THEN
-            RETURN 'KHOA = ''' || v_donvi || '''';
-        END IF;
+        RETURN 'KHOA = ''' || v_donvi || '''';
+        
     ELSE
         RETURN '0 = 1'; -- No access
     END IF;
@@ -72,24 +70,18 @@ CREATE OR REPLACE FUNCTION PF_SINVIEN_UPDATE_DCHI_DT(
 RETURN VARCHAR2
 AS
     v_username VARCHAR2(40);
-    v_temp VARCHAR2(100);
+    v_role VARCHAR2(40);
 BEGIN
     v_username := SYS_CONTEXT('userenv', 'SESSION_USER');
-    SELECT MASV INTO v_temp FROM SINVIEN WHERE MASV = v_username;
-    IF v_temp IS NOT NULL THEN
-        RETURN 'MASV = ''' || v_username || '''';
-    END IF;
+    v_role := SYS_CONTEXT('user_ctx', 'VAI_TRO');
     
-    SELECT VAITRO INTO v_temp FROM NHANVIEN WHERE MANV = v_username;
-    IF v_temp = 'NV CTSV' THEN
+    IF v_role = 'SINHVIEN' THEN
+        RETURN 'MASV = ''' || v_username || '''';
+    ELSIF v_role = 'NV CTSV' THEN
         RETURN '1 = 1';
     ELSE
         RETURN '0 = 1';
     END IF;
-    EXCEPTION
-        WHEN NO_DATA_FOUND THEN
-            RETURN '0 = 1';
-    END;
 END;
 
 BEGIN
@@ -100,7 +92,8 @@ BEGIN
     function_schema  => 'VPD_MGR',
     policy_function  => 'PF_SINVIEN_UPDATE_DCHI_DT',
     statement_types  => 'UPDATE',
-    sec_relevant_cols => 'DCHI,DT'
+    sec_relevant_cols => 'DCHI,DT',
+    update_check => TRUE
   );
 END;
 
@@ -112,22 +105,17 @@ CREATE OR REPLACE FUNCTION PF_SINHVIEN_INSERT_UPDATE_DELETE(
 )
 RETURN VARCHAR2
 AS
-    v_username VARCHAR2(40);
-    v_temp VARCHAR2(100);
+    v_role VARCHAR2(40);
 BEGIN
-    v_username := SYS_CONTEXT('userenv', 'SESSION_USER');
-    SELECT VAITRO INTO v_temp FROM NHANVIEN WHERE MANV = v_username;
+    v_role := SYS_CONTEXT('user_ctx', 'VAI_TRO');
     
-    IF v_temp = 'NV CTSV' THEN
+    IF v_role = 'NV CTSV' THEN
         RETURN '1 = 1';
     ELSE
         RETURN '0 = 1';
     END IF;
-    EXCEPTION
-        WHEN NO_DATA_FOUND THEN
-            RETURN '0 = 1';
-    END;
 END;
+/
 
 BEGIN
   DBMS_RLS.ADD_POLICY (
@@ -137,15 +125,50 @@ BEGIN
     function_schema  => 'VPD_MGR',
     policy_function  => 'PF_SINHVIEN_INSERT_UPDATE_DELETE',
     statement_types  => 'INSERT, UPDATE, DELETE',
-    sec_relevant_cols => 'MASV, HOTEN, PHAI, NGSINH, DCHI, DT, KHOA'
+    sec_relevant_cols => 'MASV, HOTEN, PHAI, NGSINH, DCHI, DT, KHOA',
+    update_check => TRUE
   );
 END;
+
+-- GIỚI HẠN VIỆC UDATE CỘT TINHTRANG
+CREATE OR REPLACE FUNCTION PF_SINHVIEN_UPDATE_TINHTRANG(
+    schema_name IN VARCHAR2,
+    object_name IN VARCHAR2
+)
+RETURN VARCHAR2
+AS
+    v_role VARCHAR2(40);
+    v_temp VARCHAR2(40);
+BEGIN
+    v_role := SYS_CONTEXT('user_ctx', 'VAI_TRO');
+    
+    IF v_role = 'NV PĐT' THEN
+        RETURN '2 = 2';
+    ELSE
+        RETURN '2 = 0';
+    END IF;
+END;
+/
+
+BEGIN
+  DBMS_RLS.ADD_POLICY (
+    object_schema    => 'ATBMCQ_ADMIN',
+    object_name      => 'SINHVIEN',
+    policy_name      => 'ATBMCQ_16_SINHVIEN_UPDATE_TINHTRANG',
+    function_schema  => 'VPD_MGR',
+    policy_function  => 'PF_SINHVIEN_UPDATE_TINHTRANG',
+    statement_types  => 'UPDATE',
+    sec_relevant_cols => 'TINHTRANG',
+    update_check => TRUE
+  );
+END;
+
 
 BEGIN
     DBMS_RLS.DROP_POLICY(
     object_schema    => 'ATBMCQ_ADMIN',
     object_name      => 'SINHVIEN',
-    policy_name      => 'ATBMCQ_16_SINHVIEN_SELECT'
+    policy_name      => 'ATBMCQ_16_SINHVIEN_UPDATE_DCHI_DT'
     );
 END;
 /
