@@ -22,20 +22,27 @@ public class ClientView extends Application {
         navigationPanel.setVgap(10);
 
         Button studentsButton = new Button("Students");
-        Button dummyButton2 = new Button("Dummy 2");
-        Button dummyButton3 = new Button("Dummy 3");
+        Button employeesButton = new Button("Employees");
+        Button subjectsButton = new Button("Subjects");
+        Button registrationButton = new Button("Registration");
+        Button broadcastNotificationButton = new Button("Broadcast Notification");
+        Button viewNotificationsButton = new Button("View Notifications");
         Button logoutButton = new Button("Log out");
 
         navigationPanel.add(studentsButton, 0, 1);
-        navigationPanel.add(dummyButton2, 0, 2);
-        navigationPanel.add(dummyButton3, 0, 3);
+        navigationPanel.add(employeesButton, 0, 2);
+        navigationPanel.add(subjectsButton, 0, 3);
+        navigationPanel.add(registrationButton, 0, 4);
+        navigationPanel.add(broadcastNotificationButton, 0, 5);
+        navigationPanel.add(viewNotificationsButton, 0, 6);
 
         // Add a spacer pane to fill the space between the last button and the bottom
         Pane spacer = new Pane();
-        navigationPanel.add(spacer, 0, 4);
+        navigationPanel.add(spacer, 0, 7);
         GridPane.setVgrow(spacer, Priority.ALWAYS);
 
-        navigationPanel.add(logoutButton, 0, 5);
+        // Move logout button to the bottom
+        navigationPanel.add(logoutButton, 0, 8);
 
         BorderPane contentArea = new BorderPane();
         contentArea.setCenter(new Text("Welcome CLIENT"));
