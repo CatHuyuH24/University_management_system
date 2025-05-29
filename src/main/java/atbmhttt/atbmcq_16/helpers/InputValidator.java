@@ -4,7 +4,7 @@ public class InputValidator {
     public static void validateInput(String input) throws IllegalArgumentException {
 
         // Disallow special characters: ; ' " -- / , . * _ #
-        String[] bannedPatterns = { ";", "'", "\"", "--", "/", ",", "\\.", "\\*", "_", "#" };
+        String[] bannedPatterns = { ";", "'", "\"", "--", "/", "\\.", "\\*", "_", "#" };
         for (String pattern : bannedPatterns) {
             if (input.contains(pattern.replace("\\", ""))) {
                 throw new IllegalArgumentException(

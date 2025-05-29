@@ -30,7 +30,7 @@ public class StudentsViewModel {
         return students.get();
     }
 
-    public String[] updateStudentAttributeAndReturnUpdatedStudent(
+    public String[] updateStudentAttributeAndReturnStudentToBeRendered(
             String studentID, String column, String newValue)
             throws Exception {
         // Validation based on schema
@@ -55,9 +55,9 @@ public class StudentsViewModel {
                 break;
             case "NGSINH":
                 try {
-                    java.time.LocalDate.parse(newValue, java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                    java.time.LocalDate.parse(newValue, java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy"));
                 } catch (Exception e) {
-                    throw new IllegalArgumentException("Date of Birth (NGSINH) must be in format yyyy-MM-dd.");
+                    throw new IllegalArgumentException("Date of Birth (NGSINH) must be in format DD-MM-YYYY.");
                 }
                 break;
             case "DCHI":
@@ -97,6 +97,7 @@ public class StudentsViewModel {
             throw e;
         }
 
+        // reaching here means db update operation is successful
         String[] student = null;
         // Update the local students list without querying the repository
         for (int i = 0; i < students.size(); i++) {
@@ -104,7 +105,7 @@ public class StudentsViewModel {
 
             if (student[0].equals(studentID)) { // Assuming studentID is at index 0
                 switch (column) {
-                    case "studentID":
+                    case "MASV":
                         student[0] = newValue;
                         break;
                     case "HOTEN":
@@ -136,8 +137,44 @@ public class StudentsViewModel {
             }
         }
 
-        System.out.println("Returning null when updateStudent");
         return null;
 
+    }
+
+    public void addStudent(String[] studentFields) throws Exception {
+        // studentFields: [MASV, HOTEN, PHAI, NGSINH, DCHI, DT, KHOA]
+        if (studentFields.length != 7)
+            throw new IllegalArgumentException("All 7 fields are required.");
+        String[] columns = { "MASV", "HOTEN", "PHAI", "NGSINH", "DCHI", "DT", "KHOA" };
+        for (int i = 0; i < columns.length; i++) {
+            InputValidator.validateInput(studentFields[i]);
+        }
+        // Field-specific validation (reuse logic from
+        // updateStudentAttributeAndReturnUpdatedStudent)
+        if (studentFields[0].length() > 10 || studentFields[0].isEmpty())
+            throw new IllegalArgumentException("Student ID (MASV) must be 1-10 characters.");
+        if (studentFields[1].length() > 50 || studentFields[1].isEmpty())
+            throw new IllegalArgumentException("Full Name (HOTEN) must be 1-50 characters.");
+        if (!(studentFields[2].equals("Nam") || studentFields[2].equals("Nu")))
+            throw new IllegalArgumentException("Gender (PHAI) must be 'Nam' or 'Nu'.");
+        try {
+            java.time.LocalDate.parse(studentFields[3], java.time.format.DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Date of Birth (NGSINH) must be in format DD-MM-YYYY.");
+        }
+        if (studentFields[4].length() > 100)
+            throw new IllegalArgumentException("Address (DCHI) must be at most 100 characters.");
+        if (studentFields[5].length() > 15)
+            throw new IllegalArgumentException("Phone (DT) must be at most 15 characters.");
+        if (studentFields[6].length() > 10 || studentFields[6].isEmpty())
+            throw new IllegalArgumentException("Department (KHOA) must be 1-10 characters.");
+
+        try {
+            studentsRepository.addStudent(studentFields);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        }
+        // No need to add to observable list, as inserter can't see the records
     }
 }

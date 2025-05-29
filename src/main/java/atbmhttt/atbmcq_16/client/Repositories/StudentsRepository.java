@@ -41,7 +41,12 @@ public class StudentsRepository {
     }
 
     public int updateStudentAttribute(String masv, String cleanedColumnName, String newValue) throws SQLException {
-        String sql = "UPDATE ATBMCQ_ADMIN.SINHVIEN SET " + cleanedColumnName + " = ? WHERE MASV = ?";
+        String sql;
+        if ("NGSINH".equals(cleanedColumnName)) {
+            sql = "UPDATE ATBMCQ_ADMIN.SINHVIEN SET NGSINH = TO_DATE(?, 'DD-MM-YYYY') WHERE MASV = ?";
+        } else {
+            sql = "UPDATE ATBMCQ_ADMIN.SINHVIEN SET " + cleanedColumnName + " = ? WHERE MASV = ?";
+        }
         try (Connection connection = DatabaseConnection.getConnection();
                 java.sql.PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, newValue);
@@ -53,6 +58,23 @@ public class StudentsRepository {
         } catch (Exception e) {
             // Any other error (should be rare)
             throw new RuntimeException("Unexpected error during update: " + e.getMessage(), e);
+        }
+    }
+
+    public void addStudent(String[] studentFields) throws SQLException {
+        String sql = "INSERT INTO ATBMCQ_ADMIN.SINHVIEN (MASV, HOTEN, PHAI, NGSINH, DCHI, DT, KHOA) VALUES (?, ?, ?, TO_DATE(?, 'DD-MM-YYYY'), ?, ?, ?)";
+        try (Connection connection = DatabaseConnection.getConnection();
+                java.sql.PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, studentFields[0]); // MASV
+            statement.setString(2, studentFields[1]); // HOTEN
+            statement.setString(3, studentFields[2]); // PHAI
+            statement.setString(4, studentFields[3]); // NGSINH
+            statement.setString(5, studentFields[4]); // DCHI
+            statement.setString(6, studentFields[5]); // DT
+            statement.setString(7, studentFields[6]); // KHOA
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw e;
         }
     }
 }

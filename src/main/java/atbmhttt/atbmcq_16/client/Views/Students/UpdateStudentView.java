@@ -36,15 +36,21 @@ public class UpdateStudentView {
         layout.setAlignment(Pos.CENTER);
 
         Label masvLabel = new Label("Student ID:");
+        masvLabel.setAlignment(Pos.CENTER_LEFT);
+        masvLabel.setStyle("-fx-alignment: center-left;");
         TextField masvField = new TextField();
         masvField.setPromptText("Enter student ID");
 
         Label colLabel = new Label("What to update:");
+        colLabel.setAlignment(Pos.CENTER_LEFT);
+        colLabel.setStyle("-fx-alignment: center-left;");
         ComboBox<String> colCombo = new ComboBox<>();
         colCombo.getItems().addAll("MASV", "HOTEN", "PHAI", "NGSINH", "DCHI", "DT", "KHOA", "TINHTRANG");
         colCombo.getSelectionModel().selectFirst();
 
         Label newValLabel = new Label("New value:");
+        newValLabel.setAlignment(Pos.CENTER_LEFT);
+        newValLabel.setStyle("-fx-alignment: center-left;");
         TextField newValField = new TextField();
         newValField.setPromptText("Enter new value");
 
@@ -67,12 +73,13 @@ public class UpdateStudentView {
                 if (viewModel == null) {
                     viewModel = new atbmhttt.atbmcq_16.client.ViewModels.StudentsViewModel();
                 }
-                var newStudent = viewModel.updateStudentAttributeAndReturnUpdatedStudent(masv, col, newVal);
+                var newStudentInfoToBeRendered = viewModel.updateStudentAttributeAndReturnStudentToBeRendered(masv, col,
+                        newVal);
 
-                if (null == newStudent) {
-                    throw new Exception();
+                if (null != newStudentInfoToBeRendered) {
+                    view.renderNewStudent(newStudentInfoToBeRendered);
                 }
-                view.renderNewStudent(newStudent);
+                // being null just means there is no need to re-render
 
                 AlertDialog.showInformationAlert("Updated sucessfully",
                         null, col + " has been updated to " + newVal,
