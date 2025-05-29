@@ -77,4 +77,18 @@ public class StudentsRepository {
             throw e;
         }
     }
+
+    public int deleteStudentByMASV(String masv) throws SQLException {
+        String sql = "DELETE FROM ATBMCQ_ADMIN.SINHVIEN WHERE MASV = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+                java.sql.PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, masv);
+            int affected = statement.executeUpdate();
+            return affected;
+        } catch (SQLException e) {
+            throw e;
+        } catch (Exception e) {
+            throw e;
+        }
+    }
 }

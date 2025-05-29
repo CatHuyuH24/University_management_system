@@ -89,7 +89,6 @@ public class StudentsViewModel {
                                 + newValue + "\nNo student information was updated!");
             }
         } catch (SQLException e) {
-            System.out.println("Error when updating student " + e.getMessage());
             e.printStackTrace();
             throw e;
         } catch (Exception e) {
@@ -176,5 +175,26 @@ public class StudentsViewModel {
             throw e;
         }
         // No need to add to observable list, as inserter can't see the records
+    }
+
+    public void deleteStudentByMASV(String masv) throws Exception {
+        if (masv == null || masv.trim().isEmpty()) {
+            throw new IllegalArgumentException("MASV cannot be empty.");
+        }
+        int affected = 0;
+        try {
+            affected = studentsRepository.deleteStudentByMASV(masv);
+            if (affected == 0) {
+                throw new Exception("No student information was deleted! MASV: " + masv + " not found.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+
+        // No need to update observable list, as deleter can't see the records
     }
 }

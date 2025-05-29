@@ -67,13 +67,15 @@ public class StudentsView {
         bottomSection.setAlignment(Pos.CENTER_RIGHT);
         bottomSection.setStyle(
                 "-fx-background-color: #f0f0f0; -fx-padding: 12 24 12 24; -fx-border-color: #ccc; -fx-border-width: 1 0 0 0;");
-        javafx.scene.control.Button updateButton = new javafx.scene.control.Button("Update");
+        javafx.scene.control.Button updateButton = new javafx.scene.control.Button("Update information");
         javafx.scene.control.Button addButton = new javafx.scene.control.Button("Add student");
+        javafx.scene.control.Button deleteButton = new javafx.scene.control.Button("Delete student");
 
         UpdateStudentView.setStudentsViewModel(this, studentsViewModel);
         updateButton.setOnAction(e -> UpdateStudentView.show());
-        addButton.setOnAction(e -> AddStudent.show(this, studentsViewModel));
-        bottomSection.getChildren().addAll(addButton, updateButton);
+        addButton.setOnAction(e -> AddStudentView.show(this, studentsViewModel));
+        deleteButton.setOnAction(e -> DeleteStudentDialog.show(studentsViewModel));
+        bottomSection.getChildren().addAll(addButton, updateButton, deleteButton);
 
         BorderPaneHelper.setAllSections(contentArea, null, null, null, bottomSection, scrollPane);
     }

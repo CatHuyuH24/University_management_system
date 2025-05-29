@@ -15,12 +15,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class AddStudent {
+public class AddStudentView {
     public static void show(StudentsView studentsView, StudentsViewModel studentsViewModel) {
         Stage dialog = new Stage();
         dialog.setTitle("Add New Student");
         try {
-            Image iconImage = new Image(AddStudent.class.getResource("/images/app_icon.png").toExternalForm());
+            Image iconImage = new Image(AddStudentView.class.getResource("/images/app_icon.png").toExternalForm());
             dialog.getIcons().add(iconImage);
         } catch (Exception ex) {
             // ignore if icon not found
@@ -90,10 +90,14 @@ public class AddStudent {
                             "KHOA you enter could not be found.\nPlease re-check and try again. If you're unsure, contact your department staff or authorized personnel.",
                             null, 400, 200);
                 } else {
-                    AlertDialog.showErrorAlert("Database error", null, e.getMessage(), null, 400, 200);
+                    AlertDialog.showErrorAlert("Error adding new student", null,
+                            "An unexpected error occurred.\nPlease contact your supervisor or authorized personnel.",
+                            null, 400, 200);
                 }
             } catch (Exception e) {
-                AlertDialog.showErrorAlert("Error", null, "An unexpected error occurred.", null, 400, 200);
+                AlertDialog.showErrorAlert("Error", null,
+                        "An unexpected error occurred.\nPlease contact your supervisor or authorized personnel.", null,
+                        400, 200);
             }
         });
         cancelBtn.setOnAction(ev -> dialog.close());
