@@ -6,7 +6,8 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class AlertDialog {
-    public static void showErrorAlert(String title, String headerText, String contentText, String iconPath) {
+    public static void showErrorAlert(String title, String headerText, String contentText, String iconPath,
+            double width, double height) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(headerText);
@@ -23,6 +24,8 @@ public class AlertDialog {
         } catch (Exception e) {
             System.err.println("AlertDialog: Error occurred when trying to get icon image");
         }
+        // Adjust the size of the dialog
+        alert.getDialogPane().setPrefSize(width, height);
         // Show the alert
         alert.showAndWait();
     }
@@ -38,6 +41,8 @@ public class AlertDialog {
      * @param iconPath    The path to the icon image to be displayed in the title
      *                    bar
      *                    of the alert dialog. If null, the app icon is used.
+     * @param width       The preferred width of the dialog.
+     * @param height      The preferred height of the dialog.
      * @return The ButtonType representing the user's response. Possible outcomes
      *         are:
      *         - ButtonType.OK: If the user confirms the action.
@@ -45,7 +50,7 @@ public class AlertDialog {
      *         - null: If the dialog is closed without any response.
      */
     public static ButtonType showAndGetResultConfirmationAlert(String title, String headerText, String contentText,
-            String iconPath) {
+            String iconPath, double width, double height) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle(title);
         alert.setHeaderText(headerText);
@@ -64,7 +69,7 @@ public class AlertDialog {
         }
 
         // Adjust the size of the dialog
-        alert.getDialogPane().setPrefSize(400, 200); // Set preferred width and height
+        alert.getDialogPane().setPrefSize(width, height); // Set preferred width and height
 
         // Show the alert
         ButtonType response;
@@ -77,7 +82,8 @@ public class AlertDialog {
 
     }
 
-    public static void showInformationAlert(String title, String headerText, String contentText, String iconPath) {
+    public static void showInformationAlert(String title, String headerText, String contentText, String iconPath,
+            double width, double height) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setHeaderText(headerText);
@@ -94,6 +100,8 @@ public class AlertDialog {
         } catch (Exception e) {
             System.err.println("AlertDialog: Error occurred when trying to get icon image");
         }
+        // Adjust the size of the dialog
+        alert.getDialogPane().setPrefSize(width, height);
         // Show the alert
         alert.showAndWait();
     }

@@ -70,7 +70,7 @@ public class UserPrivilegesView {
             AlertDialog.showErrorAlert("ERROR FETCHING USER PRIVILEGES",
                     null,
                     "An error occurred while fetching user privileges. Please try again later.",
-                    null);
+                    null, 400, 200);
         }
 
         VBox layout = new VBox(10, tableView);

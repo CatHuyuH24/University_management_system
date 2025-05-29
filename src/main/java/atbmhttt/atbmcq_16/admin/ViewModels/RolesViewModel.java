@@ -40,7 +40,8 @@ public class RolesViewModel {
             return FXCollections.observableArrayList(rolesRepository.getGrantedRoles(roleName));
         } catch (SQLException e) {
             AlertDialog.showErrorAlert("Error Fetching Granted Roles", null,
-                    "An error occurred while fetching granted roles for " + roleName + ".\n" + e.getMessage(), null);
+                    "An error occurred while fetching granted roles for " + roleName + ".\n" + e.getMessage(), null,
+                    400, 200);
             return FXCollections.observableArrayList();
         }
     }
@@ -52,7 +53,7 @@ public class RolesViewModel {
             AlertDialog.showErrorAlert("Error Fetching Available Roles", null,
                     "An error occurred while fetching available roles excluding " + excludeRoleName + ".\n"
                             + e.getMessage(),
-                    null);
+                    null, 400, 200);
             return FXCollections.observableArrayList();
         }
     }
@@ -61,11 +62,11 @@ public class RolesViewModel {
         try {
             rolesRepository.grantRoleToRole(grantRole, targetRole);
             AlertDialog.showInformationAlert("Role Granted Successfully", null,
-                    "Role " + grantRole + " has been granted to " + targetRole + ".", null);
+                    "Role " + grantRole + " has been granted to " + targetRole + ".", null, 400, 200);
         } catch (SQLException e) {
             AlertDialog.showErrorAlert("Error Granting Role", null,
                     "An error occurred while granting role " + grantRole + " to " + targetRole + ".\n" + e.getMessage(),
-                    null);
+                    null, 400, 200);
         }
     }
 }

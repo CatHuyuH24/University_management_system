@@ -55,7 +55,7 @@ public class DetailPrivilegesView {
                     content += "Are you sure you want to REVOKE?";
                     ButtonType response = AlertDialog.showAndGetResultConfirmationAlert(
                             title,
-                            null, content, null);
+                            null, content, null, 400, 200);
                     if (ButtonType.OK == response) {
                         viewModel.revokePrivilege(
                                 username,
