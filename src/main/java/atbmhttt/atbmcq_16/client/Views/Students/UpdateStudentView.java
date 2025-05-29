@@ -1,6 +1,7 @@
 package atbmhttt.atbmcq_16.client.Views.Students;
 
 import atbmhttt.atbmcq_16.client.ViewModels.StudentsViewModel;
+import atbmhttt.atbmcq_16.client.Views.ClientAlertDialogs;
 import atbmhttt.atbmcq_16.dialogs.AlertDialog;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -90,9 +91,7 @@ public class UpdateStudentView {
                 AlertDialog.showErrorAlert("Disallowed input", null,
                         e.getMessage(), null, 400, 200);
             } catch (Exception ex) {
-                AlertDialog.showErrorAlert("Error", null,
-                        "You CANNOT perform this ACTION!\nIf you think this is a mistake or need help, please reach out to an authorized staff member or administrator.",
-                        null, 400, 200);
+                ClientAlertDialogs.displayGeneralErrorDialog();
             }
         });
         cancelBtn.setOnAction(ev -> dialog.close());

@@ -1,6 +1,7 @@
 package atbmhttt.atbmcq_16.client.Views.Students;
 
 import atbmhttt.atbmcq_16.client.ViewModels.StudentsViewModel;
+import atbmhttt.atbmcq_16.client.Views.ClientAlertDialogs;
 import atbmhttt.atbmcq_16.dialogs.AlertDialog;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -53,19 +54,15 @@ public class DeleteStudentDialog {
             } catch (IllegalArgumentException e) {
                 AlertDialog.showErrorAlert("Invalid input", null, e.getMessage(), null, 400, 200);
             } catch (SQLException e) {
-                AlertDialog.showErrorAlert("Error deleting student", null,
-                        "An unexpected error occurred.\nPlease contact your supervisor or authorized personnel.",
-                        null, 400, 200);
+                ClientAlertDialogs.displayGeneralErrorDialog();
             } catch (Exception e) {
                 String msg = e.getMessage();
                 if (msg != null && (msg.contains("not found"))) {
-                    AlertDialog.showErrorAlert("Student not found", null,
+                    AlertDialog.showErrorAlert("Error deleting student", null,
                             "No student record found with the provided MASV. Please re-check and try again.\nIf you need further assistance, please contact your supervisor or authorized personnel.",
                             null, 400, 200);
                 } else {
-                    AlertDialog.showErrorAlert("Error", null,
-                            "An unexpected error occurred.\nPlease contact your supervisor or authorized personnel.",
-                            null, 400, 200);
+                    ClientAlertDialogs.displayGeneralErrorDialog();
                 }
             }
         });

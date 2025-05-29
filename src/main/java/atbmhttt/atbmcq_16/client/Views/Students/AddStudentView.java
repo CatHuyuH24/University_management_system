@@ -3,6 +3,7 @@ package atbmhttt.atbmcq_16.client.Views.Students;
 import java.sql.SQLException;
 
 import atbmhttt.atbmcq_16.client.ViewModels.StudentsViewModel;
+import atbmhttt.atbmcq_16.client.Views.ClientAlertDialogs;
 import atbmhttt.atbmcq_16.helpers.InputValidator;
 import atbmhttt.atbmcq_16.dialogs.AlertDialog;
 import javafx.geometry.Pos;
@@ -90,9 +91,7 @@ public class AddStudentView {
                             "KHOA you enter could not be found.\nPlease re-check and try again. If you're unsure, contact your department staff or authorized personnel.",
                             null, 400, 200);
                 } else {
-                    AlertDialog.showErrorAlert("Error adding new student", null,
-                            "An unexpected error occurred.\nPlease contact your supervisor or authorized personnel.",
-                            null, 400, 200);
+                    ClientAlertDialogs.displayGeneralErrorDialog();
                 }
             } catch (Exception e) {
                 AlertDialog.showErrorAlert("Error", null,
