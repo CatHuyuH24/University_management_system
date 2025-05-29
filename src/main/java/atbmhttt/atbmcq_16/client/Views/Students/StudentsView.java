@@ -5,45 +5,54 @@ import atbmhttt.atbmcq_16.helpers.BorderPaneHelper;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 public class StudentsView {
     private final StudentsViewModel studentsViewModel;
+    private final String[] labels = { "Student ID",
+            "Full Name",
+            "Gender",
+            "Date of Birth",
+            "Address",
+            "Phone",
+            "Department",
+            "Status" };
+    private VBox studentsContainer;
+    private ObservableList<String[]> students;
 
     public StudentsView() {
         this.studentsViewModel = new StudentsViewModel();
     }
 
     public void displayStudents(BorderPane contentArea) {
-        ObservableList<String[]> students = studentsViewModel.getStudents();
-        VBox studentsContainer = new VBox(20);
+        students = studentsViewModel.getStudents();
+
+        studentsContainer = new VBox(20);
         studentsContainer.setStyle("-fx-padding: 16;");
         studentsContainer.setAlignment(Pos.CENTER);
-
         if (students.isEmpty()) {
             javafx.scene.control.Label emptyLabel = new javafx.scene.control.Label(
                     "No students information to be displayed");
             emptyLabel.setStyle("-fx-font-size: 16; -fx-text-fill: #888;");
             studentsContainer.getChildren().add(emptyLabel);
         } else {
-            String[] labels = { "Student ID", "Full Name", "Gender", "Date of Birth", "Address", "Phone", "Department",
-                    "Status" };
             for (String[] student : students) {
-                VBox studentBox = new VBox(5);
-                studentBox.setStyle(
+                GridPane studentGrid = new GridPane();
+                studentGrid.setStyle(
                         "-fx-border-color: #888; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 16; -fx-background-color: #f9f9f9; -fx-margin: 16");
-                studentBox.setAlignment(Pos.TOP_LEFT);
+                studentGrid.setAlignment(Pos.TOP_LEFT);
+                studentGrid.setHgap(10);
+                studentGrid.setVgap(5);
                 for (int i = 0; i < labels.length; i++) {
-                    HBox row = new HBox(10);
-                    row.setAlignment(Pos.CENTER_LEFT);
                     javafx.scene.control.Label label = new javafx.scene.control.Label(labels[i] + ": ");
                     label.setMinWidth(90);
                     javafx.scene.control.Label value = new javafx.scene.control.Label(student[i]);
-                    row.getChildren().addAll(label, value);
-                    studentBox.getChildren().add(row);
+                    studentGrid.add(label, 0, i);
+                    studentGrid.add(value, 1, i);
                 }
-                studentsContainer.getChildren().add(studentBox);
+                studentsContainer.getChildren().add(studentGrid);
             }
         }
 
@@ -58,10 +67,37 @@ public class StudentsView {
         bottomSection.setAlignment(Pos.CENTER_RIGHT);
         bottomSection.setStyle(
                 "-fx-background-color: #f0f0f0; -fx-padding: 12 24 12 24; -fx-border-color: #ccc; -fx-border-width: 1 0 0 0;");
-        javafx.scene.control.Button updateAllBtn = new javafx.scene.control.Button("Update");
-        updateAllBtn.setOnAction(e -> UpdateStudentView.show());
-        bottomSection.getChildren().add(updateAllBtn);
+        javafx.scene.control.Button updateButton = new javafx.scene.control.Button("Update");
 
-        BorderPaneHelper.setAllSections(contentArea, null, scrollPane, null, bottomSection, null);
+        UpdateStudentView.setStudentsViewModel(this, studentsViewModel);
+        updateButton.setOnAction(e -> UpdateStudentView.show());
+        bottomSection.getChildren().add(updateButton);
+
+        BorderPaneHelper.setAllSections(contentArea, null, null, null, bottomSection, scrollPane);
+    }
+
+    public void renderNewStudent(String[] updatedStudent) {
+        GridPane studentGrid = new GridPane();
+        studentGrid.setStyle(
+                "-fx-border-color: #888; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 16; -fx-background-color: #f9f9f9; -fx-margin: 16");
+        studentGrid.setAlignment(Pos.TOP_LEFT);
+        studentGrid.setHgap(10);
+        studentGrid.setVgap(5);
+        for (int i = 0; i < labels.length; i++) {
+            javafx.scene.control.Label label = new javafx.scene.control.Label(labels[i] + ": ");
+            label.setMinWidth(90);
+            javafx.scene.control.Label value = new javafx.scene.control.Label(updatedStudent[i]);
+            studentGrid.add(label, 0, i);
+            studentGrid.add(value, 1, i);
+        }
+
+        for (int i = 0; i < students.size(); i++) {
+            if (students.get(i)[0].equals(updatedStudent[0])) {
+                studentsContainer.getChildren().set(i, studentGrid);
+                return;
+            }
+        }
+        System.out.println("Updated student does not exist in the Observable list");
+        // do nothing
     }
 }

@@ -14,15 +14,17 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class UpdateStudentView {
-    private static StudentsViewModel studentsViewModel;
+    private static StudentsViewModel viewModel;
+    private static StudentsView view;
 
-    public static void setStudentsViewModel(atbmhttt.atbmcq_16.client.ViewModels.StudentsViewModel svm) {
-        studentsViewModel = svm;
+    public static void setStudentsViewModel(StudentsView studentsView, StudentsViewModel studentsViewModel) {
+        viewModel = studentsViewModel;
+        view = studentsView;
     }
 
     public static void show() {
         Stage dialog = new Stage();
-        dialog.setTitle("Update Student Attribute");
+        dialog.setTitle("Update Student information");
         try {
             Image iconImage = new Image(UpdateStudentView.class.getResource("/images/app_icon.png").toExternalForm());
             dialog.getIcons().add(iconImage);
@@ -62,14 +64,20 @@ public class UpdateStudentView {
                 return;
             }
             try {
-                if (studentsViewModel == null) {
-                    studentsViewModel = new atbmhttt.atbmcq_16.client.ViewModels.StudentsViewModel();
+                if (viewModel == null) {
+                    viewModel = new atbmhttt.atbmcq_16.client.ViewModels.StudentsViewModel();
                 }
-                studentsViewModel.updateStudentAttribute(masv, col, newVal);
+                var newStudent = viewModel.updateStudentAttributeAndReturnUpdatedStudent(masv, col, newVal);
+
+                if (null == newStudent) {
+                    throw new Exception();
+                }
+                view.renderNewStudent(newStudent);
 
                 AlertDialog.showInformationAlert("Updated sucessfully",
                         null, col + " has been updated to " + newVal,
                         null, 400, 200);
+                dialog.close();
 
             } catch (Exception ex) {
                 AlertDialog.showErrorAlert("Error", null,

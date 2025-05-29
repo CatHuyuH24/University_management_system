@@ -28,7 +28,9 @@ public class StudentsViewModel {
         return students.get();
     }
 
-    public void updateStudentAttribute(String masv, String column, String newValue) throws Exception {
+    public String[] updateStudentAttributeAndReturnUpdatedStudent(
+            String masv, String column, String newValue)
+            throws Exception {
         // Validation based on schema
         switch (column) {
             case "MASV":
@@ -70,9 +72,27 @@ public class StudentsViewModel {
             default:
                 throw new Exception("Illegal argument!");
         }
-        int rowCount = studentsRepository.updateStudentAttribute(masv, column, newValue);
+
+        try {
+            int rowCount = studentsRepository.updateStudentAttribute(masv, column, newValue);
+            if (rowCount == 0) {
+                throw new Exception("Exeption when updating\nMASV: " + masv + "\nColumn: " + column + "\nNew value: "
+                        + newValue + "\nNo student information was updated!");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error when updating student " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+
+        String[] student = null;
         // Update the local students list without querying the repository
-        for (String[] student : students) {
+        for (int i = 0; i < students.size(); i++) {
+            student = students.get(i);
+
             if (student[0].equals(masv)) { // Assuming MASV is at index 0
                 switch (column) {
                     case "MASV":
@@ -100,15 +120,15 @@ public class StudentsViewModel {
                         student[7] = newValue;
                         break;
                 }
+
                 // Notify listeners about the change
-                students.set(students.indexOf(student), student);
-                break;
+                students.set(i, student);
+                return student;
             }
         }
 
-        if (rowCount == 0) {
-            System.out.println("No student information was updated!");
-            throw new Exception();
-        }
+        System.out.println("Returning null when updateStudent");
+        return null;
+
     }
 }

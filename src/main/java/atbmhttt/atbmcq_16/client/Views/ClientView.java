@@ -1,6 +1,5 @@
 package atbmhttt.atbmcq_16.client.Views;
 
-import atbmhttt.atbmcq_16.admin.Views.UsersView;
 import atbmhttt.atbmcq_16.client.Views.Students.StudentsView;
 import javafx.application.Application;
 import javafx.geometry.Insets;
