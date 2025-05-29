@@ -5,9 +5,9 @@ CREATE OR REPLACE FUNCTION PF_SINHVIEN_SELECT (
 )
 RETURN VARCHAR2
 AS
-  v_role VARCHAR2(30);
-  v_user VARCHAR2(30);
-  v_donvi VARCHAR2(30);
+  v_role VARCHAR2(100);
+  v_user VARCHAR2(100);
+  v_donvi VARCHAR2(100);
 BEGIN
     v_user := SYS_CONTEXT('USERENV', 'SESSION_USER');
     v_role := SYS_CONTEXT('user_ctx', 'VAI_TRO');
@@ -51,8 +51,8 @@ CREATE OR REPLACE FUNCTION PF_SINVIEN_UPDATE_DCHI_DT(
 )
 RETURN VARCHAR2
 AS
-    v_username VARCHAR2(40);
-    v_role VARCHAR2(40);
+    v_username VARCHAR2(100);
+    v_role VARCHAR2(100);
 BEGIN
     v_username := SYS_CONTEXT('userenv', 'SESSION_USER');
     v_role := SYS_CONTEXT('user_ctx', 'VAI_TRO');
@@ -87,12 +87,16 @@ CREATE OR REPLACE FUNCTION PF_SINHVIEN_INSERT_UPDATE_DELETE(
 )
 RETURN VARCHAR2
 AS
-    v_role VARCHAR2(40);
+    v_role VARCHAR2(100);
+    v_user VARCHAR2(100); 
 BEGIN
     v_role := SYS_CONTEXT('user_ctx', 'VAI_TRO');
-    
+    v_user := SYS_CONTEXT('userenv', 'SESSION_USER');
+
     IF v_role = 'NV CTSV' THEN
         RETURN '1 = 1';
+    ELSIF v_role = 'SINHVIEN' THEN
+        RETURN 'MASV = ''' || '
     ELSE
         RETURN '0 = 1';
     END IF;
@@ -126,6 +130,8 @@ BEGIN
     
     IF v_role = 'NV PĐT' THEN
         RETURN '2 = 2';
+    ELSIF v_role = 'NV CTSV' THEN
+        RETURN 'TINHTRANG IS NOT NULL';
     ELSE
         RETURN '2 = 0';
     END IF;
@@ -139,7 +145,7 @@ BEGIN
     policy_name      => 'ATBMCQ_16_SINHVIEN_UPDATE_TINHTRANG',
     function_schema  => 'VPD_MGR',
     policy_function  => 'PF_SINHVIEN_UPDATE_TINHTRANG',
-    statement_types  => 'UPDATE',
+    statement_types  => 'INSERT, UPDATE, DELETE',
     sec_relevant_cols => 'TINHTRANG',
     update_check => TRUE
   );
