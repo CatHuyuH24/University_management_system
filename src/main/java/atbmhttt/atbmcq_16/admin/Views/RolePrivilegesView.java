@@ -70,7 +70,7 @@ public class RolePrivilegesView {
             AlertDialog.showErrorAlert("ERROR FETCHING ROLE PRIVILEGES",
                     null,
                     "An error occurred while fetching role privileges. Please try again later.",
-                    null);
+                    null, 400, 200);
         }
 
         VBox layout = new VBox(10, tableView);

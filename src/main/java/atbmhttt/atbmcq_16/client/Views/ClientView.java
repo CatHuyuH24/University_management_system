@@ -1,5 +1,7 @@
 package atbmhttt.atbmcq_16.client.Views;
 
+import atbmhttt.atbmcq_16.admin.Views.UsersView;
+import atbmhttt.atbmcq_16.client.Views.Students.StudentsView;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -20,12 +22,12 @@ public class ClientView extends Application {
         navigationPanel.setPadding(new Insets(10));
         navigationPanel.setVgap(10);
 
-        Button dummyButton1 = new Button("Dummy 1");
+        Button studentsButton = new Button("Students");
         Button dummyButton2 = new Button("Dummy 2");
         Button dummyButton3 = new Button("Dummy 3");
         Button logoutButton = new Button("Log out");
 
-        navigationPanel.add(dummyButton1, 0, 1);
+        navigationPanel.add(studentsButton, 0, 1);
         navigationPanel.add(dummyButton2, 0, 2);
         navigationPanel.add(dummyButton3, 0, 3);
 
@@ -39,6 +41,9 @@ public class ClientView extends Application {
         BorderPane contentArea = new BorderPane();
         contentArea.setCenter(new Text("Welcome CLIENT"));
 
+        // set up the buttons
+        setUpDisplayStudents(studentsButton, contentArea);
+
         // Log out button functionality (similar to AdminView)
         logoutButton.setOnAction(e -> {
             // Show confirmation alert before logging out
@@ -47,7 +52,7 @@ public class ClientView extends Application {
                             "LOGGING OUT",
                             null,
                             "Are you sure you want to log out?",
-                            null);
+                            null, 400, 200);
             if (javafx.scene.control.ButtonType.OK == response) {
                 atbmhttt.atbmcq_16.Router.navigateToLogin();
             }
@@ -63,5 +68,12 @@ public class ClientView extends Application {
         primaryStage.setTitle("Client Dashboard");
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    private void setUpDisplayStudents(final Button studentsButton, final BorderPane contentArea) {
+        studentsButton.setOnAction(e -> {
+            StudentsView view = new StudentsView();
+            view.displayStudents(contentArea);
+        });
     }
 }

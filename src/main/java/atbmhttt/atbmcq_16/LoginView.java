@@ -71,14 +71,14 @@ public class LoginView {
                         "INVALID LOGIN CREDENTIAL",
                         null,
                         "Invalid username or password.\nPlease try again.",
-                        null);
+                        null, 400, 200);
                 e.printStackTrace();
             } catch (Exception e) {
                 AlertDialog.showErrorAlert(
                         "ERROR",
                         null,
                         "An error has occurred.\nPlease try again.",
-                        null);
+                        null, 400, 200);
                 e.printStackTrace();
             }
         });

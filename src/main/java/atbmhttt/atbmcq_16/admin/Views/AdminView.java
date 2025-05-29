@@ -97,7 +97,7 @@ public class AdminView extends Application {
             ButtonType response = AlertDialog.showAndGetResultConfirmationAlert("LOGGING OUT",
                     null,
                     "Are you sure you want to log out?",
-                    null);
+                    null, 400, 200);
             if (ButtonType.OK == response) {
                 Router.navigateToLogin();
             }

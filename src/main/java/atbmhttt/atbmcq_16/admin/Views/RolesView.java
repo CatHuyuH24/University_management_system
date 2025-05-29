@@ -110,7 +110,7 @@ public class RolesView {
                             "EMPTY ROLE NAME",
                             null,
                             "Role name cannot be empty. Please try again.",
-                            null);
+                            null, 400, 200);
                 } else {
                     try {
                         rolesViewModel.addRole(roleName);
@@ -118,7 +118,7 @@ public class RolesView {
                                 "ROLE ADDED SUCCESSFULLY",
                                 null,
                                 "Role " + roleName + " has been added successfully.",
-                                null);
+                                null, 400, 200);
                         addRoleStage.close();
                     } catch (SQLException ex) {
                         ex.printStackTrace();
@@ -127,14 +127,14 @@ public class RolesView {
                                     "ROLE ALREADY EXISTED", null,
                                     "Role " + roleName
                                             + " already existed!\nPlease delete it first, or use another role name",
-                                    null);
+                                    null, 400, 200);
                         } else {
 
                             AlertDialog.showErrorAlert(
                                     "FAILED TO ADD ROLE",
                                     null,
                                     "An error occurred while adding role " + roleName + ". Please try again later.",
-                                    null);
+                                    null, 400, 200);
                         }
                     }
                 }
@@ -159,7 +159,7 @@ public class RolesView {
         ButtonType response = AlertDialog.showAndGetResultConfirmationAlert(
                 "DELETE ROLE " + roleName, null,
                 "Are you sure you want to delete role " + roleName + "?",
-                null);
+                null, 400, 200);
 
         if (ButtonType.OK == response) {
             try {
@@ -167,13 +167,13 @@ public class RolesView {
                 AlertDialog.showInformationAlert("ROLE DELETED",
                         null,
                         "Role " + roleName + " has been deleted successfully.",
-                        null);
+                        null, 400, 200);
             } catch (SQLException e) {
                 e.printStackTrace();
                 AlertDialog.showErrorAlert("FAILED TO DELETE ROLE",
                         null,
                         "An error occurred while deleting role " + roleName + ". Please try again later.",
-                        null);
+                        null, 400, 200);
             }
         }
     }
@@ -200,7 +200,8 @@ public class RolesView {
             grantedRolesTable.setItems(rolesViewModel.getGrantedRoles(roleName));
         } catch (Exception e) {
             AlertDialog.showErrorAlert("Error Fetching Granted Roles", null,
-                    "An error occurred while fetching granted roles for " + roleName + ".\n" + e.getMessage(), null);
+                    "An error occurred while fetching granted roles for " + roleName + ".\n" + e.getMessage(), null,
+                    400, 200);
         }
 
         Button grantRoleButton = new Button("GRANT ROLE");
@@ -236,7 +237,8 @@ public class RolesView {
             availableRolesTable.setItems(rolesViewModel.getAvailableRoles(roleName));
         } catch (Exception e) {
             AlertDialog.showErrorAlert("Error Fetching Available Roles", null,
-                    "An error occurred while fetching available roles for " + roleName + ".\n" + e.getMessage(), null);
+                    "An error occurred while fetching available roles for " + roleName + ".\n" + e.getMessage(), null,
+                    400, 200);
         }
 
         Button submitButton = new Button("Submit");
@@ -248,7 +250,7 @@ public class RolesView {
                     editRoleStage.close();
                 } catch (Exception ex) {
                     AlertDialog.showErrorAlert("Error Granting Role", null, "An error occurred while granting role "
-                            + selectedRole + " to " + roleName + ".\n" + ex.getMessage(), null);
+                            + selectedRole + " to " + roleName + ".\n" + ex.getMessage(), null, 400, 200);
                 }
             }
             grantRoleStage.close();

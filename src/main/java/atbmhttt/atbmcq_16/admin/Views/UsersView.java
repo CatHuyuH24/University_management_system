@@ -138,7 +138,7 @@ public class UsersView {
                             "EMPTY USERNAME OR PASSWORD",
                             null,
                             "Username and/or password cannot be empty. Please try again.",
-                            null);
+                            null, 400, 200);
                 } else {
                     handleAddUser(username, password);
                     addUserStage.close();
@@ -159,7 +159,7 @@ public class UsersView {
             AlertDialog.showInformationAlert("USER ADDED SUCCESSFULLY",
                     null,
                     "User " + username + " has been added successfully.",
-                    null);
+                    null, 400, 200);
         } catch (SQLException e) {
             e.printStackTrace();
             if (e.getErrorCode() == 20001) {
@@ -168,13 +168,13 @@ public class UsersView {
                         null,
                         "User already " + username
                                 + "!\nPlease delete that user first, or choose a different username and try again.",
-                        null);
+                        null, 400, 200);
             } else {
 
                 AlertDialog.showErrorAlert("FAILED TO ADD USER",
                         null,
                         "An error occurred while adding user " + username + ". Please try again later.",
-                        null);
+                        null, 400, 200);
             }
         }
     }
@@ -198,7 +198,7 @@ public class UsersView {
             String newPassword = newPasswordField.getText();
             if (newPassword.isEmpty()) {
                 AlertDialog.showErrorAlert("EMPTY NEW PASSWORD", null,
-                        "The new password CANNOT be empty!\nPlease provide a new password", null);
+                        "The new password CANNOT be empty!\nPlease provide a new password", null, 400, 200);
             } else {
                 handleChangeUserPassword(username, newPassword);
                 changePasswordStage.close();
@@ -219,13 +219,13 @@ public class UsersView {
             AlertDialog.showInformationAlert("PASSWORD CHANGED",
                     null,
                     "Password for user " + username + " has been changed successfully!",
-                    null);
+                    null, 400, 200);
         } catch (SQLException e) {
             e.printStackTrace();
             AlertDialog.showErrorAlert("FAILED TO CHANGE PASSWORD",
                     null,
                     "An error occurred while changing the password for user " + username + ". Please try again later.",
-                    null);
+                    null, 400, 200);
         }
     }
 
@@ -233,13 +233,13 @@ public class UsersView {
         if ("ATBMCQ_ADMIN".equals(username)) {
             AlertDialog.showInformationAlert(
                     "CANNOT DELETE ROOT ADMIN", null,
-                    "YOU CANNOT DELETE THIS ROOT ADMIN ACCOUNT", null);
+                    "YOU CANNOT DELETE THIS ROOT ADMIN ACCOUNT", null, 400, 200);
             return;
         }
         ButtonType response = AlertDialog.showAndGetResultConfirmationAlert(
                 "DELETE USER " + username, null,
                 "Are you sure you want to delete user " + username + "?",
-                null);
+                null, 400, 200);
 
         if (ButtonType.OK == response) {
             try {
@@ -247,13 +247,13 @@ public class UsersView {
                 AlertDialog.showInformationAlert("USER DELETED",
                         null,
                         "User " + username + " has been deleted successfully.",
-                        null);
+                        null, 400, 200);
             } catch (SQLException e) {
                 e.printStackTrace();
                 AlertDialog.showErrorAlert("FAILED TO DELETE USER",
                         null,
                         "An error occurred while deleting user " + username + ". Please try again later.",
-                        null);
+                        null, 400, 200);
             }
         }
     }
@@ -281,7 +281,7 @@ public class UsersView {
                         AlertDialog.showErrorAlert("FAILED TO REMOVE ROLE",
                                 null,
                                 "An error occurred while removing role " + roleName + ". Please try again later.",
-                                null);
+                                null, 400, 200);
                     }
                 });
             }
@@ -310,7 +310,7 @@ public class UsersView {
             AlertDialog.showErrorAlert("FAILED TO FETCH ROLES",
                     null,
                     "An error occurred while fetching roles for user " + username + ". Please try again later.",
-                    null);
+                    null, 400, 200);
         }
 
         Button addRoleButton = new Button("Add Role");
@@ -332,7 +332,7 @@ public class UsersView {
                     AlertDialog.showErrorAlert("EMPTY ROLE NAME",
                             null,
                             "Role name cannot be empty. Please try again.",
-                            null);
+                            null, 400, 200);
                 } else {
                     try {
                         usersViewModel.addRoleToUser(username, roleName);
@@ -343,7 +343,7 @@ public class UsersView {
                         AlertDialog.showErrorAlert("FAILED TO ADD ROLE",
                                 null,
                                 "An error occurred while adding role " + roleName + ". Please try again later.",
-                                null);
+                                null, 400, 200);
                     }
                 }
             });
