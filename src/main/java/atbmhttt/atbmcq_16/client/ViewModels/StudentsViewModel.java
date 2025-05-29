@@ -1,6 +1,8 @@
 package atbmhttt.atbmcq_16.client.ViewModels;
 
 import atbmhttt.atbmcq_16.client.Repositories.StudentsRepository;
+import atbmhttt.atbmcq_16.helpers.InputValidator;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -29,13 +31,19 @@ public class StudentsViewModel {
     }
 
     public String[] updateStudentAttributeAndReturnUpdatedStudent(
-            String masv, String column, String newValue)
+            String studentID, String column, String newValue)
             throws Exception {
         // Validation based on schema
+
+        InputValidator.validateInput(column);
+        InputValidator.validateInput(studentID);
+        InputValidator.validateInput(newValue);
+
+        // reach here means inputs are clean
         switch (column) {
-            case "MASV":
+            case "studentID":
                 if (newValue.length() > 10 || newValue.isEmpty())
-                    throw new IllegalArgumentException("Student ID (MASV) must be 1-10 characters.");
+                    throw new IllegalArgumentException("Student ID (studentID) must be 1-10 characters.");
                 break;
             case "HOTEN":
                 if (newValue.length() > 50 || newValue.isEmpty())
@@ -74,10 +82,11 @@ public class StudentsViewModel {
         }
 
         try {
-            int rowCount = studentsRepository.updateStudentAttribute(masv, column, newValue);
+            int rowCount = studentsRepository.updateStudentAttribute(studentID, column, newValue);
             if (rowCount == 0) {
-                throw new Exception("Exeption when updating\nMASV: " + masv + "\nColumn: " + column + "\nNew value: "
-                        + newValue + "\nNo student information was updated!");
+                throw new Exception(
+                        "Exeption when updating\nMASV: " + studentID + "\nColumn: " + column + "\nNew value: "
+                                + newValue + "\nNo student information was updated!");
             }
         } catch (SQLException e) {
             System.out.println("Error when updating student " + e.getMessage());
@@ -93,9 +102,9 @@ public class StudentsViewModel {
         for (int i = 0; i < students.size(); i++) {
             student = students.get(i);
 
-            if (student[0].equals(masv)) { // Assuming MASV is at index 0
+            if (student[0].equals(studentID)) { // Assuming studentID is at index 0
                 switch (column) {
-                    case "MASV":
+                    case "studentID":
                         student[0] = newValue;
                         break;
                     case "HOTEN":

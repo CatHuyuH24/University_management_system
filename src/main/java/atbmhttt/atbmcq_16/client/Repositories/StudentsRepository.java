@@ -21,9 +21,17 @@ public class StudentsRepository {
                 java.sql.Date ngsinhDate = resultSet.getDate("NGSINH");
                 String ngsinh = ngsinhDate != null ? ngsinhDate.toLocalDate().format(formatter) : "";
                 String dchi = resultSet.getString("DCHI");
+                if (dchi == null)
+                    dchi = "";
                 String dt = resultSet.getString("DT");
+                if (dt == null)
+                    dt = "";
                 String khoa = resultSet.getString("KHOA");
+                if (khoa == null)
+                    khoa = "";
                 String tinhtrang = resultSet.getString("TINHTRANG");
+                if (tinhtrang == null)
+                    tinhtrang = "";
                 studentDetails.add(new String[] { masv, hoten, phai, ngsinh, dchi, dt, khoa, tinhtrang });
             }
         } catch (SQLException e) {
@@ -32,8 +40,8 @@ public class StudentsRepository {
         return studentDetails;
     }
 
-    public int updateStudentAttribute(String masv, String column, String newValue) throws SQLException {
-        String sql = "UPDATE ATBMCQ_ADMIN.SINHVIEN SET " + column + " = ? WHERE MASV = ?";
+    public int updateStudentAttribute(String masv, String cleanedColumnName, String newValue) throws SQLException {
+        String sql = "UPDATE ATBMCQ_ADMIN.SINHVIEN SET " + cleanedColumnName + " = ? WHERE MASV = ?";
         try (Connection connection = DatabaseConnection.getConnection();
                 java.sql.PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, newValue);

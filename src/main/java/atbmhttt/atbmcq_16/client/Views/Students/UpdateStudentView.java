@@ -79,6 +79,9 @@ public class UpdateStudentView {
                         null, 400, 200);
                 dialog.close();
 
+            } catch (IllegalArgumentException e) {
+                AlertDialog.showErrorAlert("Disallowed input", null,
+                        e.getMessage(), null, 400, 200);
             } catch (Exception ex) {
                 AlertDialog.showErrorAlert("Error", null,
                         "You CANNOT perform this ACTION!\nIf you think this is a mistake or need help, please reach out to an authorized staff member or administrator.",
