@@ -65,7 +65,7 @@ public class StudentsRepository {
         String sql = "INSERT INTO ATBMCQ_ADMIN.SINHVIEN (MASV, HOTEN, PHAI, NGSINH, DCHI, DT, KHOA) VALUES (?, ?, ?, TO_DATE(?, 'DD-MM-YYYY'), ?, ?, ?)";
         try (Connection connection = DatabaseConnection.getConnection();
                 java.sql.PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, studentFields[0]); // MASV
+            statement.setString(1, studentFields[0] != null ? studentFields[0].toUpperCase() : null); // MASV
             statement.setString(2, studentFields[1]); // HOTEN
             statement.setString(3, studentFields[2]); // PHAI
             statement.setString(4, studentFields[3]); // NGSINH

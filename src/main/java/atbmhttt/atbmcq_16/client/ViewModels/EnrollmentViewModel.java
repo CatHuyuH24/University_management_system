@@ -25,4 +25,19 @@ public class EnrollmentViewModel {
     public ObservableList<String[]> getEnrollments() {
         return enrollments.get();
     }
+
+    public void addEnrollment(String masv, String mamm) throws Exception {
+        try {
+            atbmhttt.atbmcq_16.helpers.InputValidator.validateInput(masv);
+            atbmhttt.atbmcq_16.helpers.InputValidator.validateInput(mamm);
+            enrollmentRepository.addEnrollment(masv, mamm);
+            enrollments.add(new String[] { masv, mamm, null, null, null, null });
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        } catch (IllegalArgumentException e) {
+            throw e;
+        }
+    }
 }

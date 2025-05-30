@@ -62,6 +62,7 @@ public class LoginView {
 
         // Login button
         Button loginButton = new Button("Log in");
+        loginButton.setDefaultButton(true);
         // Update login button action to use the router for navigation
         loginButton.setOnAction(event -> {
             try {

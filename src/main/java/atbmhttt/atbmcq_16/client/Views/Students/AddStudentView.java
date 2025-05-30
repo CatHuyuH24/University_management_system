@@ -4,7 +4,6 @@ import java.sql.SQLException;
 
 import atbmhttt.atbmcq_16.client.ViewModels.StudentsViewModel;
 import atbmhttt.atbmcq_16.client.Views.ClientAlertDialogs;
-import atbmhttt.atbmcq_16.helpers.InputValidator;
 import atbmhttt.atbmcq_16.dialogs.AlertDialog;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -14,6 +13,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class AddStudentView {
@@ -64,13 +64,8 @@ public class AddStudentView {
                             null, 400, 200);
                     return;
                 }
-                try {
-                    InputValidator.validateInput(values[i]);
-                } catch (IllegalArgumentException e) {
-                    AlertDialog.showErrorAlert("Disallowed input", null, e.getMessage(), null, 400, 200);
-                    return;
-                }
             }
+
             try {
                 studentsViewModel.addStudent(values);
                 AlertDialog.showInformationAlert("Student added", null, "Student has been added successfully.", null,
@@ -91,12 +86,10 @@ public class AddStudentView {
                             "KHOA you enter could not be found.\nPlease re-check and try again. If you're unsure, contact your department staff or authorized personnel.",
                             null, 400, 200);
                 } else {
-                    ClientAlertDialogs.displayGeneralErrorDialog();
+                    ClientAlertDialogs.displayGeneralSQLErrorDialog();
                 }
             } catch (Exception e) {
-                AlertDialog.showErrorAlert("Error", null,
-                        "An unexpected error occurred.\nPlease contact your supervisor or authorized personnel.", null,
-                        400, 200);
+                ClientAlertDialogs.displayUnexpectedErrorDialog();
             }
         });
         cancelBtn.setOnAction(ev -> dialog.close());
@@ -104,6 +97,7 @@ public class AddStudentView {
         layout.getChildren().addAll(scrollPane, buttonBox);
         Scene scene = new Scene(layout, 350, 420);
         dialog.setScene(scene);
+        dialog.initModality(Modality.APPLICATION_MODAL);
         dialog.show();
     }
 }

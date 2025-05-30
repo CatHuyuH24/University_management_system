@@ -46,5 +46,37 @@ public class EnrollmentView {
 
         BorderPaneHelper.setAllSections(contentArea,
                 null, null, null, null, container);
+
+        // --- Sticky box at the bottom ---
+        javafx.scene.layout.HBox bottomSection = new javafx.scene.layout.HBox(12); // Add spacing between buttons
+        bottomSection.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
+        bottomSection.setStyle(
+                "-fx-background-color: #f0f0f0; -fx-padding: 12 24 12 24; -fx-border-color: #ccc; -fx-border-width: 1 0 0 0;");
+        javafx.scene.control.Button updateButton = new javafx.scene.control.Button("Update information");
+        javafx.scene.control.Button addButton = new javafx.scene.control.Button("Add enrollment");
+        javafx.scene.control.Button deleteButton = new javafx.scene.control.Button("Delete enrollment");
+
+        updateButton.setOnAction(e -> {
+            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+                    javafx.scene.control.Alert.AlertType.INFORMATION);
+            alert.setTitle("Update Enrollment");
+            alert.setHeaderText(null);
+            alert.setContentText("Update enrollment confirmation.");
+            alert.showAndWait();
+        });
+        addButton.setOnAction(e -> {
+            AddEnrollmentView.show(enrollmentViewModel);
+        });
+        deleteButton.setOnAction(e -> {
+            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+                    javafx.scene.control.Alert.AlertType.INFORMATION);
+            alert.setTitle("Delete Enrollment");
+            alert.setHeaderText(null);
+            alert.setContentText("Delete enrollment confirmation.");
+            alert.showAndWait();
+        });
+        bottomSection.getChildren().addAll(addButton, updateButton, deleteButton);
+
+        BorderPaneHelper.setAllSections(contentArea, null, null, null, bottomSection, container);
     }
 }

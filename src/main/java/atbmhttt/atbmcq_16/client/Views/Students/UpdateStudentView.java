@@ -1,5 +1,7 @@
 package atbmhttt.atbmcq_16.client.Views.Students;
 
+import java.sql.SQLException;
+
 import atbmhttt.atbmcq_16.client.ViewModels.StudentsViewModel;
 import atbmhttt.atbmcq_16.client.Views.ClientAlertDialogs;
 import atbmhttt.atbmcq_16.dialogs.AlertDialog;
@@ -12,6 +14,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class UpdateStudentView {
@@ -90,8 +93,10 @@ public class UpdateStudentView {
             } catch (IllegalArgumentException e) {
                 AlertDialog.showErrorAlert("Disallowed input", null,
                         e.getMessage(), null, 400, 200);
+            } catch (SQLException e) {
+                ClientAlertDialogs.displayGeneralSQLErrorDialog();
             } catch (Exception ex) {
-                ClientAlertDialogs.displayGeneralErrorDialog();
+                ClientAlertDialogs.displayUnexpectedErrorDialog();
             }
         });
         cancelBtn.setOnAction(ev -> dialog.close());
@@ -99,6 +104,7 @@ public class UpdateStudentView {
         layout.getChildren().addAll(masvLabel, masvField, colLabel, colCombo, newValLabel, newValField, buttonBox);
         Scene scene = new Scene(layout, 350, 320);
         dialog.setScene(scene);
+        dialog.initModality(Modality.APPLICATION_MODAL);
         dialog.show();
     }
 }

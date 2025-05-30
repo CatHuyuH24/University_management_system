@@ -26,4 +26,16 @@ public class EnrollmentRepository {
         }
         return enrollments;
     }
+
+    public void addEnrollment(String masv, String mamm) throws SQLException {
+        String sql = "INSERT INTO ATBMCQ_ADMIN.DANGKY (MASV, MAMM) VALUES (?, ?)";
+        try (Connection connection = DatabaseConnection.getConnection();
+                java.sql.PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, masv != null ? masv.toUpperCase() : null);
+            statement.setString(2, mamm != null ? mamm.toUpperCase() : null);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw e;
+        }
+    }
 }

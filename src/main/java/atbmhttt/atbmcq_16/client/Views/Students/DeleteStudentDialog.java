@@ -11,6 +11,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.sql.SQLException;
@@ -54,7 +55,7 @@ public class DeleteStudentDialog {
             } catch (IllegalArgumentException e) {
                 AlertDialog.showErrorAlert("Invalid input", null, e.getMessage(), null, 400, 200);
             } catch (SQLException e) {
-                ClientAlertDialogs.displayGeneralErrorDialog();
+                ClientAlertDialogs.displayGeneralSQLErrorDialog();
             } catch (Exception e) {
                 String msg = e.getMessage();
                 if (msg != null && (msg.contains("not found"))) {
@@ -62,7 +63,7 @@ public class DeleteStudentDialog {
                             "No student record found with the provided MASV. Please re-check and try again.\nIf you need further assistance, please contact your supervisor or authorized personnel.",
                             null, 400, 200);
                 } else {
-                    ClientAlertDialogs.displayGeneralErrorDialog();
+                    ClientAlertDialogs.displayUnexpectedErrorDialog();
                 }
             }
         });
@@ -71,6 +72,7 @@ public class DeleteStudentDialog {
         layout.getChildren().addAll(titleLabel, masvLabel, masvField, buttonBox);
         Scene scene = new Scene(layout, 350, 220);
         dialog.setScene(scene);
+        dialog.initModality(Modality.APPLICATION_MODAL);
         dialog.show();
     }
 }
