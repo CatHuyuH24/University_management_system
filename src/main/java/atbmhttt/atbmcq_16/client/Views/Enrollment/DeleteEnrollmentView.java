@@ -75,7 +75,9 @@ public class DeleteEnrollmentView {
                 if (msg != null
                         && (msg.contains("not found"))) {
                     AlertDialog.showErrorAlert("Error unenrolling", null,
-                            "No enrollment record found with the provided MASV and MAMM. Please re-check and try again.\nIf you need further assistance, please contact your supervisor or authorized personnel.",
+                            "No enrollment record found for student ID \"" + masv.toUpperCase() +
+                                    "in course " + mamm.toUpperCase() +
+                                    ".\nPlease verify the information and try again.\nIf you need further assistance, contact your supervisor or authorized personnel.",
                             null, 400, 200);
                 } else {
                     ClientAlertDialogs.displayUnexpectedErrorDialog();

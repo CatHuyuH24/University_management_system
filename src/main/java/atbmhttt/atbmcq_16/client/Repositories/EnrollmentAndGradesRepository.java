@@ -50,4 +50,27 @@ public class EnrollmentAndGradesRepository {
             throw e;
         }
     }
+
+    public int updateGrades(String masv, String mamm, Double diemth, Double diemqt, Double diemck, Double diemtk)
+            throws SQLException {
+        String sql = "UPDATE ATBMCQ_ADMIN.DANGKY SET DIEMTH = ?, DIEMQT = ?, DIEMCK = ?, DIEMTK = ? WHERE MASV = ? AND MAMM = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+                java.sql.PreparedStatement statement = connection.prepareStatement(sql)) {
+            setNullableDouble(statement, 1, diemth);
+            setNullableDouble(statement, 2, diemqt);
+            setNullableDouble(statement, 3, diemck);
+            setNullableDouble(statement, 4, diemtk);
+            statement.setString(5, masv);
+            statement.setString(6, mamm);
+            return statement.executeUpdate();
+        }
+    }
+
+    private void setNullableDouble(java.sql.PreparedStatement stmt, int idx, Double value) throws SQLException {
+        if (value == null) {
+            stmt.setNull(idx, java.sql.Types.NUMERIC);
+        } else {
+            stmt.setDouble(idx, value);
+        }
+    }
 }

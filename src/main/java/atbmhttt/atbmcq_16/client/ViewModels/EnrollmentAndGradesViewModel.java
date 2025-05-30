@@ -73,4 +73,38 @@ public class EnrollmentAndGradesViewModel {
             throw e;
         }
     }
+
+    public void updateGrades(String masv, String mamm, Double diemth, Double diemqt, Double diemck, Double diemtk)
+            throws Exception {
+        try {
+            atbmhttt.atbmcq_16.helpers.InputValidator.validateInput(masv);
+            atbmhttt.atbmcq_16.helpers.InputValidator.validateInput(mamm);
+            masv = masv.toUpperCase();
+            mamm = mamm.toUpperCase();
+            if (!isGradeValid(diemth))
+                throw new IllegalArgumentException("DIEMTH must be between 0 and 10 or empty.");
+            if (!isGradeValid(diemqt))
+                throw new IllegalArgumentException("DIEMQT must be between 0 and 10 or empty.");
+            if (!isGradeValid(diemck))
+                throw new IllegalArgumentException("DIEMCK must be between 0 and 10 or empty.");
+            if (!isGradeValid(diemtk))
+                throw new IllegalArgumentException("DIEMTK must be between 0 and 10 or empty.");
+            int affected = enrollmentRepository.updateGrades(masv, mamm, diemth, diemqt, diemck, diemtk);
+            if (affected == 0) {
+                throw new Exception("No enrollment found for MASV: " + masv + ", MAMM: " + mamm);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;
+        } catch (IllegalArgumentException e) {
+            throw e;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    private boolean isGradeValid(Double grade) {
+        return grade == null || (grade.compareTo(0.0) >= 0 && grade.compareTo(10.0) <= 0);
+    }
 }
