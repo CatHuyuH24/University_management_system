@@ -173,13 +173,12 @@ public class MonHocController {
                         rs.getInt("NAM")
                     );
                     monHocList.add(monHoc);
-                    // Không cần addMonHocToView nữa
                     count++;
                 }
                 messageLabel.setText("Dữ liệu môn học đã được tải! Số dòng: " + count);
             }
         } catch (SQLException ex) {
-            messageLabel.setText("Lỗi tải dữ liệu");
+            messageLabel.setText("Lỗi tải dữ liệu môn học: " + ex.getMessage());
         }
     }
 
