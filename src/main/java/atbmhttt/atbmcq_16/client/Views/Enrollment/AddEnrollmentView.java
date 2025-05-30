@@ -16,7 +16,7 @@ import javafx.stage.Stage;
 public class AddEnrollmentView {
     public static void show(EnrollmentAndGradesViewModel enrollmentViewModel) {
         Stage dialog = new Stage();
-        dialog.setTitle("Add Enrollment");
+        dialog.setTitle("ADD ENROLLMENT");
         try {
             javafx.scene.image.Image iconImage = new javafx.scene.image.Image(
                     AddEnrollmentView.class.getResource("/images/app_icon.png").toExternalForm());
@@ -44,31 +44,31 @@ public class AddEnrollmentView {
             String mamm = mammField.getText().trim();
             if (masv.isEmpty() || mamm.isEmpty()) {
                 atbmhttt.atbmcq_16.dialogs.AlertDialog.showErrorAlert(
-                        "Missing information", null, "Please fill in all required information.",
+                        "MISSING INFORMATION", null, "Please fill in all required information.",
                         null, 400, 200);
                 return;
             }
             try {
                 enrollmentViewModel.addEnrollment(masv, mamm);
-                AlertDialog.showInformationAlert("Enrolled successfully",
+                AlertDialog.showInformationAlert("ENROLLED SUCCESSFULLY",
                         null,
                         masv.toUpperCase() + " has enrolled for " + mamm.toUpperCase(), null, 300, 200);
                 dialog.close();
 
             } catch (IllegalArgumentException ex) {
-                AlertDialog.showErrorAlert("Disallowed input",
+                AlertDialog.showErrorAlert("DISALLOWED INPUT",
                         null, ex.getMessage(),
                         null, 400, 200);
             } catch (SQLException e) {
                 if (e.getErrorCode() == 1) {
-                    AlertDialog.showErrorAlert("Error enrolling",
+                    AlertDialog.showErrorAlert("ERROR ENROLLING",
                             null,
                             masv.toUpperCase() + " has already enrolled in course " + mamm.toUpperCase()
                                     + ".\nPlease re-check and try again or contact authorized personnel.",
                             null, 400, 200);
                 } else if (e.getErrorCode() == 2291) { // ORA-02291: integrity constraint violation - parent key not
                                                        // found
-                    AlertDialog.showErrorAlert("Error enrolling",
+                    AlertDialog.showErrorAlert("ERROR ENROLLING",
                             null,
                             "Either course " + mamm.toUpperCase() + " or student " + masv.toUpperCase()
                                     + " does not exist!"

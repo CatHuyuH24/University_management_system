@@ -30,10 +30,10 @@ public class AdminView extends Application {
         navigationPanel.setPadding(new Insets(10));
         navigationPanel.setVgap(10);
 
-        Button usersButton = new Button("Users");
-        Button rolesButton = new Button("Roles");
-        Button privilegesButton = new Button("Privileges");
-        Button logoutButton = new Button("Log out");
+        Button usersButton = new Button("USERS");
+        Button rolesButton = new Button("ROLES");
+        Button privilegesButton = new Button("PRIVILEGES");
+        Button logoutButton = new Button("LOG OUT");
         // Button grantPrivilegeButton = new Button("Grant Privilege");
 
         navigationPanel.add(usersButton, 0, 1);

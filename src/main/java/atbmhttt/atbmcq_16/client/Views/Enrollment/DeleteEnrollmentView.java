@@ -18,7 +18,7 @@ import java.sql.SQLException;
 public class DeleteEnrollmentView {
     public static void show(EnrollmentAndGradesViewModel viewModel) {
         Stage dialog = new Stage();
-        dialog.setTitle("Unenroll");
+        dialog.setTitle("UNENROLL");
         try {
             Image iconImage = new Image(
                     DeleteEnrollmentView.class.getResource("/images/app_icon.png").toExternalForm());
@@ -30,20 +30,20 @@ public class DeleteEnrollmentView {
         layout.setPadding(new javafx.geometry.Insets(18));
         layout.setAlignment(Pos.CENTER);
 
-        Label titleLabel = new Label("Unenroll");
+        Label titleLabel = new Label("UNENROLL");
         titleLabel.setStyle("-fx-font-size: 18; -fx-font-weight: bold;");
 
-        Label masvLabel = new Label("MASV (Student ID):");
+        Label masvLabel = new Label("MASV (STUDENT ID):");
         masvLabel.setAlignment(Pos.CENTER_LEFT);
         masvLabel.setStyle("-fx-alignment: center-left;");
         TextField masvField = new TextField();
-        masvField.setPromptText("Enter MASV");
+        masvField.setPromptText("ENTER MASV");
 
-        Label mammLabel = new Label("MAMM (Course ID):");
+        Label mammLabel = new Label("MAMM (COURSE ID):");
         mammLabel.setAlignment(Pos.CENTER_LEFT);
         mammLabel.setStyle("-fx-alignment: center-left;");
         TextField mammField = new TextField();
-        mammField.setPromptText("Enter MAMM");
+        mammField.setPromptText("ENTER MAMM");
 
         HBox buttonBox = new HBox(10);
         buttonBox.setAlignment(Pos.CENTER_RIGHT);
@@ -55,26 +55,26 @@ public class DeleteEnrollmentView {
             String masv = masvField.getText().trim();
             String mamm = mammField.getText().trim();
             if (masv.isEmpty() || mamm.isEmpty()) {
-                AlertDialog.showErrorAlert("Missing information", null, "Please fill in both MASV and MAMM.", null, 400,
+                AlertDialog.showErrorAlert("MISSING INFORMATION", null, "Please fill in both MASV and MAMM.", null, 400,
                         200);
                 return;
             }
             try {
                 viewModel.deleteEnrollment(masv, mamm);
-                AlertDialog.showInformationAlert("Unenrolled", null,
+                AlertDialog.showInformationAlert("UNENROLLED", null,
                         "Enrollment with MASV '" + masv.toUpperCase() + "' and MAMM '" + mamm.toUpperCase()
                                 + "' has been unenrolled.",
                         null, 400, 200);
                 dialog.close();
             } catch (IllegalArgumentException e) {
-                AlertDialog.showErrorAlert("Disallowed input", null, e.getMessage(), null, 400, 200);
+                AlertDialog.showErrorAlert("DISALLOWED INPUT", null, e.getMessage(), null, 400, 200);
             } catch (SQLException e) {
                 ClientAlertDialogs.displayGeneralSQLErrorDialog();
             } catch (Exception e) {
                 String msg = e.getMessage();
                 if (msg != null
                         && (msg.contains("not found"))) {
-                    AlertDialog.showErrorAlert("Error unenrolling", null,
+                    AlertDialog.showErrorAlert("ERROR UNENROLLING", null,
                             "No enrollment record found for student ID \"" + masv.toUpperCase() +
                                     "in course " + mamm.toUpperCase() +
                                     ".\nPlease verify the information and try again.\nIf you need further assistance, contact your supervisor or authorized personnel.",

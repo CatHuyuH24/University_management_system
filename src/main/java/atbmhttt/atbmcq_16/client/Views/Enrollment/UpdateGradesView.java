@@ -15,7 +15,7 @@ import javafx.stage.Stage;
 public class UpdateGradesView {
     public static void show(EnrollmentAndGradesViewModel viewModel) {
         Stage dialog = new Stage();
-        dialog.setTitle("Update Grades");
+        dialog.setTitle("UPDATE GRADES");
         try {
             Image iconImage = new Image(UpdateGradesView.class.getResource("/images/app_icon.png").toExternalForm());
             dialog.getIcons().add(iconImage);
@@ -26,22 +26,22 @@ public class UpdateGradesView {
         layout.setPadding(new javafx.geometry.Insets(18));
         layout.setAlignment(Pos.CENTER);
 
-        Label titleLabel = new Label("Update Grades");
+        Label titleLabel = new Label("UPDATE GRADES");
         titleLabel.setStyle("-fx-font-size: 18; -fx-font-weight: bold;");
 
         TextField masvField = new TextField();
-        masvField.setPromptText("MASV (Student ID)");
+        masvField.setPromptText("MASV (STUDENT ID)");
         TextField mammField = new TextField();
-        mammField.setPromptText("MAMM (Course ID)");
+        mammField.setPromptText("MAMM (COURSE ID)");
 
         TextField diemthField = new TextField();
-        diemthField.setPromptText("DIEMTH (0-10, blank for null)");
+        diemthField.setPromptText("DIEMTH (0-10, BLANK FOR NULL)");
         TextField diemqtField = new TextField();
-        diemqtField.setPromptText("DIEMQT (0-10, blank for null)");
+        diemqtField.setPromptText("DIEMQT (0-10, BLANK FOR NULL)");
         TextField diemckField = new TextField();
-        diemckField.setPromptText("DIEMCK (0-10, blank for null)");
+        diemckField.setPromptText("DIEMCK (0-10, BLANK FOR NULL)");
         TextField diemtkField = new TextField();
-        diemtkField.setPromptText("DIEMTK (0-10, blank for null)");
+        diemtkField.setPromptText("DIEMTK (0-10, BLANK FOR NULL)");
 
         layout.getChildren().addAll(
                 titleLabel,
@@ -68,7 +68,7 @@ public class UpdateGradesView {
             Double diemck = parseGrade(diemckField.getText().trim(), "DIEMCK");
             Double diemtk = parseGrade(diemtkField.getText().trim(), "DIEMTK");
             if (masv.isEmpty() || mamm.isEmpty()) {
-                AlertDialog.showErrorAlert("Missing information", null, "Please fill in MASV and MAMM.", null, 400,
+                AlertDialog.showErrorAlert("MISSING INFORMATION", null, "Please fill in MASV and MAMM.", null, 400,
                         200);
                 return;
             }
@@ -82,18 +82,18 @@ public class UpdateGradesView {
                 return;
             try {
                 viewModel.updateGrades(masv, mamm, diemth, diemqt, diemck, diemtk);
-                AlertDialog.showInformationAlert("Grades updated", null,
+                AlertDialog.showInformationAlert("GRADES UPDATED", null,
                         "Grades updated for MASV: " + masv.toUpperCase() + ", MAMM: " + mamm.toUpperCase(), null, 400,
                         200);
                 dialog.close();
             } catch (IllegalArgumentException e) {
-                AlertDialog.showErrorAlert("Invalid input", null, e.getMessage(), null, 400, 200);
+                AlertDialog.showErrorAlert("INVALID INPUT", null, e.getMessage(), null, 400, 200);
             } catch (java.sql.SQLException e) {
                 ClientAlertDialogs.displayGeneralSQLErrorDialog();
             } catch (Exception e) {
                 String msg = e.getMessage();
                 if (msg != null && msg.contains("No enrollment")) {
-                    AlertDialog.showErrorAlert("Error updating grades",
+                    AlertDialog.showErrorAlert("ERROR UPDATING GRADES",
                             null,
                             "Cannot update grades for student " + masv.toUpperCase() + " in course "
                                     + mamm.toUpperCase()

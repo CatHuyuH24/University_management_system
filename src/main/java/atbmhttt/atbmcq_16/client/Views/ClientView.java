@@ -22,13 +22,13 @@ public class ClientView extends Application {
         navigationPanel.setPadding(new Insets(10));
         navigationPanel.setVgap(10);
 
-        Button studentsButton = new Button("Students");
-        Button employeesButton = new Button("Employees");
-        Button coursesButton = new Button("Courses");
-        Button enrollmentButton = new Button("Enrollment & Grades");
-        Button broadcastNotificationButton = new Button("Broadcast Notification");
-        Button viewNotificationsButton = new Button("View Notifications");
-        Button logoutButton = new Button("Log out");
+        Button studentsButton = new Button("STUDENTS");
+        Button employeesButton = new Button("EMPLOYEES");
+        Button coursesButton = new Button("COURSES");
+        Button enrollmentButton = new Button("ENROLLMENT & GRADES");
+        Button broadcastNotificationButton = new Button("BROADCAST NOTIFICATION");
+        Button viewNotificationsButton = new Button("VIEW NOTIFICATIONS");
+        Button logoutButton = new Button("LOG OUT");
 
         navigationPanel.add(studentsButton, 0, 1);
         navigationPanel.add(employeesButton, 0, 2);

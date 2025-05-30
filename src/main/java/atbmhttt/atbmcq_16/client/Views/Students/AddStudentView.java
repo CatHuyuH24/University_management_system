@@ -19,7 +19,7 @@ import javafx.stage.Stage;
 public class AddStudentView {
     public static void show(StudentsView studentsView, StudentsViewModel studentsViewModel) {
         Stage dialog = new Stage();
-        dialog.setTitle("Add New Student");
+        dialog.setTitle("ADD NEW STUDENT");
         try {
             Image iconImage = new Image(AddStudentView.class.getResource("/images/app_icon.png").toExternalForm());
             dialog.getIcons().add(iconImage);
@@ -60,7 +60,7 @@ public class AddStudentView {
             for (int i = 0; i < fields.length; i++) {
                 values[i] = fields[i].getText().trim();
                 if (values[i].isEmpty()) {
-                    AlertDialog.showErrorAlert("Missing information", null, "Please fill in all required information.",
+                    AlertDialog.showErrorAlert("MISSING INFORMATION", null, "Please fill in all required information.",
                             null, 400, 200);
                     return;
                 }
@@ -68,20 +68,20 @@ public class AddStudentView {
 
             try {
                 studentsViewModel.addStudent(values);
-                AlertDialog.showInformationAlert("Student added", null, "Student has been added successfully.", null,
+                AlertDialog.showInformationAlert("STUDENT ADDED", null, "Student has been added successfully.", null,
                         400, 200);
                 dialog.close();
             } catch (IllegalArgumentException e) {
-                AlertDialog.showErrorAlert("Disallowed input", null, e.getMessage(), null, 400, 200);
+                AlertDialog.showErrorAlert("DISALLOWED INPUT", null, e.getMessage(), null, 400, 200);
             } catch (SQLException e) {
                 if (e.getErrorCode() == 1) {
-                    AlertDialog.showErrorAlert("Error adding new student",
+                    AlertDialog.showErrorAlert("ERROR ADDING NEW STUDENT",
                             null,
                             "MASV you enter already exists.\nPlease re-check and try with another MASV or contact your supervisor.",
                             null, 400, 200);
                 } else if (e.getErrorCode() == 2291) { // ORA-02291: integrity constraint violation - parent key not
                                                        // found
-                    AlertDialog.showErrorAlert("Error adding new student",
+                    AlertDialog.showErrorAlert("ERROR ADDING NEW STUDENT",
                             null,
                             "KHOA you enter could not be found.\nPlease re-check and try again. If you're unsure, contact your department staff or authorized personnel.",
                             null, 400, 200);
