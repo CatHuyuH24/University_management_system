@@ -46,7 +46,13 @@ public class DeleteStudentDialog {
         buttonBox.getChildren().addAll(deleteBtn, cancelBtn);
 
         deleteBtn.setOnAction(ev -> {
-            String masv = masvField.getText();
+            String masv = masvField.getText().trim();
+
+            if (masv.isEmpty()) {
+                AlertDialog.showErrorAlert("Missing information", null, "Please fill in MASV.",
+                        null, 400, 200);
+                return;
+            }
             try {
                 studentsViewModel.deleteStudentByMASV(masv);
                 AlertDialog.showInformationAlert("Student deleted", null,

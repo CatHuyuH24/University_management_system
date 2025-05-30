@@ -2,7 +2,7 @@ package atbmhttt.atbmcq_16.client.Views.Enrollment;
 
 import java.sql.SQLException;
 
-import atbmhttt.atbmcq_16.client.ViewModels.EnrollmentViewModel;
+import atbmhttt.atbmcq_16.client.ViewModels.EnrollmentAndGradesViewModel;
 import atbmhttt.atbmcq_16.client.Views.ClientAlertDialogs;
 import atbmhttt.atbmcq_16.dialogs.AlertDialog;
 import javafx.scene.Scene;
@@ -14,7 +14,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class AddEnrollmentView {
-    public static void show(EnrollmentViewModel enrollmentViewModel) {
+    public static void show(EnrollmentAndGradesViewModel enrollmentViewModel) {
         Stage dialog = new Stage();
         dialog.setTitle("Add Enrollment");
         try {
@@ -52,7 +52,7 @@ public class AddEnrollmentView {
                 enrollmentViewModel.addEnrollment(masv, mamm);
                 AlertDialog.showInformationAlert("Enrolled successfully",
                         null,
-                        masv + " has enrolled for " + mamm, null, 300, 200);
+                        masv.toUpperCase() + " has enrolled for " + mamm.toUpperCase(), null, 300, 200);
                 dialog.close();
 
             } catch (IllegalArgumentException ex) {
@@ -63,14 +63,15 @@ public class AddEnrollmentView {
                 if (e.getErrorCode() == 1) {
                     AlertDialog.showErrorAlert("Error enrolling",
                             null,
-                            masv + " has already enrolled in course " + mamm
+                            masv.toUpperCase() + " has already enrolled in course " + mamm.toUpperCase()
                                     + ".\nPlease re-check and try again or contact authorized personnel.",
                             null, 400, 200);
                 } else if (e.getErrorCode() == 2291) { // ORA-02291: integrity constraint violation - parent key not
                                                        // found
                     AlertDialog.showErrorAlert("Error enrolling",
                             null,
-                            "Cannot find course " + mamm
+                            "Either course " + mamm.toUpperCase() + " or student " + masv.toUpperCase()
+                                    + " does not exist!"
                                     + ".\nPlease re-check and try again. If you're unsure, contact your department staff or authorized personnel.",
                             null, 400, 200);
                 } else {

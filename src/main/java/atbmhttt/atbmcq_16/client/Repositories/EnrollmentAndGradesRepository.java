@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EnrollmentRepository {
+public class EnrollmentAndGradesRepository {
     public List<String[]> getAllEnrollments() throws SQLException {
         String sql = "SELECT * FROM ATBMCQ_ADMIN.DANGKY";
         List<String[]> enrollments = new ArrayList<>();
@@ -31,9 +31,21 @@ public class EnrollmentRepository {
         String sql = "INSERT INTO ATBMCQ_ADMIN.DANGKY (MASV, MAMM) VALUES (?, ?)";
         try (Connection connection = DatabaseConnection.getConnection();
                 java.sql.PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, masv != null ? masv.toUpperCase() : null);
-            statement.setString(2, mamm != null ? mamm.toUpperCase() : null);
+            statement.setString(1, masv);
+            statement.setString(2, mamm);
             statement.executeUpdate();
+        } catch (SQLException e) {
+            throw e;
+        }
+    }
+
+    public int deleteEnrollment(String masv, String mamm) throws SQLException {
+        String sql = "DELETE FROM ATBMCQ_ADMIN.DANGKY WHERE MASV = ? AND MAMM = ?";
+        try (Connection connection = DatabaseConnection.getConnection();
+                java.sql.PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, masv);
+            statement.setString(2, mamm);
+            return statement.executeUpdate();
         } catch (SQLException e) {
             throw e;
         }

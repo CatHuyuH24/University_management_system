@@ -1,6 +1,6 @@
 package atbmhttt.atbmcq_16.client.Views.Enrollment;
 
-import atbmhttt.atbmcq_16.client.ViewModels.EnrollmentViewModel;
+import atbmhttt.atbmcq_16.client.ViewModels.EnrollmentAndGradesViewModel;
 import atbmhttt.atbmcq_16.helpers.BorderPaneHelper;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
@@ -9,14 +9,14 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 
-public class EnrollmentView {
-    private final EnrollmentViewModel enrollmentViewModel;
+public class EnrollmentAndGradesView {
+    private final EnrollmentAndGradesViewModel enrollmentViewModel;
     ScrollPane container;
     private ObservableList<String[]> enrollments;
     private final String[] columnNames = { "MASV", "MAMM", "DIEMTH", "DIEMQT", "DIEMCK", "DIEMTK" };
 
-    public EnrollmentView() {
-        this.enrollmentViewModel = new EnrollmentViewModel();
+    public EnrollmentAndGradesView() {
+        this.enrollmentViewModel = new EnrollmentAndGradesViewModel();
     }
 
     public void displayEnrollments(BorderPane contentArea) {
@@ -54,7 +54,7 @@ public class EnrollmentView {
                 "-fx-background-color: #f0f0f0; -fx-padding: 12 24 12 24; -fx-border-color: #ccc; -fx-border-width: 1 0 0 0;");
         javafx.scene.control.Button updateButton = new javafx.scene.control.Button("Update information");
         javafx.scene.control.Button addButton = new javafx.scene.control.Button("Add enrollment");
-        javafx.scene.control.Button deleteButton = new javafx.scene.control.Button("Delete enrollment");
+        javafx.scene.control.Button unenrollButton = new javafx.scene.control.Button("Unenroll");
 
         updateButton.setOnAction(e -> {
             javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
@@ -67,15 +67,10 @@ public class EnrollmentView {
         addButton.setOnAction(e -> {
             AddEnrollmentView.show(enrollmentViewModel);
         });
-        deleteButton.setOnAction(e -> {
-            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
-                    javafx.scene.control.Alert.AlertType.INFORMATION);
-            alert.setTitle("Delete Enrollment");
-            alert.setHeaderText(null);
-            alert.setContentText("Delete enrollment confirmation.");
-            alert.showAndWait();
+        unenrollButton.setOnAction(e -> {
+            DeleteEnrollmentView.show(enrollmentViewModel);
         });
-        bottomSection.getChildren().addAll(addButton, updateButton, deleteButton);
+        bottomSection.getChildren().addAll(addButton, updateButton, unenrollButton);
 
         BorderPaneHelper.setAllSections(contentArea, null, null, null, bottomSection, container);
     }

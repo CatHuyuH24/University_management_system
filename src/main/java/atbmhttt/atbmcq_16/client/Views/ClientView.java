@@ -87,7 +87,7 @@ public class ClientView extends Application {
 
     private void setUpDisplayRegistrationDetails(final Button enrollmentButton, final BorderPane contentArea) {
         enrollmentButton.setOnAction(e -> {
-            atbmhttt.atbmcq_16.client.Views.Enrollment.EnrollmentView view = new atbmhttt.atbmcq_16.client.Views.Enrollment.EnrollmentView();
+            atbmhttt.atbmcq_16.client.Views.Enrollment.EnrollmentAndGradesView view = new atbmhttt.atbmcq_16.client.Views.Enrollment.EnrollmentAndGradesView();
             view.displayEnrollments(contentArea);
         });
     }

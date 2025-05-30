@@ -38,6 +38,7 @@ public class StudentsViewModel {
         InputValidator.validateInput(column);
         InputValidator.validateInput(studentID);
         InputValidator.validateInput(newValue);
+        studentID = studentID.toUpperCase();
 
         // reach here means inputs are clean
         switch (column) {
@@ -148,6 +149,8 @@ public class StudentsViewModel {
         for (int i = 0; i < columns.length; i++) {
             InputValidator.validateInput(studentFields[i]);
         }
+        studentFields[0] = studentFields[0].toUpperCase();
+
         // Field-specific validation (reuse logic from
         // updateStudentAttributeAndReturnUpdatedStudent)
         if (studentFields[0].length() > 10 || studentFields[0].isEmpty())
@@ -178,9 +181,8 @@ public class StudentsViewModel {
     }
 
     public void deleteStudentByMASV(String masv) throws Exception {
-        if (masv == null || masv.trim().isEmpty()) {
-            throw new IllegalArgumentException("MASV cannot be empty.");
-        }
+        InputValidator.validateInput(masv);
+        masv = masv.toUpperCase();
         int affected = 0;
         try {
             affected = studentsRepository.deleteStudentByMASV(masv);
