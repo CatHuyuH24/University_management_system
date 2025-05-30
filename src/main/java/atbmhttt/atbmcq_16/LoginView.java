@@ -67,6 +67,8 @@ public class LoginView {
         loginButton.setOnAction(event -> {
             try {
                 viewModel.login();
+                // Lưu thông tin đăng nhập vào Session sau khi đăng nhập thành công
+                atbmhttt.atbmcq_16.Session.setCredentials(viewModel.getUsername(), viewModel.getPassword());
             } catch (SQLException e) {
                 AlertDialog.showErrorAlert(
                         "INVALID LOGIN CREDENTIAL",

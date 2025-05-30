@@ -50,6 +50,8 @@ public class ClientView extends Application {
 
         // set up the buttons
         setUpDisplayStudents(studentsButton, contentArea);
+        setUpDisplayEmployees(employeesButton, contentArea);
+        setUpDisplaySubjects(subjectsButton, contentArea);
         setUpDisplayRegistrationDetails(enrollmentButton, contentArea);
 
         // Log out button functionality (similar to AdminView)
@@ -89,6 +91,22 @@ public class ClientView extends Application {
         enrollmentButton.setOnAction(e -> {
             atbmhttt.atbmcq_16.client.Views.Enrollment.EnrollmentAndGradesView view = new atbmhttt.atbmcq_16.client.Views.Enrollment.EnrollmentAndGradesView();
             view.displayEnrollments(contentArea);
+        });
+    }
+
+    private void setUpDisplayEmployees(final Button employeesButton, final BorderPane contentArea) {
+        employeesButton.setOnAction(e -> {
+            String username = atbmhttt.atbmcq_16.Session.getUsername();
+            String password = atbmhttt.atbmcq_16.Session.getPassword();
+            atbmhttt.atbmcq_16.client.Views.Employees.EmployeesView view = new atbmhttt.atbmcq_16.client.Views.Employees.EmployeesView();
+            view.displayEmployees(contentArea, username, password);
+        });
+    }
+
+    private void setUpDisplaySubjects(final Button subjectsButton, final BorderPane contentArea) {
+        subjectsButton.setOnAction(e -> {
+            atbmhttt.atbmcq_16.client.Views.Subjects.SubjectsView view = new atbmhttt.atbmcq_16.client.Views.Subjects.SubjectsView();
+            view.displaySubjects(contentArea);
         });
     }
 }
