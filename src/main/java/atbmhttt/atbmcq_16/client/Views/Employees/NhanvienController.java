@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import atbmhttt.atbmcq_16.DatabaseConnection;
-import javafx.animation.KeyFrame;
+import atbmhttt.atbmcq_16.client.Models.Nhanvien;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -22,19 +22,18 @@ import javafx.util.Callback;
 
 public class NhanvienController {
     private final String username;
-    private final String password;
+
     private ListView<Nhanvien> nhanvienListView;
-    private TextField manvField, hotenField, phaiField, ngsinhField, luongField, phucapField, dtField, vaitroField, madvField;
+    private TextField manvField, hotenField, phaiField, ngsinhField, luongField, phucapField, dtField, vaitroField,
+            madvField;
     private Label messageLabel;
     private final ObservableList<Nhanvien> nhanvienList = FXCollections.observableArrayList();
 
     public NhanvienController(String username, String password) {
         this.username = username;
-        this.password = password;
     }
 
     public Scene createScene() {
-        // Thay TableView bằng ListView
         nhanvienListView = new ListView<>();
         nhanvienListView.setItems(nhanvienList);
         nhanvienListView.setCellFactory(new Callback<ListView<Nhanvien>, javafx.scene.control.ListCell<Nhanvien>>() {
@@ -54,7 +53,7 @@ public class NhanvienController {
             }
         });
 
-        // Tạo TextField
+        // Create TextFields
         manvField = new TextField();
         hotenField = new TextField();
         phaiField = new TextField();
@@ -66,48 +65,47 @@ public class NhanvienController {
         vaitroField = new TextField();
         madvField = new TextField();
 
-        // Tạo Label và TextField layout
+        // Create Label and TextField layout
         HBox inputLayout = new HBox(10);
         inputLayout.getChildren().addAll(
-            createInputVBox("Mã NV", manvField),
-            createInputVBox("Họ tên", hotenField),
-            createInputVBox("Phái", phaiField),
-            createInputVBox("Ngày sinh", ngsinhField),
-            createInputVBox("Lương", luongField),
-            createInputVBox("Phụ cấp", phucapField),
-            createInputVBox("Điện thoại", dtField),
-            createInputVBox("Vai trò", vaitroField),
-            createInputVBox("Mã DV", madvField)
-        );
+                createInputVBox("Employee ID", manvField),
+                createInputVBox("Full Name", hotenField),
+                createInputVBox("Gender", phaiField),
+                createInputVBox("Date of Birth", ngsinhField),
+                createInputVBox("Salary", luongField),
+                createInputVBox("Allowance", phucapField),
+                createInputVBox("Phone Number", dtField),
+                createInputVBox("Role", vaitroField),
+                createInputVBox("Department ID", madvField));
 
-        // Tạo Button
-        Button addButton = new Button("Thêm");
+        // Create Buttons
+        Button addButton = new Button("Add");
         addButton.setOnAction(e -> handleAdd());
 
-        Button updateButton = new Button("Sửa");
+        Button updateButton = new Button("Update");
         updateButton.setOnAction(e -> handleUpdate());
 
-        Button deleteButton = new Button("Xóa");
+        Button deleteButton = new Button("Delete");
         deleteButton.setOnAction(e -> handleDelete());
 
-        Button refreshButton = new Button("Làm mới");
+        Button refreshButton = new Button("Refresh");
         refreshButton.setOnAction(e -> handleRefresh());
 
         HBox buttonLayout = new HBox(10, addButton, updateButton, deleteButton, refreshButton);
 
-        // Tạo Label thông báo
+        // Create message label
         messageLabel = new Label();
         messageLabel.setStyle("-fx-text-fill: red;");
 
-        // Tạo tiêu đề
-        Label titleLabel = new Label("Quản lý Nhân viên");
+        // Create title
+        Label titleLabel = new Label("Employee Management");
         titleLabel.setFont(new Font("System Bold", 16));
 
-        // Sắp xếp giao diện
+        // Arrange layout
         VBox layout = new VBox(10, titleLabel, nhanvienListView, inputLayout, buttonLayout, messageLabel);
         layout.setPadding(new Insets(10));
 
-        // Load dữ liệu và xử lý chọn dòng
+        // Load data and handle row selection
         loadData();
         nhanvienListView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
@@ -136,7 +134,7 @@ public class NhanvienController {
         String role = "UNKNOWN";
         String sql = "SELECT ROLE FROM SESSION_ROLES WHERE ROLE IN ('ROLE_NVCB', 'ROLE_TRGDV', 'ROLE_TCHC')";
         try (Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+                ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 String currentRole = rs.getString("ROLE");
                 if (currentRole.equals("ROLE_TCHC")) {
@@ -156,16 +154,79 @@ public class NhanvienController {
         String sql = "";
         try (Connection conn = DatabaseConnection.getConnection()) {
             String userRole = getUserRole(conn);
-            messageLabel.setText("Vai trò của user: " + userRole);
+            messageLabel.setText("Your role: " + userRole);
 
             if (userRole.equals("ROLE_NVCB")) {
-                sql = "SELECT MANV, HOTEN, PHAI, TO_CHAR(NGSINH, 'YYYY-MM-DD') AS NGSINH, LUONG, PHUCAP, DT, VAITRO, MADV " +
-                      "FROM ATBMCQ_ADMIN.NHANVIEN_NVCB WHERE MANV = ?";
+                sql = "SELECT MANV, HOTEN, PHAI, TO_CHAR(NGSINH, 'YYYY-MM-DD') AS NGSINH, LUONG, PHUCAP, DT, VAITRO, MADV "
+                        +
+                        "FROM ATBMCQ_ADMIN.NHANVIEN_NVCB WHERE MANV = ?";
                 try (java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
                     pstmt.setString(1, username);
                     try (ResultSet rs = pstmt.executeQuery()) {
                         while (rs.next()) {
                             nhanvienList.add(new Nhanvien(
+                                    rs.getString("MANV"),
+                                    rs.getString("HOTEN"),
+                                    rs.getString("PHAI"),
+                                    rs.getString("NGSINH"),
+                                    rs.getDouble("LUONG"),
+                                    rs.getDouble("PHUCAP"),
+                                    rs.getString("DT"),
+                                    rs.getString("VAITRO"),
+                                    rs.getString("MADV")));
+                        }
+                    }
+                }
+            } else if (userRole.equals("ROLE_TRGDV")) {
+                sql = "SELECT MANV, HOTEN, PHAI, TO_CHAR(NGSINH, 'YYYY-MM-DD') AS NGSINH, DT, VAITRO, MADV " +
+                        "FROM ATBMCQ_ADMIN.NHANVIEN_TRGDV";
+                try (Statement stmt = conn.createStatement();
+                        ResultSet rs = stmt.executeQuery(sql)) {
+                    while (rs.next()) {
+                        String manv = rs.getString("MANV");
+                        if (manv.equals(username)) {
+                            String sqlSelf = "SELECT MANV, HOTEN, PHAI, TO_CHAR(NGSINH, 'YYYY-MM-DD') AS NGSINH, LUONG, PHUCAP, DT, VAITRO, MADV "
+                                    +
+                                    "FROM ATBMCQ_ADMIN.NHANVIEN_NVCB WHERE MANV = ?";
+                            try (java.sql.PreparedStatement pstmtSelf = conn.prepareStatement(sqlSelf)) {
+                                pstmtSelf.setString(1, username);
+                                try (ResultSet rsSelf = pstmtSelf.executeQuery()) {
+                                    if (rsSelf.next()) {
+                                        nhanvienList.add(new Nhanvien(
+                                                rsSelf.getString("MANV"),
+                                                rsSelf.getString("HOTEN"),
+                                                rsSelf.getString("PHAI"),
+                                                rsSelf.getString("NGSINH"),
+                                                rsSelf.getDouble("LUONG"),
+                                                rsSelf.getDouble("PHUCAP"),
+                                                rsSelf.getString("DT"),
+                                                rsSelf.getString("VAITRO"),
+                                                rsSelf.getString("MADV")));
+                                    }
+                                }
+                            }
+                        } else {
+                            nhanvienList.add(new Nhanvien(
+                                    rs.getString("MANV"),
+                                    rs.getString("HOTEN"),
+                                    rs.getString("PHAI"),
+                                    rs.getString("NGSINH"),
+                                    0.0,
+                                    0.0,
+                                    rs.getString("DT"),
+                                    rs.getString("VAITRO"),
+                                    rs.getString("MADV")));
+                        }
+                    }
+                }
+            } else if (userRole.equals("ROLE_TCHC")) {
+                sql = "SELECT MANV, HOTEN, PHAI, TO_CHAR(NGSINH, 'YYYY-MM-DD') AS NGSINH, LUONG, PHUCAP, DT, VAITRO, MADV "
+                        +
+                        "FROM ATBMCQ_ADMIN.NHANVIEN";
+                try (Statement stmt = conn.createStatement();
+                        ResultSet rs = stmt.executeQuery(sql)) {
+                    while (rs.next()) {
+                        nhanvienList.add(new Nhanvien(
                                 rs.getString("MANV"),
                                 rs.getString("HOTEN"),
                                 rs.getString("PHAI"),
@@ -174,83 +235,19 @@ public class NhanvienController {
                                 rs.getDouble("PHUCAP"),
                                 rs.getString("DT"),
                                 rs.getString("VAITRO"),
-                                rs.getString("MADV")
-                            ));
-                        }
-                    }
-                }
-            } else if (userRole.equals("ROLE_TRGDV")) {
-                sql = "SELECT MANV, HOTEN, PHAI, TO_CHAR(NGSINH, 'YYYY-MM-DD') AS NGSINH, DT, VAITRO, MADV " +
-                      "FROM ATBMCQ_ADMIN.NHANVIEN_TRGDV";
-                try (Statement stmt = conn.createStatement();
-                     ResultSet rs = stmt.executeQuery(sql)) {
-                    while (rs.next()) {
-                        String manv = rs.getString("MANV");
-                        if (manv.equals(username)) {
-                            String sqlSelf = "SELECT MANV, HOTEN, PHAI, TO_CHAR(NGSINH, 'YYYY-MM-DD') AS NGSINH, LUONG, PHUCAP, DT, VAITRO, MADV " +
-                                             "FROM ATBMCQ_ADMIN.NHANVIEN_NVCB WHERE MANV = ?";
-                            try (java.sql.PreparedStatement pstmtSelf = conn.prepareStatement(sqlSelf)) {
-                                pstmtSelf.setString(1, username);
-                                try (ResultSet rsSelf = pstmtSelf.executeQuery()) {
-                                    if (rsSelf.next()) {
-                                        nhanvienList.add(new Nhanvien(
-                                            rsSelf.getString("MANV"),
-                                            rsSelf.getString("HOTEN"),
-                                            rsSelf.getString("PHAI"),
-                                            rsSelf.getString("NGSINH"),
-                                            rsSelf.getDouble("LUONG"),
-                                            rsSelf.getDouble("PHUCAP"),
-                                            rsSelf.getString("DT"),
-                                            rsSelf.getString("VAITRO"),
-                                            rsSelf.getString("MADV")
-                                        ));
-                                    }
-                                }
-                            }
-                        } else {
-                            nhanvienList.add(new Nhanvien(
-                                rs.getString("MANV"),
-                                rs.getString("HOTEN"),
-                                rs.getString("PHAI"),
-                                rs.getString("NGSINH"),
-                                0.0,
-                                0.0,
-                                rs.getString("DT"),
-                                rs.getString("VAITRO"),
-                                rs.getString("MADV")
-                            ));
-                        }
-                    }
-                }
-            } else if (userRole.equals("ROLE_TCHC")) {
-                sql = "SELECT MANV, HOTEN, PHAI, TO_CHAR(NGSINH, 'YYYY-MM-DD') AS NGSINH, LUONG, PHUCAP, DT, VAITRO, MADV " +
-                      "FROM ATBMCQ_ADMIN.NHANVIEN";
-                try (Statement stmt = conn.createStatement();
-                     ResultSet rs = stmt.executeQuery(sql)) {
-                    while (rs.next()) {
-                        nhanvienList.add(new Nhanvien(
-                            rs.getString("MANV"),
-                            rs.getString("HOTEN"),
-                            rs.getString("PHAI"),
-                            rs.getString("NGSINH"),
-                            rs.getDouble("LUONG"),
-                            rs.getDouble("PHUCAP"),
-                            rs.getString("DT"),
-                            rs.getString("VAITRO"),
-                            rs.getString("MADV")
-                        ));
+                                rs.getString("MADV")));
                     }
                 }
             } else {
-                messageLabel.setText("Không xác định được vai trò của user!");
+                messageLabel.setText("Could not determine your role!");
                 return;
             }
-            messageLabel.setText("Dữ liệu đã được tải! Số dòng: " + nhanvienList.size());
-            nhanvienListView.setItems(nhanvienList); // Đảm bảo ListView cập nhật
+            messageLabel.setText("Data loaded! Rows: " + nhanvienList.size());
+            nhanvienListView.setItems(nhanvienList); // Ensure ListView updates
             nhanvienListView.refresh();
-            // Bỏ tự động selectFirst để không làm mất selection của người dùng
+            // Do not auto-select first row to preserve user selection
         } catch (SQLException ex) {
-            messageLabel.setText("Không có quyền xem dữ liệu: " + ex.getMessage());
+            messageLabel.setText("You do not have permission to view data: " + ex.getMessage());
         }
     }
 
@@ -258,11 +255,12 @@ public class NhanvienController {
         try (Connection conn = DatabaseConnection.getConnection()) {
             String userRole = getUserRole(conn);
             if (!userRole.equals("ROLE_TCHC")) {
-                messageLabel.setText("Bạn không có quyền thêm nhân viên!");
+                messageLabel.setText("You do not have permission to add employees!");
                 return;
             }
-            String sql = "INSERT INTO ATBMCQ_ADMIN.NHANVIEN (MANV, HOTEN, PHAI, NGSINH, LUONG, PHUCAP, DT, VAITRO, MADV) " +
-                         "VALUES (?, ?, ?, TO_DATE(?, 'YYYY-MM-DD'), ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO ATBMCQ_ADMIN.NHANVIEN (MANV, HOTEN, PHAI, NGSINH, LUONG, PHUCAP, DT, VAITRO, MADV) "
+                    +
+                    "VALUES (?, ?, ?, TO_DATE(?, 'YYYY-MM-DD'), ?, ?, ?, ?, ?)";
             try (java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
                 pstmt.setString(1, manvField.getText().trim());
                 pstmt.setString(2, hotenField.getText().trim());
@@ -276,12 +274,12 @@ public class NhanvienController {
                 pstmt.executeUpdate();
                 loadData();
                 clearFields();
-                messageLabel.setText("Thêm nhân viên thành công!");
+                messageLabel.setText("Employee added successfully!");
             }
         } catch (SQLException ex) {
-            messageLabel.setText("Lỗi khi thêm nhân viên: " + ex.getMessage());
+            messageLabel.setText("Error adding employee: " + ex.getMessage());
         } catch (NumberFormatException ex) {
-            messageLabel.setText("Lương/Phụ cấp phải là số!");
+            messageLabel.setText("Salary/Allowance must be a number!");
         }
     }
 
@@ -291,8 +289,9 @@ public class NhanvienController {
             String selectedManv = manvField.getText().trim();
 
             if (userRole.equals("ROLE_TCHC")) {
-                String sql = "UPDATE ATBMCQ_ADMIN.NHANVIEN SET HOTEN = ?, PHAI = ?, NGSINH = TO_DATE(?, 'YYYY-MM-DD'), " +
-                             "LUONG = ?, PHUCAP = ?, DT = ?, VAITRO = ?, MADV = ? WHERE MANV = ?";
+                String sql = "UPDATE ATBMCQ_ADMIN.NHANVIEN SET HOTEN = ?, PHAI = ?, NGSINH = TO_DATE(?, 'YYYY-MM-DD'), "
+                        +
+                        "LUONG = ?, PHUCAP = ?, DT = ?, VAITRO = ?, MADV = ? WHERE MANV = ?";
                 try (java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
                     pstmt.setString(1, hotenField.getText().trim());
                     pstmt.setString(2, phaiField.getText().trim());
@@ -306,16 +305,17 @@ public class NhanvienController {
                     pstmt.executeUpdate();
                     loadData();
                     clearFields();
-                    messageLabel.setText("Cập nhật nhân viên thành công!");
+                    messageLabel.setText("Employee updated successfully!");
                 }
             } else if (userRole.equals("ROLE_NVCB") || userRole.equals("ROLE_TRGDV")) {
                 if (!selectedManv.equals(username)) {
-                    messageLabel.setText("Bạn chỉ có thể cập nhật số điện thoại của chính mình!");
+                    messageLabel.setText("You can only update your own phone number!");
                     return;
                 }
 
-                String sqlCurrent = "SELECT HOTEN, PHAI, TO_CHAR(NGSINH, 'YYYY-MM-DD') AS NGSINH, LUONG, PHUCAP, DT, VAITRO, MADV " +
-                                    "FROM ATBMCQ_ADMIN.NHANVIEN_NVCB WHERE MANV = ?";
+                String sqlCurrent = "SELECT HOTEN, PHAI, TO_CHAR(NGSINH, 'YYYY-MM-DD') AS NGSINH, LUONG, PHUCAP, DT, VAITRO, MADV "
+                        +
+                        "FROM ATBMCQ_ADMIN.NHANVIEN_NVCB WHERE MANV = ?";
                 String currentHoten = "", currentPhai = "", currentNgsinh = "", currentVaitro = "", currentMadv = "";
                 double currentLuong = 0.0, currentPhucap = 0.0;
                 String currentDt = "";
@@ -336,16 +336,25 @@ public class NhanvienController {
                 }
 
                 boolean hasOtherChanges = false;
-                if (!hotenField.getText().trim().equals(currentHoten)) hasOtherChanges = true;
-                if (!phaiField.getText().trim().equals(currentPhai)) hasOtherChanges = true;
-                if (!ngsinhField.getText().trim().equals(currentNgsinh)) hasOtherChanges = true;
-                if (!luongField.getText().trim().isEmpty() && Double.parseDouble(luongField.getText().trim()) != currentLuong) hasOtherChanges = true;
-                if (!phucapField.getText().trim().isEmpty() && Double.parseDouble(phucapField.getText().trim()) != currentPhucap) hasOtherChanges = true;
-                if (!vaitroField.getText().trim().equals(currentVaitro)) hasOtherChanges = true;
-                if (!madvField.getText().trim().equals(currentMadv)) hasOtherChanges = true;
+                if (!hotenField.getText().trim().equals(currentHoten))
+                    hasOtherChanges = true;
+                if (!phaiField.getText().trim().equals(currentPhai))
+                    hasOtherChanges = true;
+                if (!ngsinhField.getText().trim().equals(currentNgsinh))
+                    hasOtherChanges = true;
+                if (!luongField.getText().trim().isEmpty()
+                        && Double.parseDouble(luongField.getText().trim()) != currentLuong)
+                    hasOtherChanges = true;
+                if (!phucapField.getText().trim().isEmpty()
+                        && Double.parseDouble(phucapField.getText().trim()) != currentPhucap)
+                    hasOtherChanges = true;
+                if (!vaitroField.getText().trim().equals(currentVaitro))
+                    hasOtherChanges = true;
+                if (!madvField.getText().trim().equals(currentMadv))
+                    hasOtherChanges = true;
 
                 if (hasOtherChanges) {
-                    messageLabel.setText("Bạn không có quyền thay đổi các trường khác ngoài số điện thoại!");
+                    messageLabel.setText("You are only allowed to change your phone number!");
                     return;
                 }
 
@@ -358,18 +367,18 @@ public class NhanvienController {
                         pstmt.executeUpdate();
                         loadData();
                         clearFields();
-                        messageLabel.setText("Cập nhật số điện thoại thành công!");
+                        messageLabel.setText("Phone number updated successfully!");
                     }
                 } else {
-                    messageLabel.setText("Không có thay đổi về số điện thoại!");
+                    messageLabel.setText("No changes to your phone number!");
                 }
             } else {
-                messageLabel.setText("Bạn không có quyền cập nhật nhân viên!");
+                messageLabel.setText("You do not have permission to update employees!");
             }
         } catch (SQLException ex) {
-            messageLabel.setText("Lỗi khi cập nhật nhân viên: " + ex.getMessage());
+            messageLabel.setText("Error updating employee: " + ex.getMessage());
         } catch (NumberFormatException ex) {
-            messageLabel.setText("Lương/Phụ cấp phải là số!");
+            messageLabel.setText("Salary/Allowance must be a number!");
         }
     }
 
@@ -377,7 +386,7 @@ public class NhanvienController {
         try (Connection conn = DatabaseConnection.getConnection()) {
             String userRole = getUserRole(conn);
             if (!userRole.equals("ROLE_TCHC")) {
-                messageLabel.setText("Bạn không có quyền xóa nhân viên!");
+                messageLabel.setText("You do not have permission to delete employees!");
                 return;
             }
             String sql = "DELETE FROM ATBMCQ_ADMIN.NHANVIEN WHERE MANV = ?";
@@ -386,10 +395,10 @@ public class NhanvienController {
                 pstmt.executeUpdate();
                 loadData();
                 clearFields();
-                messageLabel.setText("Xóa nhân viên thành công!");
+                messageLabel.setText("Employee deleted successfully!");
             }
         } catch (SQLException ex) {
-            messageLabel.setText("Lỗi khi xóa nhân viên: " + ex.getMessage());
+            messageLabel.setText("Error deleting employee: " + ex.getMessage());
         }
     }
 
@@ -408,6 +417,6 @@ public class NhanvienController {
     private void handleRefresh() {
         loadData();
         clearFields();
-        messageLabel.setText("Dữ liệu đã được làm mới!");
+        messageLabel.setText("Data refreshed!");
     }
 }

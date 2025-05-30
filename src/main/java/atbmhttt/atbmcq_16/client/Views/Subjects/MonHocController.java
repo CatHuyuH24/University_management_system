@@ -1,6 +1,7 @@
 package atbmhttt.atbmcq_16.client.Views.Subjects;
 
 import atbmhttt.atbmcq_16.DatabaseConnection;
+import atbmhttt.atbmcq_16.client.Models.MonHoc;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -22,7 +23,7 @@ import javafx.scene.text.Font;
 import javafx.util.Callback;
 
 public class MonHocController {
-    private ListView<MonHoc> monHocListView; 
+    private ListView<MonHoc> monHocListView;
     private TextField mammField, mahpField, magvField, hkField, namField;
     private Label messageLabel;
     private ObservableList<MonHoc> monHocList = FXCollections.observableArrayList();
@@ -32,7 +33,7 @@ public class MonHocController {
     }
 
     public Scene createScene() {
-        // Thay VBox bằng ListView
+        // Replace VBox with ListView
         monHocListView = new ListView<>();
         monHocListView.setItems(monHocList);
         monHocListView.setCellFactory(new Callback<ListView<MonHoc>, javafx.scene.control.ListCell<MonHoc>>() {
@@ -45,11 +46,11 @@ public class MonHocController {
                         if (empty || item == null) {
                             setText(null);
                         } else {
-                            setText("Mã MM: " + item.getMamm() +
-                                    " | Mã HP: " + item.getMahp() +
-                                    " | Mã GV: " + (item.getMagv() != null ? item.getMagv() : "N/A") +
-                                    " | Học kỳ: " + item.getHk() +
-                                    " | Năm: " + item.getNam());
+                            setText("Subject ID: " + item.getMamm() +
+                                    " | Course ID: " + item.getMahp() +
+                                    " | Lecturer ID: " + (item.getMagv() != null ? item.getMagv() : "N/A") +
+                                    " | Semester: " + item.getHk() +
+                                    " | Year: " + item.getNam());
                         }
                     }
                 };
@@ -57,51 +58,50 @@ public class MonHocController {
         });
         monHocListView.setPrefHeight(300);
 
-        // Tạo TextField
+        // Create TextFields
         mammField = new TextField();
         mahpField = new TextField();
         magvField = new TextField();
         hkField = new TextField();
         namField = new TextField();
 
-        // Tạo Label và TextField layout
+        // Create Label and TextField layout
         HBox inputLayout = new HBox(10);
         inputLayout.getChildren().addAll(
-            createInputVBox("Mã MM", mammField),
-            createInputVBox("Mã HP", mahpField),
-            createInputVBox("Mã GV", magvField),
-            createInputVBox("Học kỳ", hkField),
-            createInputVBox("Năm", namField)
-        );
+                createInputVBox("Subject ID", mammField),
+                createInputVBox("Course ID", mahpField),
+                createInputVBox("Lecturer ID", magvField),
+                createInputVBox("Semester", hkField),
+                createInputVBox("Year", namField));
 
-        // Tạo Button
-        Button addButton = new Button("Thêm");
+        // Create Buttons
+        Button addButton = new Button("Add");
         addButton.setOnAction(e -> handleAdd());
 
-        Button updateButton = new Button("Sửa");
+        Button updateButton = new Button("Update");
         updateButton.setOnAction(e -> handleUpdate());
 
-        Button deleteButton = new Button("Xóa");
+        Button deleteButton = new Button("Delete");
         deleteButton.setOnAction(e -> handleDelete());
 
-        Button refreshButton = new Button("Làm mới");
+        Button refreshButton = new Button("Refresh");
         refreshButton.setOnAction(e -> handleRefresh());
 
         HBox buttonLayout = new HBox(10, addButton, updateButton, deleteButton, refreshButton);
 
-        // Tạo Label thông báo
+        // Create message label
         messageLabel = new Label();
         messageLabel.setStyle("-fx-text-fill: red;");
 
-        // Tạo tiêu đề
-        Label titleLabel = new Label("Quản lý Môn học");
+        // Create title
+        Label titleLabel = new Label("Subject Management");
         titleLabel.setFont(new Font("System Bold", 16));
 
-        // Sắp xếp giao diện
+        // Arrange layout
         VBox layout = new VBox(10, titleLabel, monHocListView, inputLayout, buttonLayout, messageLabel);
         layout.setPadding(new Insets(10));
 
-        // Load dữ liệu và xử lý chọn dòng
+        // Load data and handle row selection
         loadData();
         monHocListView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
@@ -127,14 +127,18 @@ public class MonHocController {
         String role = "UNKNOWN";
         String sql = "SELECT ROLE FROM SESSION_ROLES WHERE ROLE IN ('ROLE_GV', 'ROLE_NVPDT', 'ROLE_TRGDV', 'ROLE_SINHVIEN')";
         try (Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+                ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 String currentRole = rs.getString("ROLE");
                 System.out.println("Detected role: " + currentRole);
-                if (currentRole.equals("ROLE_NVPDT")) return "ROLE_NVPDT";
-                else if (currentRole.equals("ROLE_GV")) role = "ROLE_GV";
-                else if (currentRole.equals("ROLE_TRGDV")) role = "ROLE_TRGDV";
-                else if (currentRole.equals("ROLE_SINHVIEN")) role = "ROLE_SINHVIEN";
+                if (currentRole.equals("ROLE_NVPDT"))
+                    return "ROLE_NVPDT";
+                else if (currentRole.equals("ROLE_GV"))
+                    role = "ROLE_GV";
+                else if (currentRole.equals("ROLE_TRGDV"))
+                    role = "ROLE_TRGDV";
+                else if (currentRole.equals("ROLE_SINHVIEN"))
+                    role = "ROLE_SINHVIEN";
             }
         }
         return role;
@@ -142,10 +146,10 @@ public class MonHocController {
 
     private void loadData() {
         monHocList.clear();
-        // Không cần clearChildren cho ListView
+        // No need to clearChildren for ListView
         try (Connection conn = DatabaseConnection.getConnection()) {
             String userRole = getUserRole(conn);
-            messageLabel.setText("Vai trò của user: " + userRole);
+            messageLabel.setText("Your role: " + userRole);
             String sql = "";
 
             if (userRole.equals("ROLE_GV")) {
@@ -157,33 +161,32 @@ public class MonHocController {
             } else if (userRole.equals("ROLE_SINHVIEN")) {
                 sql = "SELECT MAMM, MAHP, MAGV, HK, NAM FROM ATBMCQ_ADMIN.MOMON_SINHVIEN";
             } else {
-                messageLabel.setText("Vai trò không hợp lệ, dùng MOMON mặc định!");
+                messageLabel.setText("Invalid role, using default MOMON!");
                 sql = "SELECT MAMM, MAHP, MAGV, HK, NAM FROM ATBMCQ_ADMIN.MOMON";
             }
 
             try (Statement stmt = conn.createStatement();
-                 ResultSet rs = stmt.executeQuery(sql)) {
+                    ResultSet rs = stmt.executeQuery(sql)) {
                 int count = 0;
                 while (rs.next()) {
                     MonHoc monHoc = new MonHoc(
-                        rs.getString("MAMM"),
-                        rs.getString("MAHP"),
-                        rs.getString("MAGV"),
-                        rs.getInt("HK"),
-                        rs.getInt("NAM")
-                    );
+                            rs.getString("MAMM"),
+                            rs.getString("MAHP"),
+                            rs.getString("MAGV"),
+                            rs.getInt("HK"),
+                            rs.getInt("NAM"));
                     monHocList.add(monHoc);
                     count++;
                 }
-                messageLabel.setText("Dữ liệu môn học đã được tải! Số dòng: " + count);
+                messageLabel.setText("Subject data loaded! Rows: " + count);
             }
         } catch (SQLException ex) {
-            messageLabel.setText("Lỗi tải dữ liệu môn học");
+            messageLabel.setText("Failed to load subject data");
         }
     }
 
     private void handleAdd() {
-        try (Connection conn = DatabaseConnection.getConnection()) { // SỬA: bỏ username, password
+        try (Connection conn = DatabaseConnection.getConnection()) {
             String userRole = getUserRole(conn);
             String sql = "";
             if (userRole.equals("ROLE_NVPDT")) {
@@ -195,26 +198,26 @@ public class MonHocController {
                     pstmt.setInt(4, Integer.parseInt(hkField.getText().trim()));
                     pstmt.setInt(5, Integer.parseInt(namField.getText().trim()));
                     pstmt.executeUpdate();
-                    loadData(); // Làm mới giao diện
+                    loadData();
                     clearFields();
-                    messageLabel.setText("Thêm môn học thành công!");
+                    messageLabel.setText("Subject added successfully!");
                 }
             } else {
-                messageLabel.setText("Bạn không có quyền thêm môn học!");
+                messageLabel.setText("You do not have permission to add subjects!");
             }
         } catch (SQLException ex) {
-            messageLabel.setText("Lỗi khi thêm môn học");
+            messageLabel.setText("Error adding subject");
         } catch (NumberFormatException ex) {
-            messageLabel.setText("Học kỳ và Năm phải là số!");
+            messageLabel.setText("Semester and Year must be numbers!");
         }
     }
 
     private void handleUpdate() {
         if (selectedMonHoc == null) {
-            messageLabel.setText("Vui lòng chọn một môn học để sửa!");
+            messageLabel.setText("Please select a subject to update!");
             return;
         }
-        try (Connection conn = DatabaseConnection.getConnection()) { // SỬA: bỏ username, password
+        try (Connection conn = DatabaseConnection.getConnection()) {
             String userRole = getUserRole(conn);
             String sql = "";
             if (userRole.equals("ROLE_NVPDT")) {
@@ -228,24 +231,24 @@ public class MonHocController {
                     pstmt.executeUpdate();
                     loadData();
                     clearFields();
-                    messageLabel.setText("Cập nhật môn học thành công!");
+                    messageLabel.setText("Subject updated successfully!");
                 }
             } else {
-                messageLabel.setText("Bạn không có quyền sửa môn học!");
+                messageLabel.setText("You do not have permission to update subjects!");
             }
         } catch (SQLException ex) {
-            messageLabel.setText("Lỗi khi sửa môn học ");
+            messageLabel.setText("Error updating subject");
         } catch (NumberFormatException ex) {
-            messageLabel.setText("Học kỳ và Năm phải là số!");
+            messageLabel.setText("Semester and Year must be numbers!");
         }
     }
 
     private void handleDelete() {
         if (selectedMonHoc == null) {
-            messageLabel.setText("Vui lòng chọn một môn học để xóa!");
+            messageLabel.setText("Please select a subject to delete!");
             return;
         }
-        try (Connection conn = DatabaseConnection.getConnection()) { // SỬA: bỏ username, password
+        try (Connection conn = DatabaseConnection.getConnection()) {
             String userRole = getUserRole(conn);
             String sql = "";
             if (userRole.equals("ROLE_NVPDT")) {
@@ -255,20 +258,20 @@ public class MonHocController {
                     pstmt.executeUpdate();
                     loadData();
                     clearFields();
-                    messageLabel.setText("Xóa môn học thành công!");
+                    messageLabel.setText("Subject deleted successfully!");
                 }
             } else {
-                messageLabel.setText("Bạn không có quyền xóa môn học!");
+                messageLabel.setText("You do not have permission to delete subjects!");
             }
         } catch (SQLException ex) {
-            messageLabel.setText("Lỗi khi xóa môn học ");
+            messageLabel.setText("Error deleting subject");
         }
     }
 
     private void handleRefresh() {
         loadData();
         clearFields();
-        messageLabel.setText("Dữ liệu môn học đã được làm mới!");
+        messageLabel.setText("Subject data refreshed!");
     }
 
     private void clearFields() {
