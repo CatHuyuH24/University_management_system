@@ -96,10 +96,8 @@ public class ClientView extends Application {
 
     private void setUpDisplaySubjects(final Button subjectsButton, final BorderPane contentArea) {
         subjectsButton.setOnAction(e -> {
-            String username = atbmhttt.atbmcq_16.Session.getUsername();
-            String password = atbmhttt.atbmcq_16.Session.getPassword();
             atbmhttt.atbmcq_16.client.Views.Subjects.SubjectsView view = new atbmhttt.atbmcq_16.client.Views.Subjects.SubjectsView();
-            view.displaySubjects(contentArea, username, password);
+            view.displaySubjects(contentArea);
         });
     }
 }

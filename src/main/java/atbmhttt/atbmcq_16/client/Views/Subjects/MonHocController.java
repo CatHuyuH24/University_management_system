@@ -1,4 +1,6 @@
-package atbmhttt.atbmcq_16;
+package atbmhttt.atbmcq_16.client.Views.Subjects;
+
+import atbmhttt.atbmcq_16.DatabaseConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,7 +15,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -21,17 +22,13 @@ import javafx.scene.text.Font;
 import javafx.util.Callback;
 
 public class MonHocController {
-    private final String username;
-    private final String password;
-    private ListView<MonHoc> monHocListView; // Thay VBox bằng ListView
+    private ListView<MonHoc> monHocListView; 
     private TextField mammField, mahpField, magvField, hkField, namField;
     private Label messageLabel;
     private ObservableList<MonHoc> monHocList = FXCollections.observableArrayList();
     private MonHoc selectedMonHoc; // Để lưu môn học được chọn
 
-    public MonHocController(String username, String password) {
-        this.username = username;
-        this.password = password;
+    public MonHocController() {
     }
 
     public Scene createScene() {

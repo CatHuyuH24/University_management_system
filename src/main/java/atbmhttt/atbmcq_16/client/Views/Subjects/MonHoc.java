@@ -1,4 +1,4 @@
-package atbmhttt.atbmcq_16;
+package atbmhttt.atbmcq_16.client.Views.Subjects;
 
 public class MonHoc {
     private String mamm, mahp, magv;
