@@ -49,6 +49,8 @@ public class ClientView extends Application {
 
         // set up the buttons
         setUpDisplayStudents(studentsButton, contentArea);
+        setUpDisplayEmployees(employeesButton, contentArea);
+        setUpDisplaySubjects(subjectsButton, contentArea);
 
         // Log out button functionality (similar to AdminView)
         logoutButton.setOnAction(e -> {
@@ -80,6 +82,22 @@ public class ClientView extends Application {
         studentsButton.setOnAction(e -> {
             StudentsView view = new StudentsView();
             view.displayStudents(contentArea);
+        });
+    }
+
+    private void setUpDisplayEmployees(final Button employeesButton, final BorderPane contentArea) {
+        employeesButton.setOnAction(e -> {
+            String username = atbmhttt.atbmcq_16.Session.getUsername();
+            String password = atbmhttt.atbmcq_16.Session.getPassword();
+            atbmhttt.atbmcq_16.client.Views.Employees.EmployeesView view = new atbmhttt.atbmcq_16.client.Views.Employees.EmployeesView();
+            view.displayEmployees(contentArea, username, password);
+        });
+    }
+
+    private void setUpDisplaySubjects(final Button subjectsButton, final BorderPane contentArea) {
+        subjectsButton.setOnAction(e -> {
+            atbmhttt.atbmcq_16.client.Views.Subjects.SubjectsView view = new atbmhttt.atbmcq_16.client.Views.Subjects.SubjectsView();
+            view.displaySubjects(contentArea);
         });
     }
 }
