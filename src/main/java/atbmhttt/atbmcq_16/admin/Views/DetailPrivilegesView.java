@@ -62,6 +62,9 @@ public class DetailPrivilegesView {
                                 privilege.getPrivilege(),
                                 privilege.getObject());
 
+                        AlertDialog.showInformationAlert("Revoked successfully",
+                                null, "Privilege has been revoked!",
+                                null, 200, 100);
                         stage.close();
                     }
                 });

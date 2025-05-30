@@ -1,5 +1,6 @@
 package atbmhttt.atbmcq_16.client.Views;
 
+import atbmhttt.atbmcq_16.DatabaseConnection;
 import atbmhttt.atbmcq_16.client.Views.Students.StudentsView;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -23,16 +24,16 @@ public class ClientView extends Application {
 
         Button studentsButton = new Button("Students");
         Button employeesButton = new Button("Employees");
-        Button subjectsButton = new Button("Subjects");
-        Button registrationButton = new Button("Registration");
+        Button coursesButton = new Button("Courses");
+        Button enrollmentButton = new Button("Enrollment & Grades");
         Button broadcastNotificationButton = new Button("Broadcast Notification");
         Button viewNotificationsButton = new Button("View Notifications");
         Button logoutButton = new Button("Log out");
 
         navigationPanel.add(studentsButton, 0, 1);
         navigationPanel.add(employeesButton, 0, 2);
-        navigationPanel.add(subjectsButton, 0, 3);
-        navigationPanel.add(registrationButton, 0, 4);
+        navigationPanel.add(coursesButton, 0, 3);
+        navigationPanel.add(enrollmentButton, 0, 4);
         navigationPanel.add(broadcastNotificationButton, 0, 5);
         navigationPanel.add(viewNotificationsButton, 0, 6);
 
@@ -45,10 +46,11 @@ public class ClientView extends Application {
         navigationPanel.add(logoutButton, 0, 8);
 
         BorderPane contentArea = new BorderPane();
-        contentArea.setCenter(new Text("Welcome CLIENT"));
+        contentArea.setCenter(new Text("Welcome " + DatabaseConnection.getUsername()));
 
         // set up the buttons
         setUpDisplayStudents(studentsButton, contentArea);
+        setUpDisplayRegistrationDetails(enrollmentButton, contentArea);
 
         // Log out button functionality (similar to AdminView)
         logoutButton.setOnAction(e -> {
@@ -80,6 +82,13 @@ public class ClientView extends Application {
         studentsButton.setOnAction(e -> {
             StudentsView view = new StudentsView();
             view.displayStudents(contentArea);
+        });
+    }
+
+    private void setUpDisplayRegistrationDetails(final Button enrollmentButton, final BorderPane contentArea) {
+        enrollmentButton.setOnAction(e -> {
+            atbmhttt.atbmcq_16.client.Views.Enrollment.EnrollmentView view = new atbmhttt.atbmcq_16.client.Views.Enrollment.EnrollmentView();
+            view.displayEnrollments(contentArea);
         });
     }
 }

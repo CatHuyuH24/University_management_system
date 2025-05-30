@@ -22,6 +22,13 @@ public class GrantPrivilegesView {
         viewModel = new GrantPrivilegesViewModel(username);
         Stage dialog = new Stage();
         dialog.setTitle("Grant Privilege");
+        // Set the app icon like App.java
+        try {
+            Image iconImage = new Image(getClass().getResource("/images/app_icon.png").toExternalForm());
+            dialog.getIcons().add(iconImage);
+        } catch (Exception e) {
+            System.err.println("Image not found: app_icon.png");
+        }
         VBox layout = new VBox(12);
         layout.setPadding(new Insets(18));
 
