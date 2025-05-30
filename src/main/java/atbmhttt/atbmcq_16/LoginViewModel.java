@@ -1,12 +1,12 @@
 package atbmhttt.atbmcq_16;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.CallableStatement;
+
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 public class LoginViewModel {
     private final StringProperty username = new SimpleStringProperty();
