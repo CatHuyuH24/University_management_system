@@ -29,7 +29,7 @@ public class NhanvienController {
     private Label messageLabel;
     private final ObservableList<Nhanvien> nhanvienList = FXCollections.observableArrayList();
 
-    public NhanvienController(String username, String password) {
+    public NhanvienController(String username) {
         this.username = username;
     }
 

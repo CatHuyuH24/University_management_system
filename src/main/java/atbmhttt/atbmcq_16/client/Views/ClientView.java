@@ -1,5 +1,6 @@
 package atbmhttt.atbmcq_16.client.Views;
 
+import atbmhttt.atbmcq_16.DatabaseConnection;
 import atbmhttt.atbmcq_16.client.Views.Students.StudentsView;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -21,18 +22,18 @@ public class ClientView extends Application {
         navigationPanel.setPadding(new Insets(10));
         navigationPanel.setVgap(10);
 
-        Button studentsButton = new Button("Students");
-        Button employeesButton = new Button("Employees");
-        Button subjectsButton = new Button("Subjects");
-        Button registrationButton = new Button("Registration");
-        Button broadcastNotificationButton = new Button("Broadcast Notification");
-        Button viewNotificationsButton = new Button("View Notifications");
-        Button logoutButton = new Button("Log out");
+        Button studentsButton = new Button("STUDENTS");
+        Button employeesButton = new Button("EMPLOYEES");
+        Button coursesButton = new Button("COURSES");
+        Button enrollmentButton = new Button("ENROLLMENT & GRADES");
+        Button broadcastNotificationButton = new Button("BROADCAST NOTIFICATION");
+        Button viewNotificationsButton = new Button("VIEW NOTIFICATIONS");
+        Button logoutButton = new Button("LOG OUT");
 
         navigationPanel.add(studentsButton, 0, 1);
         navigationPanel.add(employeesButton, 0, 2);
-        navigationPanel.add(subjectsButton, 0, 3);
-        navigationPanel.add(registrationButton, 0, 4);
+        navigationPanel.add(coursesButton, 0, 3);
+        navigationPanel.add(enrollmentButton, 0, 4);
         navigationPanel.add(broadcastNotificationButton, 0, 5);
         navigationPanel.add(viewNotificationsButton, 0, 6);
 
@@ -45,12 +46,13 @@ public class ClientView extends Application {
         navigationPanel.add(logoutButton, 0, 8);
 
         BorderPane contentArea = new BorderPane();
-        contentArea.setCenter(new Text("Welcome CLIENT"));
+        contentArea.setCenter(new Text("Welcome " + DatabaseConnection.getUsername()));
 
         // set up the buttons
         setUpDisplayStudents(studentsButton, contentArea);
         setUpDisplayEmployees(employeesButton, contentArea);
-        setUpDisplaySubjects(subjectsButton, contentArea);
+        setUpDisplaySubjects(coursesButton, contentArea);
+        setUpDisplayRegistrationDetails(enrollmentButton, contentArea);
 
         // Log out button functionality (similar to AdminView)
         logoutButton.setOnAction(e -> {
@@ -85,17 +87,23 @@ public class ClientView extends Application {
         });
     }
 
-    private void setUpDisplayEmployees(final Button employeesButton, final BorderPane contentArea) {
-        employeesButton.setOnAction(e -> {
-            String username = atbmhttt.atbmcq_16.Session.getUsername();
-            String password = atbmhttt.atbmcq_16.Session.getPassword();
-            atbmhttt.atbmcq_16.client.Views.Employees.EmployeesView view = new atbmhttt.atbmcq_16.client.Views.Employees.EmployeesView();
-            view.displayEmployees(contentArea, username, password);
+    private void setUpDisplayRegistrationDetails(final Button enrollmentButton, final BorderPane contentArea) {
+        enrollmentButton.setOnAction(e -> {
+            atbmhttt.atbmcq_16.client.Views.Enrollment.EnrollmentAndGradesView view = new atbmhttt.atbmcq_16.client.Views.Enrollment.EnrollmentAndGradesView();
+            view.displayEnrollments(contentArea);
         });
     }
 
-    private void setUpDisplaySubjects(final Button subjectsButton, final BorderPane contentArea) {
-        subjectsButton.setOnAction(e -> {
+    private void setUpDisplayEmployees(final Button employeesButton, final BorderPane contentArea) {
+        employeesButton.setOnAction(e -> {
+            String username = DatabaseConnection.getUsername();
+            atbmhttt.atbmcq_16.client.Views.Employees.EmployeesView view = new atbmhttt.atbmcq_16.client.Views.Employees.EmployeesView();
+            view.displayEmployees(contentArea, username);
+        });
+    }
+
+    private void setUpDisplaySubjects(final Button coursesButton, final BorderPane contentArea) {
+        coursesButton.setOnAction(e -> {
             atbmhttt.atbmcq_16.client.Views.Subjects.SubjectsView view = new atbmhttt.atbmcq_16.client.Views.Subjects.SubjectsView();
             view.displaySubjects(contentArea);
         });

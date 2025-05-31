@@ -11,6 +11,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.sql.SQLException;
@@ -18,7 +19,7 @@ import java.sql.SQLException;
 public class DeleteStudentDialog {
     public static void show(StudentsViewModel studentsViewModel) {
         Stage dialog = new Stage();
-        dialog.setTitle("Delete Student");
+        dialog.setTitle("DELETE STUDENT");
         try {
             Image iconImage = new Image(DeleteStudentDialog.class.getResource("/images/app_icon.png").toExternalForm());
             dialog.getIcons().add(iconImage);
@@ -29,14 +30,14 @@ public class DeleteStudentDialog {
         layout.setPadding(new javafx.geometry.Insets(18));
         layout.setAlignment(Pos.CENTER);
 
-        Label titleLabel = new Label("Delete Student");
+        Label titleLabel = new Label("DELETE STUDENT");
         titleLabel.setStyle("-fx-font-size: 18; -fx-font-weight: bold;");
 
-        Label masvLabel = new Label("MASV (Student ID):");
+        Label masvLabel = new Label("MASV (STUDENT ID):");
         masvLabel.setAlignment(Pos.CENTER_LEFT);
         masvLabel.setStyle("-fx-alignment: center-left;");
         TextField masvField = new TextField();
-        masvField.setPromptText("Enter MASV to delete");
+        masvField.setPromptText("ENTER MASV TO DELETE");
 
         HBox buttonBox = new HBox(10);
         buttonBox.setAlignment(Pos.CENTER_RIGHT);
@@ -45,24 +46,30 @@ public class DeleteStudentDialog {
         buttonBox.getChildren().addAll(deleteBtn, cancelBtn);
 
         deleteBtn.setOnAction(ev -> {
-            String masv = masvField.getText();
+            String masv = masvField.getText().trim();
+
+            if (masv.isEmpty()) {
+                AlertDialog.showErrorAlert("MISSING INFORMATION", null, "Please fill in MASV.",
+                        null, 400, 200);
+                return;
+            }
             try {
                 studentsViewModel.deleteStudentByMASV(masv);
-                AlertDialog.showInformationAlert("Student deleted", null,
+                AlertDialog.showInformationAlert("STUDENT DELETED", null,
                         "Student with MASV '" + masv + "' has been deleted.", null, 400, 200);
                 dialog.close();
             } catch (IllegalArgumentException e) {
-                AlertDialog.showErrorAlert("Invalid input", null, e.getMessage(), null, 400, 200);
+                AlertDialog.showErrorAlert("INVALID INPUT", null, e.getMessage(), null, 400, 200);
             } catch (SQLException e) {
-                ClientAlertDialogs.displayGeneralErrorDialog();
+                ClientAlertDialogs.displayGeneralSQLErrorDialog();
             } catch (Exception e) {
                 String msg = e.getMessage();
                 if (msg != null && (msg.contains("not found"))) {
-                    AlertDialog.showErrorAlert("Error deleting student", null,
+                    AlertDialog.showErrorAlert("ERROR DELETING STUDENT", null,
                             "No student record found with the provided MASV. Please re-check and try again.\nIf you need further assistance, please contact your supervisor or authorized personnel.",
                             null, 400, 200);
                 } else {
-                    ClientAlertDialogs.displayGeneralErrorDialog();
+                    ClientAlertDialogs.displayUnexpectedErrorDialog();
                 }
             }
         });
@@ -71,6 +78,7 @@ public class DeleteStudentDialog {
         layout.getChildren().addAll(titleLabel, masvLabel, masvField, buttonBox);
         Scene scene = new Scene(layout, 350, 220);
         dialog.setScene(scene);
+        dialog.initModality(Modality.APPLICATION_MODAL);
         dialog.show();
     }
 }

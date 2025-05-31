@@ -2,7 +2,6 @@ package atbmhttt.atbmcq_16.helpers;
 
 public class InputValidator {
     public static void validateInput(String input) throws IllegalArgumentException {
-
         // Disallow special characters: ; ' " -- / , . * _ #
         String[] bannedPatterns = { ";", "'", "\"", "--", "/", "\\.", "\\*", "_", "#" };
         for (String pattern : bannedPatterns) {

@@ -51,23 +51,22 @@ public class LoginView {
         gridPane.add(subtitle, 0, 2);
 
         // Username field
-        Label usernameLabel = new Label("Username:");
+        Label usernameLabel = new Label("USERNAME:");
         TextField usernameField = new TextField();
         usernameField.textProperty().bindBidirectional(viewModel.usernameProperty());
 
         // Password field
-        Label passwordLabel = new Label("Password:");
+        Label passwordLabel = new Label("PASSWORD:");
         PasswordField passwordField = new PasswordField();
         passwordField.textProperty().bindBidirectional(viewModel.passwordProperty());
 
         // Login button
-        Button loginButton = new Button("Log in");
+        Button loginButton = new Button("LOG IN");
+        loginButton.setDefaultButton(true);
         // Update login button action to use the router for navigation
         loginButton.setOnAction(event -> {
             try {
                 viewModel.login();
-                // Lưu thông tin đăng nhập vào Session sau khi đăng nhập thành công
-                atbmhttt.atbmcq_16.Session.setCredentials(viewModel.getUsername(), viewModel.getPassword());
             } catch (SQLException e) {
                 AlertDialog.showErrorAlert(
                         "INVALID LOGIN CREDENTIAL",

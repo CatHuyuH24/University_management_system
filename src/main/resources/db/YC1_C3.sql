@@ -13,7 +13,7 @@ BEGIN
     v_role := SYS_CONTEXT('user_ctx', 'VAI_TRO');
     
     IF v_role = 'SINHVIEN' THEN
-        RETURN 'MASV = ''' || v_user || ''''; -- Access only to own record
+        RETURN 'MASV = ''' || v_user || ''''; 
     ELSIF v_role = 'GV' THEN
         BEGIN
             SELECT MADV INTO v_donvi 
@@ -80,7 +80,7 @@ BEGIN
 END;
 
 
--- HÀM VỊ TỪ CHO THÊM, SỬA (MỌI CỘT TRỪ TINHTRANG), XÓA
+-- HÀM VỊ TỪ CHO THÊM, SỬA, XOA (MỌI CỘT TRỪ TINHTRANG, DCHI, DT, MASV)
 CREATE OR REPLACE FUNCTION PF_SINHVIEN_INSERT_UPDATE_DELETE(
     schema_name IN VARCHAR2,
     object_name IN VARCHAR2
@@ -95,8 +95,6 @@ BEGIN
 
     IF v_role = 'NV CTSV' THEN
         RETURN '1 = 1';
-    ELSIF v_role = 'SINHVIEN' THEN
-        RETURN 'MASV = ''' || '
     ELSE
         RETURN '0 = 1';
     END IF;
@@ -111,13 +109,88 @@ BEGIN
     function_schema  => 'VPD_MGR',
     policy_function  => 'PF_SINHVIEN_INSERT_UPDATE_DELETE',
     statement_types  => 'INSERT, UPDATE, DELETE',
-    sec_relevant_cols => 'MASV, HOTEN, PHAI, NGSINH, DCHI, DT, KHOA',
+    sec_relevant_cols => 'HOTEN, PHAI, NGSINH, KHOA',
     update_check => TRUE
   );
 END;
 
--- GIỚI HẠN VIỆC UDATE CỘT TINHTRANG
-CREATE OR REPLACE FUNCTION PF_SINHVIEN_UPDATE_TINHTRANG(
+-- XỬ LÍ TRUY CẬP VỚI CỘT MASV, VÌ ĐÂY LÀ CỘT ĐỂ ĐỊNH VỊ SINH VIÊN THEO DÒNG CHO NV CTSV, NV PĐT
+CREATE OR REPLACE FUNCTION PF_SINHVIEN_MASV_INSERT_DELETE(
+    schema_name IN VARCHAR2,
+    object_name IN VARCHAR2
+)
+RETURN VARCHAR2
+AS
+    v_role VARCHAR2(100);
+    v_user VARCHAR2(100); 
+BEGIN
+    v_role := SYS_CONTEXT('user_ctx', 'VAI_TRO');
+    v_user := SYS_CONTEXT('userenv', 'SESSION_USER');
+
+    IF v_role = 'NV CTSV' THEN
+        RETURN '1 = 1';
+    ELSE
+        RETURN '0 = 1';
+    END IF;
+END;
+/
+
+BEGIN
+  DBMS_RLS.ADD_POLICY (
+    object_schema    => 'ATBMCQ_ADMIN',
+    object_name      => 'SINHVIEN',
+    policy_name      => 'ATBMCQ_16_SINHVIEN_MASV_INSERT_DELETE',
+    function_schema  => 'VPD_MGR',
+    policy_function  => 'PF_SINHVIEN_MASV_INSERT_DELETE',
+    statement_types  => 'INSERT, DELETE',
+    sec_relevant_cols => 'MASV',
+    update_check => TRUE
+  );
+END;
+
+
+
+CREATE OR REPLACE FUNCTION PF_SINHVIEN_MASV_UPDATE(
+    schema_name IN VARCHAR2,
+    object_name IN VARCHAR2
+)
+RETURN VARCHAR2
+AS
+    v_role VARCHAR2(100);
+    v_user VARCHAR2(100); 
+BEGIN
+    v_role := SYS_CONTEXT('user_ctx', 'VAI_TRO');
+    v_user := SYS_CONTEXT('userenv', 'SESSION_USER');
+
+    IF v_role = 'NV CTSV' OR v_role = 'NV PĐT' THEN
+        RETURN '1 = 1';
+    ELSE
+        RETURN '0 = 1';
+    END IF;
+END;
+/
+
+BEGIN
+  DBMS_RLS.ADD_POLICY (
+    object_schema    => 'ATBMCQ_ADMIN',
+    object_name      => 'SINHVIEN',
+    policy_name      => 'ATBMCQ_16_SINHVIEN_MASV_UPDATE',
+    function_schema  => 'VPD_MGR',
+    policy_function  => 'PF_SINHVIEN_MASV_UPDATE',
+    statement_types  => 'UPDATE',
+    sec_relevant_cols => 'MASV',
+    update_check => TRUE
+  );
+END;
+
+
+
+begin
+dbms_rls.drop_policy('ATBMCQ_ADMIN','SINHVIEN','ATBMCQ_16_SINHVIEN_UPDATE_TINHTRANG');
+end;
+
+-- GIỚI HẠN VIỆC THAO TÁC CỘT TINHTRANG
+CREATE OR REPLACE FUNCTION PF_SINHVIEN_TINHTRANG(
     schema_name IN VARCHAR2,
     object_name IN VARCHAR2
 )
@@ -138,13 +211,14 @@ BEGIN
 END;
 /
 
+
 BEGIN
   DBMS_RLS.ADD_POLICY (
     object_schema    => 'ATBMCQ_ADMIN',
     object_name      => 'SINHVIEN',
-    policy_name      => 'ATBMCQ_16_SINHVIEN_UPDATE_TINHTRANG',
+    policy_name      => 'ATBMCQ_16_SINHVIEN_TINHTRANG',
     function_schema  => 'VPD_MGR',
-    policy_function  => 'PF_SINHVIEN_UPDATE_TINHTRANG',
+    policy_function  => 'PF_SINHVIEN_TINHTRANG',
     statement_types  => 'INSERT, UPDATE, DELETE',
     sec_relevant_cols => 'TINHTRANG',
     update_check => TRUE
