@@ -74,7 +74,7 @@ public class StudentsView {
         UpdateStudentView.setStudentsViewModel(this, studentsViewModel);
         updateButton.setOnAction(e -> UpdateStudentView.show());
         addButton.setOnAction(e -> AddStudentView.show(this, studentsViewModel));
-        deleteButton.setOnAction(e -> DeleteStudentDialog.show(studentsViewModel));
+        deleteButton.setOnAction(e -> DeleteStudentView.show(studentsViewModel));
         bottomSection.getChildren().addAll(addButton, updateButton, deleteButton);
 
         BorderPaneHelper.setAllSections(contentArea, null, null, null, bottomSection, scrollPane);
