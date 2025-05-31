@@ -33,6 +33,7 @@ BEGIN
     sec_relevant_cols_opt => DBMS_RLS.ALL_ROWS
   );
 END;
+/
 
 -- XEM THONG TIN DANG KY
 CREATE OR REPLACE FUNCTION PF_DANGKY_MASV_MAMM_SELECT (
@@ -91,6 +92,7 @@ BEGIN
     statement_types  => 'SELECT'
   );
 END;
+/
 
 -- INSERT, UPDATE, DELETE DIEM
 CREATE OR REPLACE FUNCTION PF_DANGKY_DIEM_INSERT_UPDATE_DELETE (
@@ -123,6 +125,7 @@ BEGIN
     update_check     => TRUE
   );
 END;
+/
 
 -- CHỈ INSERT, DELETE
 CREATE OR REPLACE FUNCTION PF_DANGKY_MASV_MAMM_INSERT_DELETE (
@@ -171,6 +174,7 @@ BEGIN
 END;
 /
 
+
 BEGIN
   DBMS_RLS.ADD_POLICY (
     object_schema    => 'ATBMCQ_ADMIN',
@@ -183,7 +187,7 @@ BEGIN
     update_check     => TRUE
   );
 END;
-
+/
 
 -- LIÊN QUAN ĐẾN VIỆC UPDATE TRƯỜNG KHÔNG PHẢI ĐIỂM
 CREATE OR REPLACE FUNCTION PF_DANGKY_MASV_MAMM_UPDATE (
@@ -245,3 +249,4 @@ BEGIN
     sec_relevant_cols => 'MASV, MAMM'
   );
 END;
+/

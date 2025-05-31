@@ -42,7 +42,7 @@ BEGIN
     statement_types  => 'SELECT'
   );
 END;
-
+/
 
 -- XÂY DỰNG HÀM VỊ TỪ CHO VIỆC CẬP NHẬT DIACHI, DT
 CREATE OR REPLACE FUNCTION PF_SINVIEN_UPDATE_DCHI_DT(
@@ -65,6 +65,8 @@ BEGIN
         RETURN '0 = 1';
     END IF;
 END;
+/
+
 
 BEGIN
   DBMS_RLS.ADD_POLICY (
@@ -78,7 +80,7 @@ BEGIN
     update_check => TRUE
   );
 END;
-
+/
 
 -- HÀM VỊ TỪ CHO THÊM, SỬA, XOA (MỌI CỘT TRỪ TINHTRANG, DCHI, DT, MASV)
 CREATE OR REPLACE FUNCTION PF_SINHVIEN_INSERT_UPDATE_DELETE(
@@ -113,6 +115,7 @@ BEGIN
     update_check => TRUE
   );
 END;
+/
 
 -- XỬ LÍ TRUY CẬP VỚI CỘT MASV, VÌ ĐÂY LÀ CỘT ĐỂ ĐỊNH VỊ SINH VIÊN THEO DÒNG CHO NV CTSV, NV PĐT
 CREATE OR REPLACE FUNCTION PF_SINHVIEN_MASV_INSERT_DELETE(
@@ -147,7 +150,7 @@ BEGIN
     update_check => TRUE
   );
 END;
-
+/
 
 
 CREATE OR REPLACE FUNCTION PF_SINHVIEN_MASV_UPDATE(
@@ -182,7 +185,7 @@ BEGIN
     update_check => TRUE
   );
 END;
-
+/
 
 -- GIỚI HẠN VIỆC THAO TÁC CỘT TINHTRANG
 CREATE OR REPLACE FUNCTION PF_SINHVIEN_TINHTRANG(
@@ -219,3 +222,4 @@ BEGIN
     update_check => TRUE
   );
 END;
+/
