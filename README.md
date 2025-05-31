@@ -92,6 +92,7 @@ The Admin side of the application is designed for database administrators. It pr
 
 For further details, see the code and comments in the respective Java and SQL files. Or if you need more support, please contact the project maintainers:
 
+- [nguyenhoang-11](https://github.com/nguyenhoang-11)
 - [botchigo](https://github.com/botchigo)
 - [duongduchuy24](https://github.com/duongduchuy24)
 - [CatHuyuH24](https://github.com/CatHuyuH24)
