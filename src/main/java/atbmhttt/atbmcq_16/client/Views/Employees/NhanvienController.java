@@ -338,7 +338,7 @@ public class NhanvienController {
             nhanvienListView.refresh();
             // Do not auto-select first row to preserve user selection
         } catch (SQLException ex) {
-            messageLabel.setText("You do not have permission to view data: " + ex.getMessage());
+            messageLabel.setText("You do not have permission to view data!");
         }
     }
 
@@ -368,7 +368,7 @@ public class NhanvienController {
                 messageLabel.setText("Employee added successfully!");
             }
         } catch (SQLException ex) {
-            messageLabel.setText("Error adding employee: " + ex.getMessage());
+            messageLabel.setText("Error adding employee!");
         } catch (NumberFormatException ex) {
             messageLabel.setText("Salary/Allowance must be a number!");
         }
@@ -467,7 +467,7 @@ public class NhanvienController {
                 messageLabel.setText("You do not have permission to update employees!");
             }
         } catch (SQLException ex) {
-            messageLabel.setText("Error updating employee: " + ex.getMessage());
+            messageLabel.setText("Error updating employee!");
         } catch (NumberFormatException ex) {
             messageLabel.setText("Salary/Allowance must be a number!");
         }
@@ -489,7 +489,7 @@ public class NhanvienController {
                 messageLabel.setText("Employee deleted successfully!");
             }
         } catch (SQLException ex) {
-            messageLabel.setText("Error deleting employee: " + ex.getMessage());
+            messageLabel.setText("Error deleting employee!");
         }
     }
 
