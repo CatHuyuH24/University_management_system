@@ -6,8 +6,10 @@ This is a JavaFX-based University Management System for managing students, cours
 
 - **User Authentication**: Login with Oracle DB credentials; role-based dashboards for Admin and Client users.
 - **Student Management**: Add, update, delete, and view student information.
-- **Subject Management**: Add, update, delete, and view subject information (with role-based permissions).
+- **Course Management**: Add, update, delete, and view course information (with role-based permissions).
 - **Role Management**: Admin can manage users and roles.
+- **Privilege Management**: Admin can manage database privileges directly from the application, including granting and revoking privileges for users and roles.
+
 - **Modern JavaFX UI**: Responsive and user-friendly interface.
 
 ## Prerequisites
@@ -63,6 +65,10 @@ This is a JavaFX-based University Management System for managing students, cours
 
 - Use the credentials created in the SQL scripts (e.g., `ATBMCQ_ADMIN`/`123` or `USER1`/`123`).
 - The application will detect your role and show the appropriate dashboard.
+
+## Admin Dashboard
+
+The Admin side of the application is designed for database administrators. It provides a user-friendly interface for managing users, roles, and privileges in the Oracle database, allowing DBAs to perform essential tasks without needing to install Oracle SQL Developer or similar database tools.
 
 ## Notes
 

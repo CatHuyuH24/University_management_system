@@ -5,31 +5,31 @@ CREATE OR REPLACE FUNCTION PF_SINHVIEN_SELECT (
 )
 RETURN VARCHAR2
 AS
-  v_role VARCHAR2(100);
-  v_user VARCHAR2(100);
+  v_user  VARCHAR2(100);
+  v_role  VARCHAR2(100);
   v_donvi VARCHAR2(100);
 BEGIN
-    v_user := SYS_CONTEXT('USERENV', 'SESSION_USER');
-    v_role := SYS_CONTEXT('user_ctx', 'VAI_TRO');
-    
-    IF v_role = 'SINHVIEN' THEN
-        RETURN 'MASV = ''' || v_user || ''''; 
-    ELSIF v_role = 'GV' THEN
-        BEGIN
-            SELECT MADV INTO v_donvi 
-            FROM ATBMCQ_ADMIN.NHANVIEN
-            WHERE MANV = v_user;
-        EXCEPTION
-            WHEN NO_DATA_FOUND THEN
-                RETURN '111 = 999';
-        END;
-        RETURN 'KHOA = ''' || v_donvi || '''';
-        
-    ELSE
-        RETURN '0 = 1';
-    END IF;
+  v_user := SYS_CONTEXT('USERENV', 'SESSION_USER');
+  v_role := SYS_CONTEXT('user_ctx', 'VAI_TRO');
+
+  IF v_role = 'SINHVIEN' THEN
+    RETURN 'MASV = ''' || v_user || '''';
+  ELSIF v_role = 'GV' THEN
+    BEGIN
+      SELECT MADV INTO v_donvi 
+      FROM ATBMCQ_ADMIN.NHANVIEN
+      WHERE MANV = v_user;
+    EXCEPTION
+      WHEN NO_DATA_FOUND THEN
+        RETURN '1 = 0'; -- No matching record found
+    END;
+    RETURN 'KHOA = ''' || v_donvi || '''';
+  ELSE
+    RETURN '1 = 0'; -- Default condition when no roles match
+  END IF;
 END;
 /
+
 
 -- ÁP DỤNG HÀM VỊ TỪ
 BEGIN
@@ -183,11 +183,6 @@ BEGIN
   );
 END;
 
-
-
-begin
-dbms_rls.drop_policy('ATBMCQ_ADMIN','SINHVIEN','ATBMCQ_16_SINHVIEN_UPDATE_TINHTRANG');
-end;
 
 -- GIỚI HẠN VIỆC THAO TÁC CỘT TINHTRANG
 CREATE OR REPLACE FUNCTION PF_SINHVIEN_TINHTRANG(
