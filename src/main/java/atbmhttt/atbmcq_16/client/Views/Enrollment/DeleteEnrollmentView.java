@@ -75,8 +75,9 @@ public class DeleteEnrollmentView {
                 if (msg != null
                         && (msg.contains("not found"))) {
                     AlertDialog.showErrorAlert("ERROR UNENROLLING", null,
-                            "No enrollment record found for student ID \"" + masv.toUpperCase() +
+                            "No enrollment record found for student ID " + masv.toUpperCase() +
                                     "in course " + mamm.toUpperCase() +
+                                    " or the enrollment periord of the course has been overdue" +
                                     ".\nPlease verify the information and try again.\nIf you need further assistance, contact your supervisor or authorized personnel.",
                             null, 400, 200);
                 } else {
