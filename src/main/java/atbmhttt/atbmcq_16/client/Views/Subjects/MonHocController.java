@@ -117,6 +117,91 @@ public class MonHocController {
         return new Scene(layout, 900, 600);
     }
 
+    public VBox createView() {
+        // Replace VBox with ListView
+        monHocListView = new ListView<>();
+        monHocListView.setItems(monHocList);
+        monHocListView.setCellFactory(new Callback<ListView<MonHoc>, javafx.scene.control.ListCell<MonHoc>>() {
+            @Override
+            public javafx.scene.control.ListCell<MonHoc> call(ListView<MonHoc> param) {
+                return new javafx.scene.control.ListCell<MonHoc>() {
+                    @Override
+                    protected void updateItem(MonHoc item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty || item == null) {
+                            setText(null);
+                        } else {
+                            setText("Subject ID: " + item.getMamm() +
+                                    " | Course ID: " + item.getMahp() +
+                                    " | Lecturer ID: " + (item.getMagv() != null ? item.getMagv() : "N/A") +
+                                    " | Semester: " + item.getHk() +
+                                    " | Year: " + item.getNam());
+                        }
+                    }
+                };
+            }
+        });
+        monHocListView.setPrefHeight(300);
+
+        // Create TextFields
+        mammField = new TextField();
+        mahpField = new TextField();
+        magvField = new TextField();
+        hkField = new TextField();
+        namField = new TextField();
+
+        // Create Label and TextField layout
+        HBox inputLayout = new HBox(10);
+        inputLayout.getChildren().addAll(
+                createInputVBox("Subject ID", mammField),
+                createInputVBox("Course ID", mahpField),
+                createInputVBox("Lecturer ID", magvField),
+                createInputVBox("Semester", hkField),
+                createInputVBox("Year", namField));
+
+        // Create Buttons
+        Button addButton = new Button("Add");
+        addButton.setOnAction(e -> handleAdd());
+
+        Button updateButton = new Button("Update");
+        updateButton.setOnAction(e -> handleUpdate());
+
+        Button deleteButton = new Button("Delete");
+        deleteButton.setOnAction(e -> handleDelete());
+
+        Button refreshButton = new Button("Refresh");
+        refreshButton.setOnAction(e -> handleRefresh());
+
+        HBox buttonLayout = new HBox(10, addButton, updateButton, deleteButton, refreshButton);
+
+        // Create message label
+        messageLabel = new Label();
+        messageLabel.setStyle("-fx-text-fill: red;");
+
+        // Create title
+        Label titleLabel = new Label("Subject Management");
+        titleLabel.setFont(new Font("System Bold", 16));
+
+        // Arrange layout
+        VBox layout = new VBox(10, titleLabel, monHocListView, inputLayout, buttonLayout, messageLabel);
+        layout.setPadding(new Insets(10));
+
+        // Load data and handle row selection
+        loadData();
+        monHocListView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                selectedMonHoc = newSelection;
+                mammField.setText(newSelection.getMamm());
+                mahpField.setText(newSelection.getMahp());
+                magvField.setText(newSelection.getMagv() != null ? newSelection.getMagv() : "");
+                hkField.setText(String.valueOf(newSelection.getHk()));
+                namField.setText(String.valueOf(newSelection.getNam()));
+            }
+        });
+
+        return layout;
+    }
+
     private VBox createInputVBox(String labelText, TextField textField) {
         Label label = new Label(labelText);
         VBox vBox = new VBox(5, label, textField);

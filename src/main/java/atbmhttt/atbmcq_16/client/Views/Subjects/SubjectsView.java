@@ -8,6 +8,6 @@ public class SubjectsView {
         MonHocController controller = new MonHocController();
         BorderPaneHelper.setAllSections(contentArea,
                 null, null, null, null,
-                controller.createScene().getRoot());
+                controller.createView());
     }
 }

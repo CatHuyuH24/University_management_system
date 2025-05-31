@@ -124,6 +124,97 @@ public class NhanvienController {
         return new Scene(layout, 900, 600);
     }
 
+    public VBox createView() {
+        nhanvienListView = new ListView<>();
+        nhanvienListView.setItems(nhanvienList);
+        nhanvienListView.setCellFactory(new Callback<ListView<Nhanvien>, javafx.scene.control.ListCell<Nhanvien>>() {
+            @Override
+            public javafx.scene.control.ListCell<Nhanvien> call(ListView<Nhanvien> param) {
+                return new javafx.scene.control.ListCell<Nhanvien>() {
+                    @Override
+                    protected void updateItem(Nhanvien item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty || item == null) {
+                            setText(null);
+                        } else {
+                            setText(item.getManv() + " - " + item.getHoten() + " - " + item.getVaitro());
+                        }
+                    }
+                };
+            }
+        });
+
+        // Create TextFields
+        manvField = new TextField();
+        hotenField = new TextField();
+        phaiField = new TextField();
+        ngsinhField = new TextField();
+        ngsinhField.setPromptText("YYYY-MM-DD");
+        luongField = new TextField();
+        phucapField = new TextField();
+        dtField = new TextField();
+        vaitroField = new TextField();
+        madvField = new TextField();
+
+        // Create Label and TextField layout
+        HBox inputLayout = new HBox(10);
+        inputLayout.getChildren().addAll(
+                createInputVBox("Employee ID", manvField),
+                createInputVBox("Full Name", hotenField),
+                createInputVBox("Gender", phaiField),
+                createInputVBox("Date of Birth", ngsinhField),
+                createInputVBox("Salary", luongField),
+                createInputVBox("Allowance", phucapField),
+                createInputVBox("Phone Number", dtField),
+                createInputVBox("Role", vaitroField),
+                createInputVBox("Department ID", madvField));
+
+        // Create Buttons
+        Button addButton = new Button("Add");
+        addButton.setOnAction(e -> handleAdd());
+
+        Button updateButton = new Button("Update");
+        updateButton.setOnAction(e -> handleUpdate());
+
+        Button deleteButton = new Button("Delete");
+        deleteButton.setOnAction(e -> handleDelete());
+
+        Button refreshButton = new Button("Refresh");
+        refreshButton.setOnAction(e -> handleRefresh());
+
+        HBox buttonLayout = new HBox(10, addButton, updateButton, deleteButton, refreshButton);
+
+        // Create message label
+        messageLabel = new Label();
+        messageLabel.setStyle("-fx-text-fill: red;");
+
+        // Create title
+        Label titleLabel = new Label("Employee Management");
+        titleLabel.setFont(new Font("System Bold", 16));
+
+        // Arrange layout
+        VBox layout = new VBox(10, titleLabel, nhanvienListView, inputLayout, buttonLayout, messageLabel);
+        layout.setPadding(new Insets(10));
+
+        // Load data and handle row selection
+        loadData();
+        nhanvienListView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                manvField.setText(newSelection.getManv());
+                hotenField.setText(newSelection.getHoten());
+                phaiField.setText(newSelection.getPhai());
+                ngsinhField.setText(newSelection.getNgsinh());
+                luongField.setText(newSelection.getLuong() == 0.0 ? "" : String.valueOf(newSelection.getLuong()));
+                phucapField.setText(newSelection.getPhucap() == 0.0 ? "" : String.valueOf(newSelection.getPhucap()));
+                dtField.setText(newSelection.getDt());
+                vaitroField.setText(newSelection.getVaitro());
+                madvField.setText(newSelection.getMadv());
+            }
+        });
+
+        return layout;
+    }
+
     private VBox createInputVBox(String labelText, TextField textField) {
         Label label = new Label(labelText);
         VBox vBox = new VBox(5, label, textField);
