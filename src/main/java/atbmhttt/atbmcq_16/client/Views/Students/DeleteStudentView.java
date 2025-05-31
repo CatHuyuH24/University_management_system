@@ -16,12 +16,12 @@ import javafx.stage.Stage;
 
 import java.sql.SQLException;
 
-public class DeleteStudentDialog {
+public class DeleteStudentView {
     public static void show(StudentsViewModel studentsViewModel) {
         Stage dialog = new Stage();
         dialog.setTitle("DELETE STUDENT");
         try {
-            Image iconImage = new Image(DeleteStudentDialog.class.getResource("/images/app_icon.png").toExternalForm());
+            Image iconImage = new Image(DeleteStudentView.class.getResource("/images/app_icon.png").toExternalForm());
             dialog.getIcons().add(iconImage);
         } catch (Exception ex) {
             // ignore if icon not found
