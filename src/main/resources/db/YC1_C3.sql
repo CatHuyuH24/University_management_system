@@ -167,6 +167,8 @@ BEGIN
 
     IF v_role = 'NV CTSV' OR v_role = 'NV PĐT' THEN
         RETURN '1 = 1';
+    ELSIF v_role = 'SINHVIEN' THEN
+        RETURN 'MASV = ''' ||v_user ||'''';
     ELSE
         RETURN '0 = 1';
     END IF;
@@ -187,8 +189,8 @@ BEGIN
 END;
 /
 
--- GIỚI HẠN VIỆC THAO TÁC CỘT TINHTRANG
-CREATE OR REPLACE FUNCTION PF_SINHVIEN_TINHTRANG(
+-- GIỚI HẠN VIỆC UPDATE CỘT TINHTRANG
+CREATE OR REPLACE FUNCTION PF_SINHVIEN_TINHTRANG_UPDATE(
     schema_name IN VARCHAR2,
     object_name IN VARCHAR2
 )
@@ -214,12 +216,53 @@ BEGIN
   DBMS_RLS.ADD_POLICY (
     object_schema    => 'ATBMCQ_ADMIN',
     object_name      => 'SINHVIEN',
-    policy_name      => 'ATBMCQ_16_SINHVIEN_TINHTRANG',
+    policy_name      => 'ATBMCQ_16_SINHVIEN_TINHTRANG_UPDATE',
     function_schema  => 'VPD_MGR',
-    policy_function  => 'PF_SINHVIEN_TINHTRANG',
-    statement_types  => 'INSERT, UPDATE, DELETE',
+    policy_function  => 'PF_SINHVIEN_TINHTRANG_UPDATE',
+    statement_types  => 'UPDATE',
     sec_relevant_cols => 'TINHTRANG',
     update_check => TRUE
   );
 END;
 /
+
+-- GIỚI HẠN VIỆC INSERT DELETE
+CREATE OR REPLACE FUNCTION PF_SINHVIEN_TINHTRANG_INSERT_UPDATE(
+    schema_name IN VARCHAR2,
+    object_name IN VARCHAR2
+)
+RETURN VARCHAR2
+AS
+    v_role VARCHAR2(40);
+    v_temp VARCHAR2(40);
+BEGIN
+    v_role := SYS_CONTEXT('user_ctx', 'VAI_TRO');
+    
+    IF v_role = 'NV PĐT' THEN
+        RETURN '2 = 2';
+    ELSIF v_role = 'NV CTSV' THEN
+        RETURN 'TINHTRANG IS NULL';
+    ELSE
+        RETURN '2 = 0';
+    END IF;
+END;
+/
+
+
+BEGIN
+  DBMS_RLS.ADD_POLICY (
+    object_schema    => 'ATBMCQ_ADMIN',
+    object_name      => 'SINHVIEN',
+    policy_name      => 'ATBMCQ_16_SINHVIEN_TINHTRANG_INSERT_UDPATE',
+    function_schema  => 'VPD_MGR',
+    policy_function  => 'PF_SINHVIEN_TINHTRANG_INSERT_UPDATE',
+    statement_types  => 'INSERT, DELETE',
+    sec_relevant_cols => 'TINHTRANG',
+    update_check => TRUE
+  );
+END;
+/
+
+BEGIN
+DBMS_RLS.DROP_POLICY('ATBMCQ_ADMIN', 'SINHVIEN', 'ATBMCQ_16_SINHVIEN_TINHTRANG_INSERT_UDPATE');
+END;

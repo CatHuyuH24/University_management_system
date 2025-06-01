@@ -112,4 +112,7 @@ STARTUP;
 
 
 --- temp
-select * from atbmcq_admin.nhanvien;
+select * from ATBMCQ_ADMIN.NHANVIEN;
+select * from ATBMCQ_ADMIN.MOMON;
+SELECT * FROM ATBMCQ_ADMIN.SINHVIEN;
+SELECT * FROM ATBMCQ_aDMIN.DANGKY
