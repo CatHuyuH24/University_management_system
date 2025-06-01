@@ -109,3 +109,7 @@ STARTUP;
 ALTER SYSTEM SET AUDIT_TRAIL=NONE SCOPE=SPFILE;
 SHUTDOWN IMMEDIATE;
 STARTUP;
+
+
+--- temp
+select * from atbmcq_admin.nhanvien;
