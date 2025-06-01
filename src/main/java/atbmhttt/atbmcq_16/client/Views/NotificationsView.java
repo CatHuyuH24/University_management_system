@@ -19,7 +19,7 @@ public class NotificationsView {
         try {
             List<NotificationRepository.Notification> notifications = NotificationRepository.getAllNotifications(conn);
             if (notifications.isEmpty()) {
-                Label emptyLabel = new Label("Không có thông báo nào.");
+                Label emptyLabel = new Label("No notifications available.");
                 emptyLabel.setStyle("-fx-font-size: 16; -fx-text-fill: #888;");
                 notificationsContainer.getChildren().add(emptyLabel);
             } else {
@@ -46,7 +46,7 @@ public class NotificationsView {
                 }
             }
         } catch (Exception e) {
-            Label errorLabel = new Label("Lỗi khi tải thông báo: " + e.getMessage());
+            Label errorLabel = new Label("Error loading notifications: " + e.getMessage());
             errorLabel.setStyle("-fx-text-fill: red;");
             notificationsContainer.getChildren().add(errorLabel);
         }
@@ -58,10 +58,10 @@ public class NotificationsView {
 
         BorderPane pane = new BorderPane();
         pane.setPadding(new Insets(10));
-        pane.setTop(new Label("Danh sách thông báo:"));
+        pane.setTop(new Label("Notification List:"));
         pane.setCenter(scrollPane);
 
-        // Hiển thị ngay trên contentArea thay vì mở cửa sổ mới
+        // Display directly on contentArea instead of opening a new window
         contentArea.setCenter(pane);
     }
 }

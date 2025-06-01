@@ -16,7 +16,7 @@ public class AddNotificationView {
     public static void show(Connection conn) {
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setTitle("Thêm thông báo mới");
+        stage.setTitle("Add New Notification");
         // Set app icon like App.java
         try {
             Image iconImage = new Image(AddNotificationView.class.getResource("/images/app_icon.png").toExternalForm());
@@ -29,20 +29,22 @@ public class AddNotificationView {
         root.setPadding(new Insets(18));
         root.setAlignment(Pos.TOP_CENTER);
 
-        Label labelTitle = new Label("Chọn label cho thông báo:");
+        Label labelTitle = new Label("Select label for notification:");
         TableView<LabelRepository.LabelInfo> table = new TableView<>();
         TableColumn<LabelRepository.LabelInfo, String> idCol = new TableColumn<>("ID");
         idCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().id));
-        TableColumn<LabelRepository.LabelInfo, String> dinhCol = new TableColumn<>("Định danh");
+        TableColumn<LabelRepository.LabelInfo, String> dinhCol = new TableColumn<>("Identifier");
         dinhCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().dinhdanh));
-        TableColumn<LabelRepository.LabelInfo, String> nameCol = new TableColumn<>("Tên label");
+        TableColumn<LabelRepository.LabelInfo, String> nameCol = new TableColumn<>("Label Name");
         nameCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().nameLabel));
-        table.getColumns().addAll(idCol, dinhCol, nameCol);
+        table.getColumns().add(idCol);
+        table.getColumns().add(dinhCol);
+        table.getColumns().add(nameCol);
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         table.setPrefHeight(200);
 
         ComboBox<String> dinhdanhCombo = new ComboBox<>();
-        dinhdanhCombo.setPromptText("Chọn định danh label");
+        dinhdanhCombo.setPromptText("Select label identifier");
 
         try {
             List<LabelRepository.LabelInfo> labels = LabelRepository.getAllLabels(conn);
@@ -51,33 +53,33 @@ public class AddNotificationView {
                 dinhdanhCombo.getItems().add(l.dinhdanh);
             }
         } catch (Exception e) {
-            root.getChildren().add(new Label("Lỗi tải label: " + e.getMessage()));
+            root.getChildren().add(new Label("Error loading labels: " + e.getMessage()));
         }
 
-        Label contentLabel = new Label("Nhập nội dung thông báo:");
+        Label contentLabel = new Label("Enter notification content:");
         TextArea contentArea = new TextArea();
-        contentArea.setPromptText("Nhập nội dung...");
+        contentArea.setPromptText("Enter content...");
         contentArea.setWrapText(true);
         contentArea.setPrefRowCount(4);
 
-        Button submitBtn = new Button("Thêm thông báo");
+        Button submitBtn = new Button("Add Notification");
         Label statusLabel = new Label();
         submitBtn.setOnAction(ev -> {
             String noidung = contentArea.getText().trim();
             String dinhdanh = dinhdanhCombo.getValue();
             if (noidung.isEmpty() || dinhdanh == null) {
-                statusLabel.setText("Vui lòng nhập nội dung và chọn label!");
+                statusLabel.setText("Please enter content and select a label!");
                 statusLabel.setStyle("-fx-text-fill: red;");
                 return;
             }
             try {
                 LabelRepository.insertNotification(conn, noidung, dinhdanh);
-                statusLabel.setText("Thêm thông báo thành công!");
+                statusLabel.setText("Notification added successfully!");
                 statusLabel.setStyle("-fx-text-fill: green;");
                 contentArea.clear();
                 dinhdanhCombo.getSelectionModel().clearSelection();
             } catch (Exception ex) {
-                statusLabel.setText("Lỗi khi thêm thông báo: " + ex.getMessage());
+                statusLabel.setText("Error adding notification: " + ex.getMessage());
                 statusLabel.setStyle("-fx-text-fill: red;");
             }
         });
