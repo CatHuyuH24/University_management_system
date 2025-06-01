@@ -16,6 +16,13 @@ public class AssignLabelView {
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setTitle("Gán nhãn cho người dùng");
+        // Set app icon like App.java
+        try {
+            javafx.scene.image.Image iconImage = new javafx.scene.image.Image(AssignLabelView.class.getResource("/images/app_icon.png").toExternalForm());
+            stage.getIcons().add(iconImage);
+        } catch (Exception e) {
+            System.err.println("Image not found: app_icon.png");
+        }
 
         VBox root = new VBox(16);
         root.setPadding(new Insets(18));

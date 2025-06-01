@@ -5,6 +5,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -16,6 +17,13 @@ public class AddNotificationView {
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setTitle("Thêm thông báo mới");
+        // Set app icon like App.java
+        try {
+            Image iconImage = new Image(AddNotificationView.class.getResource("/images/app_icon.png").toExternalForm());
+            stage.getIcons().add(iconImage);
+        } catch (Exception e) {
+            System.err.println("Image not found: app_icon.png");
+        }
 
         VBox root = new VBox(16);
         root.setPadding(new Insets(18));

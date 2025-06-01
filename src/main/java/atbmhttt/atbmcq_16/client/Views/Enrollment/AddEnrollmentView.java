@@ -2,8 +2,8 @@ package atbmhttt.atbmcq_16.client.Views.Enrollment;
 
 import java.sql.SQLException;
 
+import atbmhttt.atbmcq_16.client.ClientAlertDialogs;
 import atbmhttt.atbmcq_16.client.ViewModels.EnrollmentAndGradesViewModel;
-import atbmhttt.atbmcq_16.client.Views.ClientAlertDialogs;
 import atbmhttt.atbmcq_16.dialogs.AlertDialog;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
