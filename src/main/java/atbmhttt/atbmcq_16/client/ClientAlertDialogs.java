@@ -1,4 +1,4 @@
-package atbmhttt.atbmcq_16.client.Views;
+package atbmhttt.atbmcq_16.client;
 
 import atbmhttt.atbmcq_16.dialogs.AlertDialog;
 

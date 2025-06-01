@@ -1,7 +1,7 @@
 package atbmhttt.atbmcq_16.client.Views.Students;
 
+import atbmhttt.atbmcq_16.client.ClientAlertDialogs;
 import atbmhttt.atbmcq_16.client.ViewModels.StudentsViewModel;
-import atbmhttt.atbmcq_16.client.Views.ClientAlertDialogs;
 import atbmhttt.atbmcq_16.dialogs.AlertDialog;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;

@@ -58,7 +58,7 @@ BEGIN
             SELECT 1
             FROM ATBMCQ_ADMIN.MOMON m
             WHERE m.MAMM = ATBMCQ_ADMIN.DANGKY.MAMM
-              AND TO_DATE('01-09-2024', 'DD-MM-YYYY') BETWEEN
+              AND SYSDATE BETWEEN
                 CASE m.HK
                   WHEN 1 THEN TO_DATE('01-09-' || m.NAM, 'DD-MM-YYYY')
                   WHEN 2 THEN TO_DATE('01-01-' || m.NAM, 'DD-MM-YYYY')
@@ -152,7 +152,7 @@ BEGIN
             SELECT 1
             FROM ATBMCQ_ADMIN.MOMON m
             WHERE m.MAMM = ATBMCQ_ADMIN.DANGKY.MAMM
-              AND TO_DATE('14-09-2024', 'DD-MM-YYYY') BETWEEN
+              AND SYSDATE BETWEEN
                 CASE m.HK
                   WHEN 1 THEN TO_DATE('01-09-' || m.NAM, 'DD-MM-YYYY')
                   WHEN 2 THEN TO_DATE('01-01-' || m.NAM, 'DD-MM-YYYY')
@@ -214,7 +214,7 @@ BEGIN
             SELECT 1
             FROM ATBMCQ_ADMIN.MOMON m
             WHERE m.MAMM = ATBMCQ_ADMIN.DANGKY.MAMM
-              AND TO_DATE('14-09-2024', 'DD-MM-YYYY') BETWEEN
+              AND SYSDATE BETWEEN
                 CASE m.HK
                   WHEN 1 THEN TO_DATE('01-09-' || m.NAM, 'DD-MM-YYYY')
                   WHEN 2 THEN TO_DATE('01-01-' || m.NAM, 'DD-MM-YYYY')

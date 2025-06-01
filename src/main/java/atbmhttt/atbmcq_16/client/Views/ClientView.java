@@ -2,6 +2,7 @@ package atbmhttt.atbmcq_16.client.Views;
 
 import atbmhttt.atbmcq_16.DatabaseConnection;
 import atbmhttt.atbmcq_16.client.Views.Students.StudentsView;
+import java.sql.Connection;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -26,24 +27,26 @@ public class ClientView extends Application {
         Button employeesButton = new Button("EMPLOYEES");
         Button coursesButton = new Button("COURSES");
         Button enrollmentButton = new Button("ENROLLMENT & GRADES");
-        Button broadcastNotificationButton = new Button("BROADCAST NOTIFICATION");
+        Button addNotificationButton = new Button("ADD NOTIFICATION");
         Button viewNotificationsButton = new Button("VIEW NOTIFICATIONS");
+        Button assignLabelButton = new Button("ASSIGN LABEL");
         Button logoutButton = new Button("LOG OUT");
 
         navigationPanel.add(studentsButton, 0, 1);
         navigationPanel.add(employeesButton, 0, 2);
         navigationPanel.add(coursesButton, 0, 3);
         navigationPanel.add(enrollmentButton, 0, 4);
-        navigationPanel.add(broadcastNotificationButton, 0, 5);
+        navigationPanel.add(addNotificationButton, 0, 5);
         navigationPanel.add(viewNotificationsButton, 0, 6);
+        navigationPanel.add(assignLabelButton, 0, 7);
 
         // Add a spacer pane to fill the space between the last button and the bottom
         Pane spacer = new Pane();
-        navigationPanel.add(spacer, 0, 7);
+        navigationPanel.add(spacer, 0, 8);
         GridPane.setVgrow(spacer, Priority.ALWAYS);
 
         // Move logout button to the bottom
-        navigationPanel.add(logoutButton, 0, 8);
+        navigationPanel.add(logoutButton, 0, 9);
 
         BorderPane contentArea = new BorderPane();
         contentArea.setCenter(new Text("Welcome " + DatabaseConnection.getUsername()));
@@ -53,6 +56,51 @@ public class ClientView extends Application {
         setUpDisplayEmployees(employeesButton, contentArea);
         setUpDisplaySubjects(coursesButton, contentArea);
         setUpDisplayRegistrationDetails(enrollmentButton, contentArea);
+
+        // Gán sự kiện cho nút VIEW NOTIFICATIONS
+        viewNotificationsButton.setOnAction(e -> {
+            try {
+                Connection conn = DatabaseConnection.getConnection();
+                atbmhttt.atbmcq_16.client.Views.NotificationsView.showNotifications(conn, contentArea);
+            } catch (Exception ex) {
+                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+                        javafx.scene.control.Alert.AlertType.ERROR);
+                alert.setTitle("Lỗi");
+                alert.setHeaderText("Không thể tải thông báo");
+                alert.setContentText(ex.getMessage());
+                alert.showAndWait();
+            }
+        });
+
+        // Gán sự kiện cho nút ADD NOTIFICATION để mở giao diện thêm thông báo
+        addNotificationButton.setOnAction(e -> {
+            try {
+                Connection conn = DatabaseConnection.getConnection();
+                atbmhttt.atbmcq_16.client.Views.AddNotificationView.show(conn);
+            } catch (Exception ex) {
+                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+                        javafx.scene.control.Alert.AlertType.ERROR);
+                alert.setTitle("Lỗi");
+                alert.setHeaderText("Không thể mở giao diện thêm thông báo");
+                alert.setContentText(ex.getMessage());
+                alert.showAndWait();
+            }
+        });
+
+        // Gán sự kiện cho nút ASSIGN LABEL để mở giao diện gán nhãn cho user
+        assignLabelButton.setOnAction(e -> {
+            try {
+                Connection conn = DatabaseConnection.getConnection();
+                atbmhttt.atbmcq_16.client.Views.AssignLabelView.show(conn);
+            } catch (Exception ex) {
+                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+                        javafx.scene.control.Alert.AlertType.ERROR);
+                alert.setTitle("Lỗi");
+                alert.setHeaderText("Không thể mở giao diện gán nhãn");
+                alert.setContentText(ex.getMessage());
+                alert.showAndWait();
+            }
+        });
 
         // Log out button functionality (similar to AdminView)
         logoutButton.setOnAction(e -> {
