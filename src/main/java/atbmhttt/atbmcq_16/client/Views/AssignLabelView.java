@@ -15,29 +15,20 @@ public class AssignLabelView {
     public static void show(Connection conn) {
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setTitle("Assign Label to User");
-        // Set app icon like App.java
-        try {
-            javafx.scene.image.Image iconImage = new javafx.scene.image.Image(
-                    AssignLabelView.class.getResource("/images/app_icon.png").toExternalForm());
-            stage.getIcons().add(iconImage);
-        } catch (Exception e) {
-            System.err.println("Image not found: app_icon.png");
-        }
+        stage.setTitle("Gán nhãn cho người dùng");
 
         VBox root = new VBox(16);
         root.setPadding(new Insets(18));
         root.setAlignment(Pos.TOP_CENTER);
 
-        Label labelTitle = new Label("Select label identifier:");
+        Label labelTitle = new Label("Chọn định danh nhãn:");
         ComboBox<String> dinhdanhCombo = new ComboBox<>();
         TableView<UserLabelRepository.UserLabelInfo> table = new TableView<>();
-        TableColumn<UserLabelRepository.UserLabelInfo, String> dinhCol = new TableColumn<>("Identifier");
+        TableColumn<UserLabelRepository.UserLabelInfo, String> dinhCol = new TableColumn<>("Định danh");
         dinhCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().dinhdanh));
-        TableColumn<UserLabelRepository.UserLabelInfo, String> nameCol = new TableColumn<>("Label Name");
+        TableColumn<UserLabelRepository.UserLabelInfo, String> nameCol = new TableColumn<>("Tên nhãn");
         nameCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().name));
-        table.getColumns().add(dinhCol);
-        table.getColumns().add(nameCol);
+        table.getColumns().addAll(dinhCol, nameCol);
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         table.setPrefHeight(180);
 
@@ -48,35 +39,35 @@ public class AssignLabelView {
                 dinhdanhCombo.getItems().add(l.dinhdanh);
             }
         } catch (Exception e) {
-            root.getChildren().add(new Label("Error loading labels: " + e.getMessage()));
+            root.getChildren().add(new Label("Lỗi tải label: " + e.getMessage()));
         }
 
-        Label userLabel = new Label("Select user to assign label:");
+        Label userLabel = new Label("Chọn user để gán nhãn:");
         ComboBox<String> userCombo = new ComboBox<>();
-        userCombo.setPromptText("Select user");
+        userCombo.setPromptText("Chọn user");
         try {
             List<String> users = UserLabelRepository.getUserList(conn);
             userCombo.getItems().addAll(users);
         } catch (Exception e) {
-            root.getChildren().add(new Label("Error loading users: " + e.getMessage()));
+            root.getChildren().add(new Label("Lỗi tải user: " + e.getMessage()));
         }
 
-        Button submitBtn = new Button("Assign Label");
+        Button submitBtn = new Button("Gán nhãn");
         Label statusLabel = new Label();
         submitBtn.setOnAction(ev -> {
             String dinhdanh = dinhdanhCombo.getValue();
             String user = userCombo.getValue();
             if (dinhdanh == null || user == null) {
-                statusLabel.setText("Please select both a label identifier and a user!");
+                statusLabel.setText("Vui lòng chọn định danh và user!");
                 statusLabel.setStyle("-fx-text-fill: red;");
                 return;
             }
             try {
                 UserLabelRepository.setOlsLabelForUser(conn, user, dinhdanh);
-                statusLabel.setText("Successfully assigned label " + dinhdanh + " to user " + user + "!");
+                statusLabel.setText("Đã gán nhãn " + dinhdanh + " cho user " + user + " thành công!");
                 statusLabel.setStyle("-fx-text-fill: green;");
             } catch (Exception ex) {
-                statusLabel.setText("Error assigning label: " + ex.getMessage());
+                statusLabel.setText("Lỗi khi gán nhãn: " + ex.getMessage());
                 statusLabel.setStyle("-fx-text-fill: red;");
             }
         });

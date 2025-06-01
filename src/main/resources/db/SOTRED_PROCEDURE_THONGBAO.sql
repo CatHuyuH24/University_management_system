@@ -1,4 +1,4 @@
--- CHẠY DƯỚI VAI TRÒ OLS_ADMIN
+-- Đăng nhập với ADMIN_OLS/123 để thực hiện
 -- Lấy toàn bộ thông báo
 CREATE OR REPLACE FUNCTION GET_ALL_THONGBAO
 RETURN SYS_REFCURSOR
@@ -7,7 +7,6 @@ IS
 BEGIN
     OPEN v_cursor FOR
         SELECT * FROM ADMIN_OLS.THONGBAO;
-
     RETURN v_cursor;
 END;
 /
@@ -15,48 +14,48 @@ END;
 -- phát tán thông báo UI
  -- Tạo thủ tục INSERT_THONGBAO 
 CREATE OR REPLACE PROCEDURE INSERT_THONGBAO (
-    p_noidung   IN VARCHAR2,
-    p_dinhdanh  IN VARCHAR2
-) IS
-    v_next_id   NUMBER;
+    p_noidung  IN VARCHAR2,
+    p_dinhdanh IN VARCHAR2
+)
+AS
+    v_level     VARCHAR2(50);
+    v_comp      VARCHAR2(50);
+    v_group     VARCHAR2(50);
+    v_label     NUMBER;
+    v_id        NUMBER;
 BEGIN
-    -- Lấy ID lớn nhất hiện có và tăng lên 1
-    SELECT NVL(MAX(ID), 0) + 1 INTO v_next_id FROM THONGBAO;
+    -- Lấy ID max hiện tại + 1 từ bảng THONGBAO
+    SELECT NVL(MAX(ID), 0) + 1 INTO v_id FROM THONGBAO;
 
-    -- Chèn bản ghi mới
-    INSERT INTO THONGBAO (ID, NOIDUNG, DINHDANH)
-    VALUES (v_next_id, p_noidung, p_dinhdanh);
-    
+    -- Lấy nhãn từ bảng map theo DINHDANH
+    SELECT LEVEL_No, COMPARTMENT, GROUPS
+    INTO v_level, v_comp, v_group
+    FROM THONGBAO_LABEL_MAP
+    WHERE DINHDANH = p_dinhdanh;
+
+    DBMS_OUTPUT.PUT_LINE('Nhận được nhãn: ' || v_level || ':' || v_comp || ':' || v_group);
+
+    -- Tạo nhãn OLS_LABEL
+    v_label := CHAR_TO_LABEL('THONGBAO_POLICY', v_level || ':' || v_comp || ':' || v_group);
+    DBMS_OUTPUT.PUT_LINE('Nhãn numeric: ' || TO_CHAR(v_label));
+
+    -- Chèn vào bảng THONGBAO
+    INSERT INTO THONGBAO (ID, NOIDUNG, DINHDANH, OLS_LABEL)
+    VALUES (v_id, p_noidung, p_dinhdanh, v_label);
+
     COMMIT;
+    DBMS_OUTPUT.PUT_LINE('Insert thành công với ID=' || v_id);
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('Không tìm thấy nhãn trong THONGBAO_LABEL_MAP với DINHDANH = ' || p_dinhdanh);
+        RAISE;  -- Nâng lỗi lên để dễ phát hiện
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Lỗi: ' || SQLERRM);
+        RAISE;  -- Nâng lỗi lên để dễ phát hiện
 END;
 /
 
--- update OLS_LABEL
-CREATE OR REPLACE TRIGGER TRG_SET_OLS_LABEL_BEFORE_INSERT
-BEFORE INSERT ON THONGBAO
-FOR EACH ROW
-DECLARE
-    v_level  VARCHAR2(30);
-    v_comp   VARCHAR2(30);
-    v_group  VARCHAR2(30);
-BEGIN
-    BEGIN
-        -- Lấy nhãn bảo mật từ bảng ánh xạ
-        SELECT LEVEL_NO, COMPARTMENT, GROUPS
-        INTO v_level, v_comp, v_group
-        FROM THONGBAO_LABEL_MAP
-        WHERE DINHDANH = :NEW.DINHDANH;
-
-        -- Tạo nhãn OLS từ chuỗi "LEVEL:COMPARTMENT:GROUP"
-        :NEW.OLS_LABEL := CHAR_TO_LABEL('THONGBAO_POLICY', v_level || ':' || v_comp || ':' || v_group);
-
-    EXCEPTION
-        WHEN NO_DATA_FOUND THEN
-            -- Nếu không có ánh xạ thì không gán nhãn
-            :NEW.OLS_LABEL := NULL;
-    END;
-END;
-/
 
 -- Gán nhãn cho người trên UI
 -- Gán nhãn cho user, này cho admin dùng
@@ -80,7 +79,7 @@ BEGIN
 
     -- Gán nhãn cho user
     SA_USER_ADMIN.SET_USER_LABELS('THONGBAO_POLICY', p_username, v_label);
-
+    
 EXCEPTION
     WHEN NO_DATA_FOUND THEN
         DBMS_OUTPUT.PUT_LINE('Không tìm thấy nhãn với DINHDANH: ' || p_dinhdanh);
@@ -114,7 +113,6 @@ BEGIN
     RETURN rc;
 END;
 /
-
 
 
 CREATE OR REPLACE FUNCTION GET_USER_LIST
