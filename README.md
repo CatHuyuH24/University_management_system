@@ -9,7 +9,10 @@ This is a JavaFX-based University Management System for managing students, cours
 - **Course Management**: Add, update, delete, and view course information (with role-based permissions).
 - **Role Management**: Admin can manage users and roles.
 - **Privilege Management**: Admin can manage database privileges directly from the application, including granting and revoking privileges for users and roles.
-
+- **Notification Management**: Add, view, and manage notifications with label-based access control. Users can:
+  - Add new notifications with a label (security level) using a modern JavaFX form.
+  - View all notifications relevant to their access level in a user-friendly list.
+  - Assign labels to users for notification access control.
 - **Modern JavaFX UI**: Responsive and user-friendly interface.
 
 ## Prerequisites
@@ -69,6 +72,28 @@ This is a JavaFX-based University Management System for managing students, cours
 ## Admin Dashboard
 
 The Admin side of the application is designed for database administrators. It provides a user-friendly interface for managing users, roles, and privileges in the Oracle database, allowing DBAs to perform essential tasks without needing to install Oracle SQL Developer or similar database tools.
+
+## How to Use Notifications
+
+### Add Notification
+
+- Click the **ADD NOTIFICATION** button in the client dashboard.
+- Select a label (security level) and enter the notification content.
+- Submit to add the notification to the database. Only users with the appropriate label can view the notification.
+
+### View Notifications
+
+- Click the **VIEW NOTIFICATIONS** button to see a list of notifications you have access to, based on your assigned label.
+
+### Assign Label to User
+
+- Click the **ASSIGN LABEL** button to assign a label (security level) to a user, controlling which notifications they can access.
+
+### Technical Details
+
+- Notifications and labels are managed via stored procedures in the Oracle database (see `ADMIN_OLS` package).
+- JavaFX views: `AddNotificationView.java`, `NotificationsView.java`, and `AssignLabelView.java` handle the UI and logic.
+- Repositories: `LabelRepository.java` and `NotificationRepository.java` handle database operations for labels and notifications.
 
 ## Notes
 
