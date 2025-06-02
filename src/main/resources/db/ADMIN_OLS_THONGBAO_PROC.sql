@@ -63,10 +63,10 @@ CREATE OR REPLACE PROCEDURE SET_OLS_LABEL_FOR_USER(
     p_username IN VARCHAR2,     -- tên người dùng trong hệ thống
     p_dinhdanh IN VARCHAR2      -- mã nhãn từ bảng ánh xạ (VD: 'u1', 'u2'...)
 ) IS
-    v_level   VARCHAR2(30);
-    v_comp    VARCHAR2(30);
-    v_group   VARCHAR2(30);
-    v_label   VARCHAR2(100);
+    v_level   VARCHAR2(50);
+    v_comp    VARCHAR2(50);
+    v_group   VARCHAR2(50);
+    v_label   VARCHAR2(150);
 BEGIN
     -- Lấy thông tin nhãn từ bảng ánh xạ theo DINHDANH (vd: 'u1')
     SELECT LEVEL_NO, COMPARTMENT, GROUPS
@@ -87,7 +87,6 @@ EXCEPTION
         DBMS_OUTPUT.PUT_LINE('Lỗi: ' || SQLERRM);
 END;
 /
-
 
 -- gọi tương ứng với các u1-u8 đế lấy name lên UI
 CREATE OR REPLACE FUNCTION GET_ALL_USER_LABELS
