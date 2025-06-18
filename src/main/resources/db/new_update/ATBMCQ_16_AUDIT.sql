@@ -157,7 +157,7 @@ BEGIN
     object_name     => 'NHANVIEN',
     policy_name     => 'FGA_SEL_LUONG_PHUCAP_NOT_NVTCHC',
     audit_column    => 'LUONG,PHUCAP',
-    audit_condition => 'SYS_CONTEXT(''USERENV'', ''SESSION_USER'') <> ''NV004''',
+    audit_condition => 'SYS_CONTEXT(''USER_CTX'', ''VAI_TRO'') <> ''NV TCHC''',
     statement_types => 'SELECT',
     enable          => TRUE
   );
@@ -188,7 +188,7 @@ BEGIN
     object_schema   => 'ATBMCQ_ADMIN',
     object_name     => 'NHANVIEN',
     policy_name     => 'FGA_UPD_NHANVIEN_NOT_NVTCHC',
-    audit_condition => 'SYS_CONTEXT(''USERENV'', ''SESSION_USER'') <> ''NV004''',
+    audit_condition => 'SYS_CONTEXT(''USER_CTX'', ''VAI_TRO'') <> ''NV TCHC''',
     statement_types => 'UPDATE',
     enable          => TRUE
   );

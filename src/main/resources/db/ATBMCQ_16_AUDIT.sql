@@ -205,5 +205,13 @@ ORDER BY
   timestamp DESC;
 
 ------------------------------------------------------------------------------------------------------
+-- Trong SQL*Plus:
+SPOOL audit_log.txt
+
+SELECT *
+FROM DBA_AUDIT_TRAIL
+ORDER BY TIMESTAMP DESC;
+
+SPOOL OFF;
 
 -- 3C
