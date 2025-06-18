@@ -24,7 +24,7 @@ AS
     v_label     NUMBER;
     v_id        NUMBER;
 BEGIN
-    SELECT COUNT(*) INTO v_id FROM ADMIN_OLS.THONGBAO;
+     SELECT THONGBAO_SEQ.NEXTVAL INTO v_id FROM DUAL;
 
     -- Lấy nhãn từ bảng map theo DINHDANH
     SELECT LEVEL_No, COMPARTMENT, GROUPS
