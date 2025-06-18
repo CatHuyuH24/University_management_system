@@ -12,7 +12,7 @@ END;
 /
 
 -- phát tán thông báo UI
- -- Tạo thủ tục INSERT_THONGBAO 
+-- Tạo thủ tục INSERT_THONGBAO 
 CREATE OR REPLACE PROCEDURE INSERT_THONGBAO (
     p_noidung  IN VARCHAR2,
     p_dinhdanh IN VARCHAR2
@@ -24,8 +24,8 @@ AS
     v_label     NUMBER;
     v_id        NUMBER;
 BEGIN
-     SELECT THONGBAO_SEQ.NEXTVAL INTO v_id FROM DUAL;
-
+    SELECT THONGBAO_SEQ.NEXTVAL INTO v_id FROM DUAL;
+    
     -- Lấy nhãn từ bảng map theo DINHDANH
     SELECT LEVEL_No, COMPARTMENT, GROUPS
     INTO v_level, v_comp, v_group
@@ -54,19 +54,6 @@ EXCEPTION
         RAISE;  -- Nâng lỗi lên để dễ phát hiện
 END;
 /
-
--- Bật hiển thị DBMS_OUTPUT
-SET SERVEROUTPUT ON;
-
--- Gọi thủ tục với ví dụ thông báo và định danh
-BEGIN
-    INSERT_THONGBAO(
-        p_noidung  => 'Hệ thống sẽ bảo trì lúc 22:00 hôm nay.',
-        p_dinhdanh => 't1'  -- Định danh phải tồn tại trong bảng THONGBAO_LABEL_MAP
-    );
-END;
-/
-
 
 -- Gán nhãn cho người trên UI
 -- Gán nhãn cho user, này cho admin dùng
