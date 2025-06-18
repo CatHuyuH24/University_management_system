@@ -1,4 +1,5 @@
 -- YEU CAU 3 AUDIT
+-- KET NOI BANG ATBMCQ_ADMIN
 -----------------------------------------------------------------------------------------------
 -- CAU 2 STANDARD AUDIT
 CREATE OR REPLACE PROCEDURE PROC_TANG_LUONG(p_manv VARCHAR2, p_muc NUMBER) IS
@@ -85,8 +86,6 @@ ORDER BY
 -- 3A
 
 -- Cấp vai trò NV_PKT cho user
-GRANT NV_PKT TO USER_PKT;
-GRANT NV_TCHC TO USER_SV;
 
 
 BEGIN
@@ -163,6 +162,8 @@ BEGIN
   );
 END;
 /
+
+
 BEGIN
   DBMS_FGA.DROP_POLICY(
     object_schema => 'ATBMCQ_ADMIN',

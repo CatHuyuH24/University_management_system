@@ -20,8 +20,7 @@ public class AssignLabelView {
         // Set up the icon for this window (like App.java)
         try {
             javafx.scene.image.Image iconImage = new javafx.scene.image.Image(
-                AssignLabelView.class.getResource("/images/app_icon.png").toExternalForm()
-            );
+                    AssignLabelView.class.getResource("/images/app_icon.png").toExternalForm());
             stage.getIcons().add(iconImage);
         } catch (NullPointerException e) {
             System.err.println("Image not found: app_icon.png");
