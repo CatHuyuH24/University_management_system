@@ -208,3 +208,39 @@ ORDER BY
 ------------------------------------------------------------------------------------------------------
 
 -- 3C
+
+BEGIN
+  DBMS_FGA.ADD_POLICY(
+    object_schema   => 'ATBMCQ_ADMIN',
+    object_name     => 'DANGKY',
+    policy_name     => 'FGA_DANGKY_SAI_SV',
+    audit_condition => 'MASV <> SYS_CONTEXT(''USERENV'', ''SESSION_USER'')',
+    audit_column    => NULL,
+    handler_module  => NULL,
+    enable          => TRUE,
+    statement_types => 'UPDATE,DELETE',
+    audit_trail     => DBMS_FGA.DB + DBMS_FGA.EXTENDED
+  );
+END;
+/
+
+BEGIN
+  DBMS_FGA.ADD_POLICY(
+    object_schema   => 'ATBMCQ_ADMIN',
+    object_name     => 'DANGKY',
+    policy_name     => 'FGA_DANGKY_NGOAI_TG',
+    audit_condition => 'SYSDATE NOT BETWEEN TO_DATE(''2025-06-01'', ''YYYY-MM-DD'') AND TO_DATE(''2025-06-30'', ''YYYY-MM-DD'')',
+    audit_column    => NULL,
+    handler_module  => NULL,
+    enable          => TRUE,
+    statement_types => 'UPDATE,INSERT,DELETE',
+    audit_trail     => DBMS_FGA.DB + DBMS_FGA.EXTENDED
+  );
+END;
+/
+
+SELECT
+ *
+FROM dba_fga_audit_trail
+
+
