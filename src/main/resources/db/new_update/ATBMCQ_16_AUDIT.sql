@@ -101,14 +101,14 @@ BEGIN
 END;
 
 
-
-BEGIN
-  DBMS_FGA.DROP_POLICY(
-    object_schema => 'ATBMCQ_ADMIN',
-    object_name   => 'DANGKY',
-    policy_name   => 'FGA_AUDIT_UPDATE_NOT_NVPKT'
-  );
-END;
+--
+--BEGIN
+--  DBMS_FGA.DROP_POLICY(
+--    object_schema => 'ATBMCQ_ADMIN',
+--    object_name   => 'DANGKY',
+--    policy_name   => 'FGA_DANGKY_NGOAI_TG'
+--  );
+--END;
 
 
 
@@ -229,7 +229,12 @@ BEGIN
     object_schema   => 'ATBMCQ_ADMIN',
     object_name     => 'DANGKY',
     policy_name     => 'FGA_DANGKY_NGOAI_TG',
-    audit_condition => 'SYSDATE NOT BETWEEN TO_DATE(''2025-06-01'', ''YYYY-MM-DD'') AND TO_DATE(''2025-06-30'', ''YYYY-MM-DD'')',
+    audit_condition => q'[
+      regexp_count(
+        to_char(sysdate,'MM-DD'),
+        '^(01|05|09)-(0[1-9]|1[0-4])$'
+      ) = 0
+    ]',
     audit_column    => NULL,
     handler_module  => NULL,
     enable          => TRUE,
@@ -238,6 +243,8 @@ BEGIN
   );
 END;
 /
+
+
 
 SELECT
  *
